@@ -4,6 +4,8 @@ Una aplicación Spring Boot que proporciona operaciones matemáticas básicas a 
 
 [![Java CI with Maven](https://github.com/accenture-amer-extending-copilot/poc-springboot-sum-integers/actions/workflows/maven.yml/badge.svg)](https://github.com/accenture-amer-extending-copilot/poc-springboot-sum-integers/actions/workflows/maven.yml)
 
+[![Cobertura](https://raw.githubusercontent.com/accenture-amer-extending-copilot/poc-springboot-sum-integers/main/.github/badges/jacoco.svg)](https://accenture-amer-extending-copilot.github.io/poc-springboot-sum-integers/site/jacoco/)
+
 ## 📋 Contenido
 
 - [Requisitos Previos](#-requisitos-previos)
