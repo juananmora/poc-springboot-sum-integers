@@ -58,12 +58,12 @@ jobs:
     - name: Generate Jacoco Badge
       uses: cicirello/jacoco-badge-generator@v2
       with:
-        jacoco-csv-file: target/site/jacoco/jacoco.csv
+        jacoco-report-path: target/site/jacoco/jacoco.xml
         badges-directory: .github/badges
-        generate-coverage-badge: true
-
-    - name: Upload Jacoco Badge
-      uses: actions/upload-artifact@v4
-      with:
-        name: jacoco-badges
-        path: .github/badges/
+    - name: Commit badge
+      run: |
+        git config --global user.name 'github-actions'
+        git config --global user.email 'github-actions@github.com'
+        git add .github/badges/jacoco.svg
+        git commit -m "Actualiza badge de cobertura Jacoco [skip ci]" || echo "Sin cambios"
+        git push || echo "No hay cambios para pushear"
