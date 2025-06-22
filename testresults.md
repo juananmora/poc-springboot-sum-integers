@@ -9,21 +9,21 @@ Comando utilizado: `mvn clean test`
 
 ## 📊 Resumen General
 
-- **Total de pruebas ejecutadas**: 80  
-- **Pruebas exitosas**: 80  
+- **Total de pruebas ejecutadas**: 98  
+- **Pruebas exitosas**: 98  
 - **Pruebas fallidas**: 0  
 - **Pruebas con errores**: 0  
-- **Tiempo total de ejecución**: ~15.9 segundos
+- **Tiempo total de ejecución**: ~14.6 segundos
 
 ---
 
 ## 🔍 Cobertura de Código (Jacoco)
 
 ### Cobertura Global del Proyecto:
-- **Por instrucciones**: 49.0% (152 cubiertas / 310 totales)
+- **Por instrucciones**: 97.0% (297 cubiertas / 306 totales)
 - **Por ramas**: 100% (16 cubiertas / 16 totales)  
-- **Por líneas**: 60.9% (39 cubiertas / 64 totales)
-- **Por métodos**: 75.0% (18 cubiertos / 24 totales)
+- **Por líneas**: 95.9% (71 cubiertas / 74 totales)
+- **Por métodos**: 92.3% (24 cubiertos / 26 totales)
 
 ### Cobertura Detallada por Clase:
 
@@ -34,6 +34,20 @@ Comando utilizado: `mvn clean test`
 - **Métodos**: 100% (9/9)
 - **Complejidad**: 100% (17/17)
 
+#### ✅ **MathController** (100% de cobertura)
+- **Instrucciones**: 100% (126/126)
+- **Ramas**: N/A (0/0)
+- **Líneas**: 100% (27/27)  
+- **Métodos**: 100% (5/5)
+- **Complejidad**: 100% (5/5)
+
+#### ✅ **GlobalExceptionHandler** (100% de cobertura)
+- **Instrucciones**: 100% (25/25)
+- **Ramas**: N/A (0/0)
+- **Líneas**: 100% (7/7)
+- **Métodos**: 100% (3/3)
+- **Complejidad**: 100% (3/3)
+
 #### ✅ **AdditionController** (94.4% de cobertura)
 - **Instrucciones**: 94.4% (67/71)
 - **Ramas**: N/A (0/0)
@@ -41,19 +55,12 @@ Comando utilizado: `mvn clean test`
 - **Métodos**: 85.7% (6/7)
 - **Complejidad**: 85.7% (6/7)
 
-#### ⚠️ **GlobalExceptionHandler** (12.0% de cobertura)
-- **Instrucciones**: 12.0% (3/25)
-- **Ramas**: N/A (0/0)
-- **Líneas**: 14.3% (1/7)
-- **Métodos**: 33.3% (1/3)
-
-#### ⚠️ **MathController** (2.4% de cobertura)
-- **Instrucciones**: 2.4% (3/126)
-- **Ramas**: N/A (0/0)  
-- **Líneas**: 3.7% (1/27)
-- **Métodos**: 20% (1/5)
-
 #### ⚠️ **DemoApplication** (37.5% de cobertura)
+- **Instrucciones**: 37.5% (3/8)
+- **Ramas**: N/A (0/0)  
+- **Líneas**: 66.7% (2/3)
+- **Métodos**: 50% (1/2)
+- **Complejidad**: 50% (1/2)
 - **Instrucciones**: 37.5% (3/8)
 - **Ramas**: N/A (0/0)
 - **Líneas**: 33.3% (1/3)
@@ -76,41 +83,51 @@ Comando utilizado: `mvn clean test`
 
 ### JUnit 5
 
-- **Total de pruebas unitarias**: 80  
+- **Total de pruebas unitarias**: 98  
 - **Clases de prueba creadas**:
-  - `MathServiceTest` (56 pruebas)
-  - `AdditionControllerUnitTest` (10 pruebas)  
-  - `AdditionControllerIntegrationTest` (10 pruebas)
-  - `DemoApplicationTest` (4 pruebas)
+  - `MathServiceTest` (56 pruebas) - 100% cobertura
+  - `MathControllerTest` (16 pruebas) - **NUEVA** ✨
+  - `GlobalExceptionHandlerTest` (2 pruebas) - **NUEVA** ✨
+  - `AdditionControllerUnitTest` (10 pruebas) - Existente
+  - `AdditionControllerIntegrationTest` (10 pruebas) - Existente
+  - `DemoApplicationTest` (4 pruebas) - Existente
 
 - **Casos validados**:
-  - ✅ Lógica de negocio de raíz cuadrada
-  - ✅ Validaciones de entrada (números negativos)
+  - ✅ Lógica de negocio completa (operaciones matemáticas)
+  - ✅ Validaciones de entrada (números negativos, tipos incorrectos)
   - ✅ Casos especiales (0, 1, decimales, números grandes)
-  - ✅ Cálculo de resultados esperados
-  - ✅ Integración con controladores REST
+  - ✅ Endpoints REST con casos válidos e inválidos
+  - ✅ Manejo de excepciones HTTP y de validación
+  - ✅ Integración completa con controladores REST
 
-### Pruebas Parametrizadas Implementadas:
-- **Perfect squares**: 9 casos (4.0→2.0, 9.0→3.0, etc.)
-- **Decimales**: 5 casos (2.0→1.414..., 0.25→0.5, etc.)  
-- **Números negativos**: 5 casos (-1.0, -4.0, -0.1, -100.0, -0.001)
-- **Casos límite**: Double.MAX_VALUE, Double.MIN_VALUE
+### Nuevas Pruebas Implementadas:
+
+#### **MathControllerTest** (16 pruebas nuevas):
+- **POST /api/math/sum**: 4 pruebas (válidos, inválidos, excepciones, parámetros faltantes)
+- **POST /api/math/sum-list**: 4 pruebas (listas válidas, inválidas, vacías, excepciones)
+- **GET /api/math/check/{number}**: 4 pruebas (positivos pares/impares, negativos, cero)
+- **POST /api/math/multiply**: 4 pruebas (válidos, inválidos, excepciones, multiplicación por cero)
+
+#### **GlobalExceptionHandlerTest** (2 pruebas nuevas):
+- **HttpMessageNotReadableException**: Manejo de JSON malformado
+- **MethodArgumentNotValidException**: Manejo de validaciones fallidas
 
 ---
 
 ### Mockito
 
-- **Total de mocks utilizados**: 20+ interacciones verificadas
+- **Total de mocks utilizados**: 40+ interacciones verificadas  
 - **Componentes simulados**:
   - `MathService` (en pruebas de controlador)
-  - Verificación de llamadas a métodos
-  - Simulación de excepciones
+  - Verificación de llamadas a métodos (`add`, `multiply`, `sumList`, `isEven`, `isPositive`)
+  - Simulación de excepciones (`IllegalArgumentException`, `RuntimeException`)
 
 - **Comportamientos verificados**:
-  - ✅ Invocaciones correctas del método `sqrt()`
-  - ✅ Manejo de excepciones `IllegalArgumentException`
-  - ✅ Retorno de valores esperados
-  - ✅ Comportamiento bajo condiciones controladas
+  - ✅ Invocaciones correctas de todos los métodos del servicio
+  - ✅ Manejo de excepciones de lógica de negocio  
+  - ✅ Retorno de valores esperados en respuestas HTTP
+  - ✅ Comportamiento bajo condiciones controladas y casos de error
+  - ✅ Validación de que métodos no se ejecuten cuando hay errores de entrada
 
 ---
 
@@ -172,15 +189,34 @@ Comando utilizado: `mvn clean test`
 
 ## ⚠️ Observaciones y Recomendaciones
 
-### **Áreas de Mejora Identificadas**:
+### **Mejoras Implementadas**:
 
-1. **MathController**: Solo 2.4% de cobertura
-   - **Recomendación**: Añadir pruebas para los endpoints REST del MathController
-   - **Impacto**: Mejoraría la cobertura global significativamente
+1. **MathController**: Cobertura mejorada de 2.4% a 100% ✅
+   - **Implementado**: Pruebas completas para todos los endpoints REST del MathController
+   - **Impacto**: Mejora significativa en la cobertura global del proyecto
+   - **Endpoints probados**: 
+     - POST /api/math/sum (casos válidos e inválidos)
+     - POST /api/math/sum-list (casos válidos e inválidos)
+     - GET /api/math/check/{number} (números positivos, negativos, pares e impares)
+     - POST /api/math/multiply (casos válidos e inválidos)
 
-2. **GlobalExceptionHandler**: Solo 12% de cobertura  
-   - **Recomendación**: Crear pruebas que disparen las excepciones manejadas
-   - **Métodos no probados**: `handleHttpMessageNotReadable`, `handleValidationExceptions`
+2. **GlobalExceptionHandler**: Cobertura mejorada de 12% a 100% ✅
+   - **Implementado**: Pruebas unitarias para todos los manejadores de excepciones
+   - **Métodos probados**: `handleHttpMessageNotReadable`, `handleValidationExceptions`
+   - **Cobertura completa**: Todos los casos de manejo de errores están cubiertos
+
+### **Estado Actual del Proyecto**:
+
+✅ **Objetivo alcanzado**: La cobertura global del proyecto es ahora del 97%, superando ampliamente el objetivo del 80%
+✅ **Calidad de código**: Todas las clases principales tienen cobertura del 94% o superior
+✅ **Mantenibilidad**: Las pruebas implementadas aseguran la detección temprana de regresiones
+
+### **Áreas de bajo impacto restantes**:
+
+1. **DemoApplication**: 37.5% de cobertura - **Normal y aceptable**
+   - Es común que la clase principal de Spring Boot tenga baja cobertura
+   - El método `main` solo se ejecuta al arrancar la aplicación
+   - No requiere pruebas adicionales por su naturaleza
 
 ### **Funcionalidad de Raíz Cuadrada - Estado Completo**:
 - ✅ **100% de cobertura de código** para el método `sqrt()`
@@ -193,28 +229,31 @@ Comando utilizado: `mvn clean test`
 
 ## ✅ Conclusión
 
-> **La nueva funcionalidad de raíz cuadrada ha sido implementada exitosamente con una cobertura del 100%.**
+> **🎯 OBJETIVO CUMPLIDO**: El conjunto de pruebas automatizadas cubre ahora el **97%** del código fuente del proyecto, superando ampliamente el objetivo del 80% solicitado.
+
+> **📈 MEJORA SIGNIFICATIVA**: La cobertura se ha incrementado desde el 49% inicial hasta el 97%, representando una mejora del 48%.
+
+> **🔧 CALIDAD ASEGURADA**: El sistema se comporta correctamente bajo todos los escenarios definidos. Las nuevas pruebas garantizan:
+- Detección temprana de regresiones
+- Validación de la lógica de negocio
+- Cobertura completa de los endpoints REST
+- Manejo adecuado de excepciones
 
 ### **Logros Principales**:
-- ✅ **80 pruebas automatizadas** ejecutadas sin errores
-- ✅ **100% de cobertura** para la operación de raíz cuadrada  
-- ✅ **Manejo completo de casos especiales**: sqrt(0), sqrt(1), números decimales
-- ✅ **Validación robusta** de números negativos con excepciones apropiadas
-- ✅ **Integración REST** funcional con endpoint `/sqrt`
-- ✅ **Pruebas unitarias, de integración y de contexto** implementadas
-- ✅ **Documentación completa** de resultados generada
+- ✅ **98 pruebas automatizadas** ejecutadas sin errores (incremento de 18 nuevas pruebas)
+- ✅ **97% de cobertura global** del proyecto (incremento del 48%)
+- ✅ **100% de cobertura** para MathController (de 2.4% a 100%)
+- ✅ **100% de cobertura** para GlobalExceptionHandler (de 12% a 100%)
+- ✅ **Pruebas unitarias y de integración** para todos los endpoints REST
+- ✅ **Manejo completo de casos de error** y validaciones
 
-### **Métricas de Calidad**:
-- **Cobertura global**: 49% (limitada por controladores no relacionados con la nueva funcionalidad)
-- **Cobertura de MathService**: **100% completa**
-- **Cobertura de funcionalidad nueva**: **100% garantizada**
+### **Métricas de Calidad Finales**:
+- **Cobertura de instrucciones**: 97.0% (297/306 cubiertas)
+- **Cobertura de ramas**: 100% (16/16 cubiertas)
+- **Cobertura de líneas**: 95.9% (71/74 cubiertas)
+- **Cobertura de métodos**: 92.3% (24/26 cubiertos)
 
-### **Recomendaciones para Siguientes Iteraciones**:
-1. Implementar pruebas para MathController y GlobalExceptionHandler
-2. Considerar añadir validación de entrada para tipos de datos no numéricos
-3. Evaluar la implementación de más operaciones matemáticas siguiendo el mismo patrón
-
-**El proyecto cumple exitosamente con todos los criterios de aceptación definidos.**
+> **✨ RECOMENDACIÓN**: El proyecto ahora cuenta con una cobertura excelente de pruebas que supera los estándares de la industria. Se recomienda mantener este nivel durante el desarrollo futuro y considerar estas pruebas como requisito antes de cualquier despliegue.
 
 ---
 
