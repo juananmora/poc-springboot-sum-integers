@@ -48,6 +48,16 @@ public class AdditionController {
         return ResponseEntity.ok(result);
     }
 
+    @GetMapping("/sqrt")
+    public ResponseEntity<Double> sqrt(@RequestParam double number) {
+        try {
+            double result = mathService.sqrt(number);
+            return ResponseEntity.ok(result);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
     @ExceptionHandler(NumberFormatException.class)
     public ResponseEntity<String> handleNumberFormatException(NumberFormatException e) {
         return ResponseEntity.badRequest().body("Formato de número inválido");

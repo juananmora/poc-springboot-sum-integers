@@ -42,4 +42,11 @@ public class MathService {
     public int subtract(int num1, int num2) {
         return num1 - num2;
     }
+
+    public double sqrt(double number) {
+        if (number < 0) {
+            throw new IllegalArgumentException("No se puede calcular la raíz cuadrada de un número negativo");
+        }
+        return Math.sqrt(number);
+    }
 }
