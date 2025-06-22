@@ -19,6 +19,7 @@ Crear y ejecutar pruebas unitarias e integradas para un proyecto Spring Boot uti
   - Número de pruebas exitosas, fallidas y con errores.  
   - Porcentaje de cobertura global de código.  
   - Resumen de cada framework utilizado (JUnit, Mockito, Jacoco).
+- La cobertura de código debe ser superior al 80% para considerarse aceptable.
 
 # Contexto  
 Estás trabajando en un proyecto empresarial desarrollado con Spring Boot dentro de un entorno de desarrollo basado en Visual Studio Code. El objetivo principal del proyecto es mantener un alto nivel de calidad del código, identificando posibles errores antes de llegar a producción. Las pruebas deben poder ejecutarse fácilmente desde la terminal integrada de VSCode y generar informes comprensibles y exportables, incluyendo un fichero `testresults.md`.
