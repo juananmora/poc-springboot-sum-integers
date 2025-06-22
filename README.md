@@ -2,6 +2,8 @@
 
 Una aplicación Spring Boot que proporciona operaciones matemáticas básicas a través de endpoints REST, completamente probada con JUnit 5, Mockito y Jacoco para análisis de cobertura.
 
+[![Java CI with Maven](https://github.com/accenture-amer-extending-copilot/poc-springboot-sum-integers/actions/workflows/maven.yml/badge.svg)](https://github.com/accenture-amer-extending-copilot/poc-springboot-sum-integers/actions/workflows/maven.yml)
+
 ## 📋 Contenido
 
 - [Requisitos Previos](#-requisitos-previos)
