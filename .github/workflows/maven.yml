@@ -15,21 +15,42 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
-
+  build-and-test:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
     - name: Set up JDK 17
       uses: actions/setup-java@v4
       with:
         java-version: '17'
         distribution: 'temurin'
-        cache: maven
-    - name: Build with Maven
-      run: mvn -B package --file pom.xml
 
-    # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
-    - name: Update dependency graph
-      uses: advanced-security/maven-dependency-submission-action@571e99aab1055c2e71a1e2309b9691de18d6b7d6
+    - name: Build with Maven and run unit tests
+      run: mvn clean test
+
+    - name: Check unit test error percentage
+      run: |
+        total=$(grep -o 'tests="[0-9]\+"' target/surefire-reports/TEST-*.xml | grep -o '[0-9]\+' | awk '{s+=$1} END {print s}')
+        errors=$(grep -o 'errors="[0-9]\+"' target/surefire-reports/TEST-*.xml | grep -o '[0-9]\+' | awk '{s+=$1} END {print s}')
+        failures=$(grep -o 'failures="[0-9]\+"' target/surefire-reports/TEST-*.xml | grep -o '[0-9]\+' | awk '{s+=$1} END {print s}')
+        failed=$((errors + failures))
+        if [ "$total" -eq 0 ]; then
+          echo "No tests found."
+          exit 1
+        fi
+        percent=$((100 * failed / total))
+        echo "Errores y fallos: $failed de $total pruebas ($percent%)"
+        if [ "$percent" -gt 10 ]; then
+          echo "El porcentaje de errores+fallos supera el 10%. Fallando el job."
+          exit 1
+        fi
+
+    - name: Upload test results
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: testresults
+        path: target/surefire-reports/
