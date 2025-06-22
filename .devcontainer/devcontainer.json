@@ -1,0 +1,33 @@
+{
+  "name": "Java Dev Container",
+  "image": "mcr.microsoft.com/devcontainers/java:17-bullseye",
+  "features": {
+    "ghcr.io/devcontainers/features/java:1": {
+      "version": "none",
+      "installMaven": "true",
+      "installGradle": "false"
+    },
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {},
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "lts",
+      "nodeGypDependencies": true
+    },
+    "ghcr.io/devcontainers/features/git:1": {
+      "version": "latest",
+      "ppa": false
+    }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "bierner.markdown-mermaid",
+        "esbenp.prettier-vscode",
+        "vscode-icons-team.vscode-icons",
+        "oderwat.indent-rainbow",
+        "vscjava.vscode-java-pack",
+        "SonarSource.sonarlint-vscode"
+      ]
+    }
+  }
+}
+
