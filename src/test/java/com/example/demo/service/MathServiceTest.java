@@ -255,4 +255,68 @@ class MathServiceTest {
             assertEquals(5, mathService.subtract(5, 0));
         }
     }
+
+    @Nested
+    @DisplayName("Calculate Mean Tests")
+    class CalculateMeanTests {
+
+        @Test
+        @DisplayName("Should calculate mean for valid list of integers")
+        void testCalculateMeanValidList() {
+            // Escenario 1: [1, 2, 3, 4, 5] -> 3.0
+            List<Integer> numbers = Arrays.asList(1, 2, 3, 4, 5);
+            assertEquals(3.0, mathService.calculateMean(numbers), 0.0001);
+        }
+
+        @Test
+        @DisplayName("Should return same number for single element list")
+        void testCalculateMeanSingleElement() {
+            // Escenario 2: [7] -> 7.0
+            List<Integer> numbers = Arrays.asList(7);
+            assertEquals(7.0, mathService.calculateMean(numbers), 0.0001);
+        }
+
+        @Test
+        @DisplayName("Should return 0.0 for empty list")
+        void testCalculateMeanEmptyList() {
+            // Escenario 3: [] -> 0.0
+            assertEquals(0.0, mathService.calculateMean(Collections.emptyList()), 0.0001);
+        }
+
+        @Test
+        @DisplayName("Should return 0.0 for null list")
+        void testCalculateMeanNullList() {
+            // Escenario 3: null -> 0.0
+            assertEquals(0.0, mathService.calculateMean(null), 0.0001);
+        }
+
+        @Test
+        @DisplayName("Should calculate mean correctly with negative numbers")
+        void testCalculateMeanWithNegatives() {
+            // Escenario 4: [-1, 0, 1] -> 0.0
+            List<Integer> numbers = Arrays.asList(-1, 0, 1);
+            assertEquals(0.0, mathService.calculateMean(numbers), 0.0001);
+        }
+
+        @Test
+        @DisplayName("Should calculate mean correctly with all negative numbers")
+        void testCalculateMeanAllNegatives() {
+            List<Integer> numbers = Arrays.asList(-1, -2, -3);
+            assertEquals(-2.0, mathService.calculateMean(numbers), 0.0001);
+        }
+
+        @Test
+        @DisplayName("Should calculate mean correctly with decimal result")
+        void testCalculateMeanDecimalResult() {
+            List<Integer> numbers = Arrays.asList(1, 2, 4);
+            assertEquals(2.3333333333333335, mathService.calculateMean(numbers), 0.0001);
+        }
+
+        @Test
+        @DisplayName("Should handle large numbers correctly")
+        void testCalculateMeanLargeNumbers() {
+            List<Integer> numbers = Arrays.asList(1000, 2000, 3000);
+            assertEquals(2000.0, mathService.calculateMean(numbers), 0.0001);
+        }
+    }
 }

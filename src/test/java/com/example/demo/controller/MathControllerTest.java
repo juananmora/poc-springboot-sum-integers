@@ -12,6 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -341,6 +342,132 @@ class MathControllerTest {
                     .andExpect(jsonPath("$.operation").value("multiply"));
 
             verify(mathService, times(1)).multiply(5, 0);
+        }
+    }
+
+    @Nested
+    @DisplayName("POST /api/math/mean endpoint tests")
+    class MeanEndpointTests {
+
+        @Test
+        @DisplayName("Should calculate mean for valid number list")
+        void testMeanValidNumbers() throws Exception {
+            // Given - Escenario 1: [1, 2, 3, 4, 5] -> 3.0
+            List<Integer> numbers = Arrays.asList(1, 2, 3, 4, 5);
+            Map<String, List<Integer>> request = Map.of("numbers", numbers);
+            when(mathService.calculateMean(numbers)).thenReturn(3.0);
+
+            // When & Then
+            mockMvc.perform(post("/api/math/mean")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(request)))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.result").value(3.0))
+                    .andExpect(jsonPath("$.operation").value("mean"))
+                    .andExpect(jsonPath("$.operands[0]").value(1))
+                    .andExpect(jsonPath("$.operands[1]").value(2))
+                    .andExpect(jsonPath("$.operands[2]").value(3))
+                    .andExpect(jsonPath("$.operands[3]").value(4))
+                    .andExpect(jsonPath("$.operands[4]").value(5));
+
+            verify(mathService, times(1)).calculateMean(numbers);
+        }
+
+        @Test
+        @DisplayName("Should calculate mean for single element list")
+        void testMeanSingleElement() throws Exception {
+            // Given - Escenario 2: [7] -> 7.0
+            List<Integer> numbers = Arrays.asList(7);
+            Map<String, List<Integer>> request = Map.of("numbers", numbers);
+            when(mathService.calculateMean(numbers)).thenReturn(7.0);
+
+            // When & Then
+            mockMvc.perform(post("/api/math/mean")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(request)))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.result").value(7.0))
+                    .andExpect(jsonPath("$.operation").value("mean"))
+                    .andExpect(jsonPath("$.operands[0]").value(7));
+
+            verify(mathService, times(1)).calculateMean(numbers);
+        }
+
+        @Test
+        @DisplayName("Should return 0.0 for empty list")
+        void testMeanEmptyList() throws Exception {
+            // Given - Escenario 3: [] -> 0.0
+            List<Integer> numbers = Collections.emptyList();
+            Map<String, List<Integer>> request = Map.of("numbers", numbers);
+            when(mathService.calculateMean(numbers)).thenReturn(0.0);
+
+            // When & Then
+            mockMvc.perform(post("/api/math/mean")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(request)))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.result").value(0.0))
+                    .andExpect(jsonPath("$.operation").value("mean"))
+                    .andExpect(jsonPath("$.operands").isEmpty());
+
+            verify(mathService, times(1)).calculateMean(numbers);
+        }
+
+        @Test
+        @DisplayName("Should calculate mean with negative numbers")
+        void testMeanWithNegatives() throws Exception {
+            // Given - Escenario 4: [-1, 0, 1] -> 0.0
+            List<Integer> numbers = Arrays.asList(-1, 0, 1);
+            Map<String, List<Integer>> request = Map.of("numbers", numbers);
+            when(mathService.calculateMean(numbers)).thenReturn(0.0);
+
+            // When & Then
+            mockMvc.perform(post("/api/math/mean")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(request)))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.result").value(0.0))
+                    .andExpect(jsonPath("$.operation").value("mean"))
+                    .andExpect(jsonPath("$.operands[0]").value(-1))
+                    .andExpect(jsonPath("$.operands[1]").value(0))
+                    .andExpect(jsonPath("$.operands[2]").value(1));
+
+            verify(mathService, times(1)).calculateMean(numbers);
+        }
+
+        @Test
+        @DisplayName("Should return error for invalid input")
+        void testMeanInvalidInput() throws Exception {
+            // Given
+            Map<String, Object> request = Map.of("numbers", "invalid");
+
+            // When & Then
+            mockMvc.perform(post("/api/math/mean")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(request)))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.error").value("Invalid input"));
+
+            verify(mathService, never()).calculateMean(anyList());
+        }
+
+        @Test
+        @DisplayName("Should handle null numbers in request")
+        void testMeanNullNumbers() throws Exception {
+            // Given
+            Map<String, List<Integer>> request = Map.of();
+            when(mathService.calculateMean(null)).thenReturn(0.0);
+
+            // When & Then
+            mockMvc.perform(post("/api/math/mean")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(request)))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.result").value(0.0))
+                    .andExpect(jsonPath("$.operation").value("mean"))
+                    .andExpect(jsonPath("$.operands").isEmpty());
+
+            verify(mathService, times(1)).calculateMean(null);
         }
     }
 }
