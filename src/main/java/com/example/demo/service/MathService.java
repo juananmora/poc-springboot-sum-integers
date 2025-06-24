@@ -49,4 +49,12 @@ public class MathService {
         }
         return Math.sqrt(number);
     }
+
+    public double calculateMean(List<Integer> numbers) {
+        if (numbers == null || numbers.isEmpty()) {
+            return 0.0;
+        }
+        double sum = numbers.stream().mapToInt(Integer::intValue).sum();
+        return sum / numbers.size();
+    }
 }

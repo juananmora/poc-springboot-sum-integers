@@ -72,4 +72,20 @@ public class MathController {
             return ResponseEntity.badRequest().body(Map.of("error", "Invalid input"));
         }
     }
+
+    @PostMapping("/mean")
+    public ResponseEntity<Map<String, Object>> calculateMean(@RequestBody Map<String, List<Integer>> request) {
+        try {
+            List<Integer> numbers = request.get("numbers");
+            double result = mathService.calculateMean(numbers);
+            
+            return ResponseEntity.ok(Map.of(
+                "result", result,
+                "operation", "mean",
+                "operands", numbers != null ? numbers : List.of()
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Invalid input"));
+        }
+    }
 }
