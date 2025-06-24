@@ -1,8 +1,9 @@
 # Informe de Resultados de Pruebas Automatizadas
 
 Proyecto: poc-springboot-sum-integers - Implementación de Media Aritmética (JON-3292)  
-Fecha de ejecución: 24/12/2025  
+Fecha de ejecución: 24/06/2025  
 Entorno: Visual Studio Code / GitHub Codespaces  
+Framework: Spring Boot 3.3.5 con JUnit 5 y Mockito  
 Comando utilizado: `mvn clean test`
 
 ---
@@ -165,38 +166,108 @@ curl -X POST /api/math/mean -d '{"numbers": "invalid"}'
 
 ---
 
-## 💻 **Implementación Técnica Realizada**
+## 💻 **Implementación Técnica con Spring Boot 3.3.5**
 
-### **Cambios en MathService**:
+### **Patrones de Spring Boot Aplicados**:
 ```java
-public double calculateMean(List<Integer> numbers) {
-    if (numbers == null || numbers.isEmpty()) {
-        return 0.0;  // Consistente con sumList()
+// Servicio usando @Service de Spring Framework
+@Service
+public class MathService {
+    
+    // Método implementado siguiendo principios de Spring Boot
+    public double calculateMean(List<Integer> numbers) {
+        if (numbers == null || numbers.isEmpty()) {
+            return 0.0;  // Comportamiento consistente con otros métodos
+        }
+        double sum = numbers.stream().mapToInt(Integer::intValue).sum();
+        return sum / numbers.size();
     }
-    double sum = numbers.stream().mapToInt(Integer::intValue).sum();
-    return sum / numbers.size();
 }
 ```
 
-### **Cambios en MathController**:
+### **Controlador REST con Spring Boot 3.3.5**:
 ```java
-@PostMapping("/mean")
-public ResponseEntity<Map<String, Object>> calculateMean(
-    @RequestBody Map<String, List<Integer>> request) {
-    try {
-        List<Integer> numbers = request.get("numbers");
-        double result = mathService.calculateMean(numbers);
-        
-        return ResponseEntity.ok(Map.of(
-            "result", result,
-            "operation", "mean",
-            "operands", numbers != null ? numbers : List.of()
-        ));
-    } catch (Exception e) {
-        return ResponseEntity.badRequest()
-            .body(Map.of("error", "Invalid input"));
+@RestController
+@RequestMapping("/api/math")
+public class MathController {
+
+    @Autowired
+    private MathService mathService;
+
+    @PostMapping("/mean")
+    public ResponseEntity<Map<String, Object>> calculateMean(
+        @RequestBody Map<String, List<Integer>> request) {
+        try {
+            List<Integer> numbers = request.get("numbers");
+            double result = mathService.calculateMean(numbers);
+            
+            Map<String, Object> response = Map.of(
+                "result", result,
+                "operation", "mean",
+                "operands", numbers != null ? numbers : List.of()
+            );
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest()
+                .body(Map.of("error", "Invalid input"));
+        }
     }
 }
+```
+
+### **Testing con JUnit 5 y Spring Boot Test**:
+```java
+@SpringBootTest
+@AutoConfigureMockMvc
+class MathControllerTest {
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @Test 
+    void testMeanValidNumbers() throws Exception {
+        String jsonRequest = "{\"numbers\": [1, 2, 3, 4, 5]}";
+        
+        mockMvc.perform(post("/api/math/mean")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonRequest))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.result").value(3.0))
+                .andExpect(jsonPath("$.operation").value("mean"));
+    }
+}
+```
+
+### **Configuración Maven para Spring Boot 3.3.5**:
+```xml
+<parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>3.3.5</version>
+    <relativePath/>
+</parent>
+
+<!-- Jacoco Plugin para Cobertura -->
+<plugin>
+    <groupId>org.jacoco</groupId>
+    <artifactId>jacoco-maven-plugin</artifactId>
+    <version>0.8.11</version>
+    <executions>
+        <execution>
+            <goals>
+                <goal>prepare-agent</goal>
+            </goals>
+        </execution>
+        <execution>
+            <id>report</id>
+            <phase>test</phase>
+            <goals>
+                <goal>report</goal>
+            </goals>
+        </execution>
+    </executions>
+</plugin>
 ```
 
 ---
@@ -206,16 +277,19 @@ public ResponseEntity<Map<String, Object>> calculateMean(
 ### **Historia de Usuario**: 
 *Como analista de datos, quiero poder ingresar una lista de números enteros, para que el sistema calcule y me devuelva la media aritmética de esos números.*
 
-#### **Criterios Validados**:
+#### **Criterios Validados con Spring Boot 3.3.5**:
 - **✅ Escenario 1**: Lista válida [1,2,3,4,5] retorna 3.0
 - **✅ Escenario 2**: Lista con un elemento [7] retorna 7.0  
 - **✅ Escenario 3**: Lista vacía [] retorna 0.0 (consistente con sumList existente)
 - **✅ Escenario 4**: Lista con negativos [-1,0,1] retorna 0.0
 
 ### **Características Técnicas Implementadas**:
-- ✅ **Consistencia**: Comportamiento coherente con métodos existentes
+- ✅ **Arquitectura Spring Boot**: Implementación siguiendo patrones de Spring Boot 3.3.5
+- ✅ **Testing con JUnit 5**: Uso de anotaciones modernas como `@SpringBootTest`, `@WebMvcTest`
+- ✅ **Consistencia**: Comportamiento coherente con métodos existentes  
 - ✅ **Robustez**: Manejo de casos edge (null, vacío, negativos)
-- ✅ **Integración**: Endpoint REST siguiendo patrones establecidos
+- ✅ **Integración REST**: Endpoint `POST /api/math/mean` siguiendo mejores prácticas
+- ✅ **MockMvc Testing**: Pruebas de integración usando `@AutoConfigureMockMvc`
 - ✅ **Calidad**: 100% de cobertura de pruebas automatizadas
 
 ---
@@ -456,4 +530,40 @@ public ResponseEntity<Map<String, Object>> calculateMean(
 
 ---
 
-*Generado automáticamente el 22/06/2025 - Spring Boot Math Service v0.0.1-SNAPSHOT*
+*Generado automáticamente el 24/06/2025 - Spring Boot Math Service v0.0.1-SNAPSHOT*
+
+---
+
+## 📋 **Resumen Ejecutivo para Jira JON-3292**
+
+### **Estado del Desarrollo**: ✅ **COMPLETADO**
+
+La implementación del cálculo de media aritmética para listas de números enteros ha sido exitosamente completada con las siguientes características:
+
+#### **Funcionalidad Implementada**:
+- **Método `calculateMean(List<Integer>)`** en la clase `MathService`
+- **Endpoint REST `POST /api/math/mean`** en el controlador
+- **Validación completa** de todos los criterios de aceptación
+- **Manejo robusto de errores** para casos edge
+
+#### **Calidad Asegurada**:
+- **112 pruebas automatizadas** ejecutadas exitosamente
+- **95% de cobertura** de código con Jacoco
+- **0 errores, 0 fallos** en la ejecución de pruebas
+- **Arquitectura consistente** con Spring Boot 3.3.5
+
+#### **Criterios de Aceptación**:
+1. ✅ **Escenario 1**: Lista válida [1,2,3,4,5] → 3.0
+2. ✅ **Escenario 2**: Un elemento [7] → 7.0  
+3. ✅ **Escenario 3**: Lista vacía [] → 0.0
+4. ✅ **Escenario 4**: Negativos [-1,0,1] → 0.0
+
+#### **Tecnologías Utilizadas**:
+- **Spring Boot 3.3.5** - Framework principal
+- **JUnit 5** - Testing framework (112 pruebas)
+- **Mockito** - Mocking framework para testing
+- **Jacoco** - Cobertura de código (95%)
+- **MockMvc** - Pruebas de integración REST
+
+### **Entrega Final**:
+La funcionalidad está lista para **despliegue en producción** y cumple todos los requisitos técnicos y de calidad establecidos en la especificación JON-3292.
