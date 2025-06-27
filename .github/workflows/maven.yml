@@ -212,22 +212,24 @@ jobs:
         id: read-xml
         run: |
           if ls target/surefire-reports/TEST-*.xml 1> /dev/null 2>&1; then
-            # Crear un resumen del contenido XML en lugar de todo el contenido
+            # Extraer solo métricas y errores clave del XML
             {
               echo "XML_CONTENT<<GITHUB_XML_END_OF_CONTENT"
-              echo "=== RESUMEN DE PERGAMINOS XML ==="
-              echo "Archivos encontrados: $(ls target/surefire-reports/TEST-*.xml | wc -l)"
+              echo "=== MÉTRICAS DE PRUEBAS ==="
+              echo "Archivos XML: $(ls target/surefire-reports/TEST-*.xml | wc -l)"
+              echo "Total de pruebas: $(grep -o 'tests="[0-9]\+"' target/surefire-reports/TEST-*.xml | grep -o '[0-9]\+' | awk '{s+=$1} END {print s}')"
+              echo "Errores: $(grep -o 'errors="[0-9]\+"' target/surefire-reports/TEST-*.xml | grep -o '[0-9]\+' | awk '{s+=$1} END {print s}')"
+              echo "Fallos: $(grep -o 'failures="[0-9]\+"' target/surefire-reports/TEST-*.xml | grep -o '[0-9]\+' | awk '{s+=$1} END {print s}')"
               echo ""
-              echo "=== CONTENIDO DE LOS PRIMEROS 3 ARCHIVOS ==="
-              ls target/surefire-reports/TEST-*.xml | head -3 | while read file; do
-                echo "--- ARCHIVO: $file ---"
-                head -50 "$file"  # Solo primeras 50 líneas de cada archivo
-                echo ""
-              done
+              echo "=== CLASES DE PRUEBA ==="
+              grep 'testsuite.*name=' target/surefire-reports/TEST-*.xml | head -10 | sed 's/.*name="//;s/".*//' || echo "No se pudieron extraer nombres de clases"
+              echo ""
+              echo "=== ERRORES DETECTADOS ==="
+              grep -A 2 '<failure\|<error' target/surefire-reports/TEST-*.xml | head -20 || echo "No se detectaron errores"
               echo "GITHUB_XML_END_OF_CONTENT"
             } >> $GITHUB_OUTPUT
             xml_count=$(ls target/surefire-reports/TEST-*.xml | wc -l)
-            echo "✅ $xml_count pergaminos XML procesados (resumen generado)" >> $GITHUB_STEP_SUMMARY
+            echo "✅ $xml_count pergaminos XML procesados (métricas extraídas)" >> $GITHUB_STEP_SUMMARY
           else
             echo "XML_CONTENT=No se encontraron pergaminos de pruebas" >> $GITHUB_OUTPUT
           fi
@@ -238,17 +240,23 @@ jobs:
           if [ -f "target/site/jacoco/jacoco.xml" ]; then
             {
               echo "COVERAGE_CONTENT<<GITHUB_COVERAGE_END_OF_CONTENT"
-              echo "=== REPORTE DE COBERTURA JACOCO ==="
+              echo "=== ESTADÍSTICAS DE COBERTURA JACOCO ==="
               echo "Archivo: target/site/jacoco/jacoco.xml"
               echo ""
-              # Tomar solo las partes más relevantes del XML de cobertura
-              head -100 target/site/jacoco/jacoco.xml
+              echo "=== MÉTRICAS PRINCIPALES ==="
+              # Extraer solo las métricas de cobertura esenciales
+              grep -E 'counter.*type="INSTRUCTION"' target/site/jacoco/jacoco.xml | head -5
+              grep -E 'counter.*type="BRANCH"' target/site/jacoco/jacoco.xml | head -5
+              grep -E 'counter.*type="LINE"' target/site/jacoco/jacoco.xml | head -5
               echo ""
-              echo "=== ESTADÍSTICAS DE COBERTURA ==="
-              grep -E "(counter|package|class)" target/site/jacoco/jacoco.xml | head -20
+              echo "=== PAQUETES ANALIZADOS ==="
+              grep -E 'package.*name=' target/site/jacoco/jacoco.xml | head -10 | sed 's/.*name="//;s/".*//' || echo "No se encontraron paquetes"
+              echo ""
+              echo "=== CLASES CON MENOR COBERTURA ==="
+              grep -E 'class.*name=' target/site/jacoco/jacoco.xml | head -10 | sed 's/.*name="//;s/".*//' || echo "No se encontraron clases"
               echo "GITHUB_COVERAGE_END_OF_CONTENT"
             } >> $GITHUB_OUTPUT
-            echo "✅ Pergamino de cobertura procesado (resumen generado)" >> $GITHUB_STEP_SUMMARY
+            echo "✅ Pergamino de cobertura procesado (métricas extraídas)" >> $GITHUB_STEP_SUMMARY
             echo "📄 Ubicación: target/site/jacoco/jacoco.xml" >> $GITHUB_STEP_SUMMARY
           else
             echo "COVERAGE_CONTENT=No se encontró el pergamino de cobertura" >> $GITHUB_OUTPUT
@@ -302,7 +310,7 @@ jobs:
         id: inference
         uses: actions/ai-inference@v1
         with:
-          max-tokens: 8000
+          max-tokens: 4096
           system-prompt: |
             Eres un sabio maestro de las artes del testing y desarrollo de software, versado en los antiguos conocimientos. 
             Analiza los resultados de pruebas JUnit y cobertura de código para proporcionar un análisis claro y útil,
