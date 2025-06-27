@@ -113,6 +113,17 @@ jobs:
         echo "- Reportes de pruebas (Surefire)" >> $GITHUB_STEP_SUMMARY
         echo "- Reportes de cobertura (Jacoco)" >> $GITHUB_STEP_SUMMARY
         echo "- Nombre del artefacto: resultados-pruebas-y-cobertura" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "🔍 Archivos que se incluirán en el artefacto:" >> $GITHUB_STEP_SUMMARY
+        echo "**Surefire Reports:**" >> $GITHUB_STEP_SUMMARY
+        if [ -d "target/surefire-reports" ]; then
+          ls target/surefire-reports/TEST-*.xml 2>/dev/null | head -5 >> $GITHUB_STEP_SUMMARY || echo "No se encontraron archivos TEST-*.xml" >> $GITHUB_STEP_SUMMARY
+        fi
+        echo "**Jacoco Reports:**" >> $GITHUB_STEP_SUMMARY
+        if [ -d "target/site/jacoco" ]; then
+          ls target/site/jacoco/jacoco.xml 2>/dev/null >> $GITHUB_STEP_SUMMARY || echo "No se encontró jacoco.xml" >> $GITHUB_STEP_SUMMARY
+          ls target/site/jacoco/jacoco.csv 2>/dev/null >> $GITHUB_STEP_SUMMARY || echo "No se encontró jacoco.csv" >> $GITHUB_STEP_SUMMARY
+        fi
 
     - name: Generar la insignia de Jacoco como los heraldos de antaño
       id: jacoco-badge
@@ -177,17 +188,24 @@ jobs:
           if [ -d "resultados" ]; then
             file_count=$(find resultados -type f | wc -l)
             echo "📄 Archivos encontrados: $file_count" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "🔍 Estructura de directorios:" >> $GITHUB_STEP_SUMMARY
+            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+            tree resultados/ 2>/dev/null || find resultados -type f | head -10 >> $GITHUB_STEP_SUMMARY
+            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
           fi
       
       - name: Verificar la existencia de los pergaminos de pruebas
         id: check-files
         run: |
-          if [ -f "resultados/TEST-*.xml" ]; then
+          if ls resultados/TEST-*.xml 1> /dev/null 2>&1; then
             echo "exists=true" >> $GITHUB_OUTPUT
-            echo "✅ Pergaminos de pruebas hallados"
+            echo "✅ Pergaminos de pruebas hallados" >> $GITHUB_STEP_SUMMARY
+            file_count=$(ls resultados/TEST-*.xml | wc -l)
+            echo "📄 Archivos XML encontrados: $file_count" >> $GITHUB_STEP_SUMMARY
           else
             echo "exists=false" >> $GITHUB_OUTPUT
-            echo "❌ Pergaminos de pruebas extraviados"
+            echo "❌ Pergaminos de pruebas extraviados" >> $GITHUB_STEP_SUMMARY
           fi
       
       - name: Leer el contenido de los pergaminos XML
@@ -206,23 +224,38 @@ jobs:
       - name: Leer el contenido del reporte de cobertura
         id: read-coverage
         run: |
-          if [ -f "resultados/jacoco.xml" ]; then
+          if [ -f "resultados/site/jacoco/jacoco.xml" ]; then
             {
               echo "COVERAGE_CONTENT<<DELIMITER"
-              cat resultados/jacoco.xml
+              cat resultados/site/jacoco/jacoco.xml
               echo "DELIMITER"
             } >> $GITHUB_OUTPUT
             echo "✅ Pergamino de cobertura leído exitosamente" >> $GITHUB_STEP_SUMMARY
+            echo "📄 Ubicación: resultados/site/jacoco/jacoco.xml" >> $GITHUB_STEP_SUMMARY
           else
             echo "COVERAGE_CONTENT=No se encontró el pergamino de cobertura" >> $GITHUB_OUTPUT
-            echo "❌ Pergamino de cobertura no encontrado" >> $GITHUB_STEP_SUMMARY
+            echo "❌ Pergamino de cobertura no encontrado en resultados/site/jacoco/jacoco.xml" >> $GITHUB_STEP_SUMMARY
+            # Buscar en ubicaciones alternativas
+            if [ -f "resultados/jacoco.xml" ]; then
+              echo "⚠️ Encontrado en ubicación alternativa: resultados/jacoco.xml" >> $GITHUB_STEP_SUMMARY
+            fi
+            echo "📂 Contenido del directorio resultados:" >> $GITHUB_STEP_SUMMARY
+            ls -la resultados/ || echo "No se pudo listar el directorio" >> $GITHUB_STEP_SUMMARY
           fi
           
       - name: Finalizar la preparación de pergaminos
         run: |
           echo "📋 Resumen de la preparación:" >> $GITHUB_STEP_SUMMARY
           echo "- Pergaminos XML: ${{ steps.check-files.outputs.exists }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Pergamino de cobertura: ${{ steps.read-coverage.outputs.COVERAGE_CONTENT != 'No se encontró el pergamino de cobertura' }}" >> $GITHUB_STEP_SUMMARY
           echo "- Estado: Preparación completada para el análisis de IA" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "🔍 Diagnóstico final:" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ steps.check-files.outputs.exists }}" = "true" ]; then
+            echo "✅ Archivos XML listos para análisis" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ Sin archivos XML - verificar el proceso de preservación" >> $GITHUB_STEP_SUMMARY
+          fi
 
   # Tercer oficio: Invocar las artes de la inteligencia artificial
   ai-analysis:
