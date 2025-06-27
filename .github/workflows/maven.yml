@@ -370,41 +370,92 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "## 📝 Nota sobre el Análisis de IA" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "El análisis detallado generado por las artes de la inteligencia artificial ha sido inscrito como comentario en la issue #${{ github.event.inputs.issue_number || '7' }}." >> $GITHUB_STEP_SUMMARY
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "El análisis detallado generado por las artes de la inteligencia artificial ha sido inscrito como comentario en la Pull Request #${{ github.event.number }}." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "El análisis detallado generado por las artes de la inteligencia artificial ha sido inscrito como comentario en la issue #${{ github.event.inputs.issue_number || '7' }}." >> $GITHUB_STEP_SUMMARY
+          fi
 
-  # Quinto oficio: Inscribir el análisis en las crónicas de la issue
-  comment-on-issue:
-    name: 💬 Inscripción en las Crónicas de la Issue
+  # Quinto oficio: Inscribir el análisis en las crónicas (Issue o PR según el contexto)
+  comment-on-target:
+    name: 💬 Inscripción en las Crónicas
     runs-on: ubuntu-latest
     needs: [build-and-test, prepare-data, ai-analysis, generate-summary]
     permissions:
       issues: write
+      pull-requests: write
       contents: read
     steps:
-      - name: Preparar el contenido para las crónicas
-        id: prepare-comment
+      - name: Preparar el contenido según el contexto de ejecución
+        id: prepare-context
         run: |
-          # Determinar el número de issue a usar
-          ISSUE_NUM="${{ github.event.inputs.issue_number }}"
-          if [ -z "$ISSUE_NUM" ] || [ "$ISSUE_NUM" = "" ]; then
-            ISSUE_NUM="7"
+          # Determinar si estamos en un PR o necesitamos usar una issue
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "context=pr" >> $GITHUB_OUTPUT
+            echo "target-number=${{ github.event.number }}" >> $GITHUB_OUTPUT
+            echo "🎯 Contexto detectado: Pull Request #${{ github.event.number }}" >> $GITHUB_STEP_SUMMARY
+            echo "📝 Comentario se publicará en la PR" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "context=issue" >> $GITHUB_OUTPUT
+            ISSUE_NUM="${{ github.event.inputs.issue_number }}"
+            if [ -z "$ISSUE_NUM" ] || [ "$ISSUE_NUM" = "" ]; then
+              ISSUE_NUM="7"
+            fi
+            echo "target-number=$ISSUE_NUM" >> $GITHUB_OUTPUT
+            echo "🎯 Contexto detectado: Issue #$ISSUE_NUM (push/workflow_dispatch)" >> $GITHUB_STEP_SUMMARY
+            echo "📝 Comentario se publicará en la issue" >> $GITHUB_STEP_SUMMARY
           fi
-          echo "issue-number=$ISSUE_NUM" >> $GITHUB_OUTPUT
-          echo "🎯 Preparando la inscripción para la issue #$ISSUE_NUM" >> $GITHUB_STEP_SUMMARY
-          echo "📝 Comentario con análisis de IA será publicado" >> $GITHUB_STEP_SUMMARY
       
-      - name: Inscribir en las crónicas de GitHub
-        id: create-comment
+      - name: Inscribir en las crónicas de Pull Request
+        if: steps.prepare-context.outputs.context == 'pr'
+        id: create-pr-comment
         uses: peter-evans/create-or-update-comment@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          issue-number: ${{ steps.prepare-comment.outputs.issue-number }}
+          issue-number: ${{ steps.prepare-context.outputs.target-number }}
+          body: |
+            ## 🤖 Análisis por las Artes de la Inteligencia Artificial
+            > 📝 **Análisis automático de Pull Request #${{ github.event.number }}**
+
+            ### 📋 Información del Flujo de Trabajo:
+            - **Flujo**: ${{ github.workflow }}
+            - **Ejecución**: #${{ github.run_number }}
+            - **Trigger**: Pull Request
+            - **Branch**: `${{ github.head_ref }}` → `${{ github.base_ref }}`
+            - **Pergaminos encontrados**: ${{ needs.prepare-data.outputs.file-exists }}
+
+            ### 📊 Métricas de las Pruebas:
+            - **Total de pruebas**: ${{ needs.build-and-test.outputs.tests-total }}
+            - **Errores**: ${{ needs.build-and-test.outputs.tests-errors }}
+            - **Fallos**: ${{ needs.build-and-test.outputs.tests-failures }}
+            - **Cobertura de código**: ${{ needs.build-and-test.outputs.coverage-percentage }}%
+
+            ### 🧙‍♂️ Análisis Generado por la IA:
+
+            ${{ needs.ai-analysis.outputs.ai-response }}
+
+            ---
+            
+            ### 🔗 Enlaces de utilidad:
+            - [Ver ejecución completa](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+            - [Ver cambios en esta PR](${{ github.server_url }}/${{ github.repository }}/pull/${{ github.event.number }}/files)
+            
+            *Generado automáticamente por GitHub Actions con las bendiciones de los antiguos maestros*
+
+      - name: Inscribir en las crónicas de Issue
+        if: steps.prepare-context.outputs.context == 'issue'
+        id: create-issue-comment
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          issue-number: ${{ steps.prepare-context.outputs.target-number }}
           body: |
             ## 🤖 Análisis por las Artes de la Inteligencia Artificial
 
             ### 📋 Información del Flujo de Trabajo:
             - **Flujo**: ${{ github.workflow }}
             - **Ejecución**: #${{ github.run_number }}
+            - **Trigger**: ${{ github.event_name }}
             - **Pergaminos encontrados**: ${{ needs.prepare-data.outputs.file-exists }}
 
             ### 📊 Métricas de las Pruebas:
@@ -427,15 +478,20 @@ jobs:
             
       - name: Confirmar la inscripción en las crónicas
         run: |
-          echo "✅ Comentario publicado exitosamente en issue #${{ steps.prepare-comment.outputs.issue-number }}" >> $GITHUB_STEP_SUMMARY
-          echo "🔗 El análisis completo de IA está disponible en la issue" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ steps.prepare-context.outputs.context }}" = "pr" ]; then
+            echo "✅ Comentario publicado exitosamente en PR #${{ steps.prepare-context.outputs.target-number }}" >> $GITHUB_STEP_SUMMARY
+            echo "🔗 El análisis completo de IA está disponible en la Pull Request" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "✅ Comentario publicado exitosamente en issue #${{ steps.prepare-context.outputs.target-number }}" >> $GITHUB_STEP_SUMMARY
+            echo "🔗 El análisis completo de IA está disponible en la issue" >> $GITHUB_STEP_SUMMARY
+          fi
           echo "📊 Métricas incluidas: ${{ needs.build-and-test.outputs.tests-total }} pruebas, ${{ needs.build-and-test.outputs.coverage-percentage }}% cobertura" >> $GITHUB_STEP_SUMMARY
 
   # Sexto oficio: Finalización y ceremonias de clausura
   finalize:
     name: 🎯 Ceremonias de Clausura
     runs-on: ubuntu-latest
-    needs: [build-and-test, prepare-data, ai-analysis, generate-summary, comment-on-issue]
+    needs: [build-and-test, prepare-data, ai-analysis, generate-summary, comment-on-target]
     if: always() # Se ejecuta incluso si los oficios anteriores fallan
     permissions:
       contents: read
@@ -449,13 +505,19 @@ jobs:
           echo "- prepare-data: ${{ needs.prepare-data.result }}" >> $GITHUB_STEP_SUMMARY
           echo "- ai-analysis: ${{ needs.ai-analysis.result }}" >> $GITHUB_STEP_SUMMARY
           echo "- generate-summary: ${{ needs.generate-summary.result }}" >> $GITHUB_STEP_SUMMARY
-          echo "- comment-on-issue: ${{ needs.comment-on-issue.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- comment-on-target: ${{ needs.comment-on-target.result }}" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           
-          # Determinar el número de issue utilizado
-          ISSUE_USED="${{ github.event.inputs.issue_number }}"
-          if [ -z "$ISSUE_USED" ] || [ "$ISSUE_USED" = "" ]; then
-            ISSUE_USED="7"
+          # Determinar el contexto de ejecución y target utilizado
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            TARGET_TYPE="PR"
+            TARGET_NUM="${{ github.event.number }}"
+          else
+            TARGET_TYPE="Issue"
+            TARGET_NUM="${{ github.event.inputs.issue_number }}"
+            if [ -z "$TARGET_NUM" ] || [ "$TARGET_NUM" = "" ]; then
+              TARGET_NUM="7"
+            fi
           fi
           
           if [ "${{ needs.ai-analysis.result }}" = "success" ]; then
@@ -464,15 +526,16 @@ jobs:
             echo "❌ Error en la invocación de las artes de la IA" >> $GITHUB_STEP_SUMMARY
           fi
           
-          if [ "${{ needs.comment-on-issue.result }}" = "success" ]; then
-            echo "✅ Crónicas inscritas exitosamente en la issue #$ISSUE_USED" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ needs.comment-on-target.result }}" = "success" ]; then
+            echo "✅ Crónicas inscritas exitosamente en $TARGET_TYPE #$TARGET_NUM" >> $GITHUB_STEP_SUMMARY
           else
-            echo "❌ Error al inscribir en las crónicas de la issue #$ISSUE_USED" >> $GITHUB_STEP_SUMMARY
+            echo "❌ Error al inscribir en las crónicas de $TARGET_TYPE #$TARGET_NUM" >> $GITHUB_STEP_SUMMARY
           fi
           
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "🏆 **Resumen Final:**" >> $GITHUB_STEP_SUMMARY
-          echo "- Issue utilizada: #$ISSUE_USED" >> $GITHUB_STEP_SUMMARY
+          echo "- Contexto: ${{ github.event_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Target utilizado: $TARGET_TYPE #$TARGET_NUM" >> $GITHUB_STEP_SUMMARY
           echo "- Pruebas ejecutadas: ${{ needs.build-and-test.outputs.tests-total }}" >> $GITHUB_STEP_SUMMARY
           echo "- Cobertura alcanzada: ${{ needs.build-and-test.outputs.coverage-percentage }}%" >> $GITHUB_STEP_SUMMARY
           echo "- Pipeline status: ${{ job.status }}" >> $GITHUB_STEP_SUMMARY
