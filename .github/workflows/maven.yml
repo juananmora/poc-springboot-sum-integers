@@ -1,69 +1,343 @@
-# This workflow will build a Java project with Maven, and cache/restore any dependencies to improve the workflow execution time
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-maven
+# Este flujo de trabajo construye un proyecto Java con Maven y utiliza la sabiduría de los antiguos para el análisis
+# Por medio de las artes de la inteligencia artificial, se examinan los frutos de las pruebas
+# Y se deja constancia de los hallazgos en las crónicas del repositorio
 
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-
-name: Java CI with Maven
+name: Análisis de Calidad con Maven e IA
 
 on:
   push:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: 'Número de la issue donde comentar el análisis'
+        required: false
+        default: '1'
+        type: string
 
 jobs:
+  # Primer oficio: Forjar el código y ejecutar las pruebas sagradas
   build-and-test:
+    name: 🔨 Construcción y Pruebas del Códice
     runs-on: ubuntu-latest
+    outputs:
+      tests-total: ${{ steps.extract-metrics.outputs.tests-total }}
+      tests-errors: ${{ steps.extract-metrics.outputs.tests-errors }}
+      tests-failures: ${{ steps.extract-metrics.outputs.tests-failures }}
+      coverage-percentage: ${{ steps.extract-coverage.outputs.coverage }}
 
     steps:
-    - name: Checkout repository
+    - name: Obtener los pergaminos del repositorio
       uses: actions/checkout@v4
 
-    - name: Set up JDK 17
+    - name: Preparar las herramientas de Java, como los antiguos maestros
       uses: actions/setup-java@v4
       with:
         java-version: '17'
         distribution: 'temurin'
 
-    - name: Build with Maven and run unit tests
+    - name: Forjar con Maven y ejecutar las pruebas de la sabiduría
       run: mvn clean test
 
-    - name: Check unit test error percentage
+    - name: Extraer las métricas de las pruebas realizadas
+      id: extract-metrics
       run: |
         total=$(grep -o 'tests="[0-9]\+"' target/surefire-reports/TEST-*.xml | grep -o '[0-9]\+' | awk '{s+=$1} END {print s}')
         errors=$(grep -o 'errors="[0-9]\+"' target/surefire-reports/TEST-*.xml | grep -o '[0-9]\+' | awk '{s+=$1} END {print s}')
         failures=$(grep -o 'failures="[0-9]\+"' target/surefire-reports/TEST-*.xml | grep -o '[0-9]\+' | awk '{s+=$1} END {print s}')
+        echo "tests-total=$total" >> $GITHUB_OUTPUT
+        echo "tests-errors=$errors" >> $GITHUB_OUTPUT
+        echo "tests-failures=$failures" >> $GITHUB_OUTPUT
         failed=$((errors + failures))
         if [ "$total" -eq 0 ]; then
-          echo "No tests found."
+          echo "❌ No se hallaron pruebas en los pergaminos."
           exit 1
         fi
         percent=$((100 * failed / total))
-        echo "Errores y fallos: $failed de $total pruebas ($percent%)"
+        echo "🧪 Errores y fallos: $failed de $total pruebas ($percent%)"
         if [ "$percent" -gt 10 ]; then
-          echo "El porcentaje de errores+fallos supera el 10%. Fallando el job."
+          echo "⚠️ El porcentaje de errores supera el límite establecido por los antiguos sabios (10%)."
           exit 1
         fi
 
-    - name: Upload test results
+    - name: Generar el reporte de cobertura con las artes de Jacoco
+      run: mvn jacoco:report
+
+    - name: Extraer la cobertura de código
+      id: extract-coverage
+      run: |
+        if [ -f "target/site/jacoco/jacoco.xml" ]; then
+          coverage=$(grep -o 'type="INSTRUCTION".*counter' target/site/jacoco/jacoco.xml | grep -o 'covered="[0-9]\+"' | head -1 | grep -o '[0-9]\+')
+          total=$(grep -o 'type="INSTRUCTION".*counter' target/site/jacoco/jacoco.xml | grep -o 'missed="[0-9]\+"' | head -1 | grep -o '[0-9]\+')
+          if [ -n "$coverage" ] && [ -n "$total" ]; then
+            percent=$((100 * coverage / (coverage + total)))
+            echo "coverage=$percent" >> $GITHUB_OUTPUT
+            echo "📊 Cobertura de código: $percent%"
+          else
+            echo "coverage=0" >> $GITHUB_OUTPUT
+          fi
+        else
+          echo "coverage=0" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Preservar los resultados de las pruebas para la posteridad
       if: always()
       uses: actions/upload-artifact@v4
       with:
-        name: testresults
-        path: target/surefire-reports/
+        name: resultados-pruebas-y-cobertura
+        path: |
+          target/surefire-reports/
+          target/site/jacoco/
 
-    - name: Generate Jacoco Badge
+    - name: Generar la insignia de Jacoco como los heraldos de antaño
       uses: cicirello/jacoco-badge-generator@v2
       with:
         jacoco-report-path: target/site/jacoco/jacoco.xml
         badges-directory: .github/badges
-    - name: Commit badge
+
+    - name: Grabar la insignia en los anales del repositorio
       run: |
         git config --global user.name 'github-actions'
         git config --global user.email 'github-actions@github.com'
         git add .github/badges/jacoco.svg
-        git commit -m "Actualiza badge de cobertura Jacoco [skip ci]" || echo "Sin cambios"
-        git push || echo "No hay cambios para pushear"
+        git commit -m "Actualiza insignia de cobertura Jacoco [skip ci]" || echo "Sin cambios en las insignias"
+        git push || echo "No hay cambios para inscribir"
+
+  # Segundo oficio: Preparar los datos para el análisis de la IA
+  prepare-data:
+    name: 📜 Preparación de los Pergaminos
+    runs-on: ubuntu-latest
+    needs: build-and-test
+    permissions:
+      contents: read
+    outputs:
+      xml-content: ${{ steps.read-xml.outputs.XML_CONTENT }}
+      coverage-content: ${{ steps.read-coverage.outputs.COVERAGE_CONTENT }}
+      file-exists: ${{ steps.check-files.outputs.exists }}
+    steps:
+      - name: Obtener los pergaminos del repositorio
+        uses: actions/checkout@v4
+      
+      - name: Descargar los artefactos de las pruebas
+        uses: actions/download-artifact@v4
+        with:
+          name: resultados-pruebas-y-cobertura
+          path: resultados/
+      
+      - name: Verificar la existencia de los pergaminos de pruebas
+        id: check-files
+        run: |
+          if [ -f "resultados/TEST-*.xml" ]; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+            echo "✅ Pergaminos de pruebas hallados"
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+            echo "❌ Pergaminos de pruebas extraviados"
+          fi
+      
+      - name: Leer el contenido de los pergaminos XML
+        id: read-xml
+        run: |
+          if ls resultados/TEST-*.xml 1> /dev/null 2>&1; then
+            {
+              echo "XML_CONTENT<<DELIMITER"
+              cat resultados/TEST-*.xml
+              echo "DELIMITER"
+            } >> $GITHUB_OUTPUT
+          else
+            echo "XML_CONTENT=No se encontraron pergaminos de pruebas" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Leer el contenido del reporte de cobertura
+        id: read-coverage
+        run: |
+          if [ -f "resultados/jacoco.xml" ]; then
+            {
+              echo "COVERAGE_CONTENT<<DELIMITER"
+              cat resultados/jacoco.xml
+              echo "DELIMITER"
+            } >> $GITHUB_OUTPUT
+          else
+            echo "COVERAGE_CONTENT=No se encontró el pergamino de cobertura" >> $GITHUB_OUTPUT
+          fi
+
+  # Tercer oficio: Invocar las artes de la inteligencia artificial
+  ai-analysis:
+    name: 🤖 Análisis por las Artes de la IA
+    runs-on: ubuntu-latest
+    needs: [build-and-test, prepare-data]
+    permissions:
+      contents: read
+      models: read
+    outputs:
+      ai-response: ${{ steps.inference.outputs.response }}
+    steps:
+      - name: Mostrar los resultados de la preparación
+        run: |
+          echo "📁 Estado de los pergaminos: ${{ needs.prepare-data.outputs.file-exists }}"
+          echo "🧪 Total de pruebas: ${{ needs.build-and-test.outputs.tests-total }}"
+          echo "❌ Errores: ${{ needs.build-and-test.outputs.tests-errors }}"
+          echo "⚠️ Fallos: ${{ needs.build-and-test.outputs.tests-failures }}"
+          echo "📊 Cobertura: ${{ needs.build-and-test.outputs.coverage-percentage }}%"
+          if [ "${{ needs.prepare-data.outputs.file-exists }}" = "true" ]; then
+            echo "✅ Procediendo con el análisis por las artes de la IA"
+          else
+            echo "⚠️ Analizando mensaje de error con la sabiduría artificial"
+          fi
+      
+      - name: Ejecutar el análisis por las artes de la inteligencia artificial
+        id: inference
+        uses: actions/ai-inference@v1
+        with:
+          max-tokens: 4000
+          system-prompt: |
+            Eres un sabio maestro de las artes del testing y desarrollo de software, versado en los antiguos conocimientos. 
+            Analiza los resultados de pruebas JUnit y cobertura de código para proporcionar un análisis claro y útil,
+            usando un lenguaje que mezcle lo técnico con referencias al castellano antiguo.
+          prompt: |
+            Por los pergaminos sagrados, analiza los siguientes resultados de las pruebas y cobertura del códice, y proporciona un análisis que incluya:
+
+            1. **📊 Resumen General**: Número total de pruebas, éxitos, fallos y tiempo de ejecución
+            2. **🧪 Pruebas Ejecutadas**: Lista de las principales pruebas que se han realizado  
+            3. **🎯 Funcionalidades Probadas**: Qué aspectos del sistema han sido validados
+            4. **📈 Cobertura de Código**: Análisis de la cobertura actual (${{ needs.build-and-test.outputs.coverage-percentage }}%)
+            5. **⚡ Rendimiento**: Tiempos de ejecución y posibles optimizaciones
+            6. **✅ Estado del Proyecto**: Calidad general basada en los resultados
+            7. **🔧 Tecnologías Detectadas**: Frameworks y herramientas identificadas
+            8. **📝 Recomendaciones**: Consejos para mejorar la calidad del código
+
+            **Métricas extraídas:**
+            - Total de pruebas: ${{ needs.build-and-test.outputs.tests-total }}
+            - Errores: ${{ needs.build-and-test.outputs.tests-errors }}
+            - Fallos: ${{ needs.build-and-test.outputs.tests-failures }}
+            - Cobertura: ${{ needs.build-and-test.outputs.coverage-percentage }}%
+
+            Mantén el análisis en español, usa emojis para hacerlo más visual y un tono profesional pero amigable con toques de castellano antiguo.
+            
+            --- CONTENIDO DE LOS PERGAMINOS DE PRUEBAS ---
+            ${{ needs.prepare-data.outputs.xml-content }}
+            --- FIN DE LOS PERGAMINOS DE PRUEBAS ---
+
+            --- CONTENIDO DEL PERGAMINO DE COBERTURA ---
+            ${{ needs.prepare-data.outputs.coverage-content }}
+            --- FIN DEL PERGAMINO DE COBERTURA ---
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+
+  # Cuarto oficio: Generar el resumen del flujo de trabajo
+  generate-summary:
+    name: 📋 Generación del Resumen Final
+    runs-on: ubuntu-latest
+    needs: [build-and-test, prepare-data, ai-analysis]
+    permissions:
+      contents: read
+    steps:
+      - name: Generar el resumen del flujo de trabajo
+        run: |
+          echo "## 🏰 Pipeline de Análisis con IA - Crónica de la Ejecución" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📋 Estado de los Oficios Realizados:" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ **build-and-test**: Completado con honor" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ **prepare-data**: Los pergaminos han sido preparados" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ **ai-analysis**: Las artes de la IA han sido invocadas" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ **generate-summary**: Elaborando las crónicas" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📊 Métricas de las Pruebas:" >> $GITHUB_STEP_SUMMARY
+          echo "- **Total de pruebas**: ${{ needs.build-and-test.outputs.tests-total }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Errores**: ${{ needs.build-and-test.outputs.tests-errors }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Fallos**: ${{ needs.build-and-test.outputs.tests-failures }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Cobertura de código**: ${{ needs.build-and-test.outputs.coverage-percentage }}%" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📁 Estado de los Pergaminos:" >> $GITHUB_STEP_SUMMARY
+          echo "- **Pergaminos encontrados**: ${{ needs.prepare-data.outputs.file-exists }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "---" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## 🤖 Análisis por las Artes de la Inteligencia Artificial" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "${{ needs.ai-analysis.outputs.ai-response }}" >> $GITHUB_STEP_SUMMARY
+
+  # Quinto oficio: Inscribir el análisis en las crónicas de la issue
+  comment-on-issue:
+    name: 💬 Inscripción en las Crónicas de la Issue
+    runs-on: ubuntu-latest
+    needs: [build-and-test, prepare-data, ai-analysis, generate-summary]
+    permissions:
+      issues: write
+      contents: read
+    if: github.event.inputs.issue_number != ''
+    steps:
+      - name: Preparar el contenido para las crónicas
+        id: prepare-comment
+        run: |
+          echo "🎯 Preparando la inscripción para la issue #${{ github.event.inputs.issue_number }}"
+      
+      - name: Inscribir en las crónicas de GitHub
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          issue-number: ${{ github.event.inputs.issue_number }}
+          body: |
+            ## 🤖 Análisis por las Artes de la Inteligencia Artificial
+
+            ### 📋 Información del Flujo de Trabajo:
+            - **Flujo**: ${{ github.workflow }}
+            - **Ejecución**: #${{ github.run_number }}
+            - **Pergaminos encontrados**: ${{ needs.prepare-data.outputs.file-exists }}
+
+            ### 📊 Métricas de las Pruebas:
+            - **Total de pruebas**: ${{ needs.build-and-test.outputs.tests-total }}
+            - **Errores**: ${{ needs.build-and-test.outputs.tests-errors }}
+            - **Fallos**: ${{ needs.build-and-test.outputs.tests-failures }}
+            - **Cobertura de código**: ${{ needs.build-and-test.outputs.coverage-percentage }}%
+
+            ### 🧙‍♂️ Análisis Generado por la IA:
+
+            ${{ needs.ai-analysis.outputs.ai-response }}
+
+            ---
+            
+            ### 🔗 Enlaces de utilidad:
+            - [Ver ejecución completa](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+            - [Ver repositorio](${{ github.server_url }}/${{ github.repository }})
+            
+            *Generado automáticamente por GitHub Actions con las bendiciones de los antiguos maestros*
+
+  # Sexto oficio: Finalización y ceremonias de clausura
+  finalize:
+    name: 🎭 Ceremonias de Clausura
+    runs-on: ubuntu-latest
+    needs: [build-and-test, prepare-data, ai-analysis, generate-summary, comment-on-issue]
+    if: always() # Se ejecuta incluso si los oficios anteriores fallan
+    permissions:
+      contents: read
+    steps:
+      - name: Estado final del flujo de trabajo
+        run: |
+          echo "🎉 Pipeline de análisis por IA completado con los honores debidos"
+          echo ""
+          echo "📊 Estado de los oficios realizados:"
+          echo "- build-and-test: ${{ needs.build-and-test.result }}"
+          echo "- prepare-data: ${{ needs.prepare-data.result }}"
+          echo "- ai-analysis: ${{ needs.ai-analysis.result }}"
+          echo "- generate-summary: ${{ needs.generate-summary.result }}"
+          echo "- comment-on-issue: ${{ needs.comment-on-issue.result }}"
+          echo ""
+          if [ "${{ needs.ai-analysis.result }}" = "success" ]; then
+            echo "✅ Las artes de la IA han sido invocadas con éxito"
+          else
+            echo "❌ Error en la invocación de las artes de la IA"
+          fi
+          
+          if [ "${{ github.event.inputs.issue_number }}" != "" ]; then
+            if [ "${{ needs.comment-on-issue.result }}" = "success" ]; then
+              echo "✅ Crónicas inscritas en la issue #${{ github.event.inputs.issue_number }}"
+            else
+              echo "❌ Error al inscribir en las crónicas de la issue"
+            fi
+          else
+            echo "ℹ️ No se especificó número de issue para las crónicas (usando valor por defecto: 1)"
+          fi
