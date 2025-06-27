@@ -94,7 +94,7 @@ jobs:
     - name: Generar la insignia de Jacoco como los heraldos de antaño
       uses: cicirello/jacoco-badge-generator@v2
       with:
-        jacoco-report-path: target/site/jacoco/jacoco.xml
+        jacoco-csv-file: target/site/jacoco/jacoco.csv
         badges-directory: .github/badges
 
     - name: Grabar la insignia en los anales del repositorio
@@ -256,9 +256,9 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "---" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "## 🤖 Análisis por las Artes de la Inteligencia Artificial" >> $GITHUB_STEP_SUMMARY
+          echo "## 📝 Nota sobre el Análisis de IA" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "${{ needs.ai-analysis.outputs.ai-response }}" >> $GITHUB_STEP_SUMMARY
+          echo "El análisis detallado generado por las artes de la inteligencia artificial ha sido inscrito como comentario en la issue especificada (#${{ github.event.inputs.issue_number }})." >> $GITHUB_STEP_SUMMARY
 
   # Quinto oficio: Inscribir el análisis en las crónicas de la issue
   comment-on-issue:
@@ -268,7 +268,6 @@ jobs:
     permissions:
       issues: write
       contents: read
-    if: github.event.inputs.issue_number != ''
     steps:
       - name: Preparar el contenido para las crónicas
         id: prepare-comment
@@ -308,7 +307,7 @@ jobs:
 
   # Sexto oficio: Finalización y ceremonias de clausura
   finalize:
-    name: 🎭 Ceremonias de Clausura
+    name:  Ceremonias de Clausura
     runs-on: ubuntu-latest
     needs: [build-and-test, prepare-data, ai-analysis, generate-summary, comment-on-issue]
     if: always() # Se ejecuta incluso si los oficios anteriores fallan
@@ -339,5 +338,5 @@ jobs:
               echo "❌ Error al inscribir en las crónicas de la issue"
             fi
           else
-            echo "ℹ️ No se especificó número de issue para las crónicas (usando valor por defecto: 1)"
+            echo "ℹ️ Se utilizó el valor por defecto (issue #1) para las crónicas"
           fi
