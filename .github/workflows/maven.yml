@@ -14,7 +14,7 @@ on:
       issue_number:
         description: 'Número de la issue donde comentar el análisis'
         required: false
-        default: '1'
+        default: '7'
         type: string
 
 jobs:
@@ -39,7 +39,10 @@ jobs:
         distribution: 'temurin'
 
     - name: Forjar con Maven y ejecutar las pruebas de la sabiduría
-      run: mvn clean test
+      run: |
+        echo "🔨 Iniciando la construcción y pruebas del códice..." >> $GITHUB_STEP_SUMMARY
+        mvn clean test
+        echo "✅ Construcción y pruebas completadas exitosamente" >> $GITHUB_STEP_SUMMARY
 
     - name: Extraer las métricas de las pruebas realizadas
       id: extract-metrics
@@ -52,18 +55,25 @@ jobs:
         echo "tests-failures=$failures" >> $GITHUB_OUTPUT
         failed=$((errors + failures))
         if [ "$total" -eq 0 ]; then
-          echo "❌ No se hallaron pruebas en los pergaminos."
+          echo "❌ No se hallaron pruebas en los pergaminos." >> $GITHUB_STEP_SUMMARY
           exit 1
         fi
         percent=$((100 * failed / total))
-        echo "🧪 Errores y fallos: $failed de $total pruebas ($percent%)"
+        echo "🧪 Métricas extraídas de las pruebas:" >> $GITHUB_STEP_SUMMARY
+        echo "- Total de pruebas: $total" >> $GITHUB_STEP_SUMMARY
+        echo "- Errores: $errors" >> $GITHUB_STEP_SUMMARY
+        echo "- Fallos: $failures" >> $GITHUB_STEP_SUMMARY
+        echo "- Porcentaje de fallos: $percent%" >> $GITHUB_STEP_SUMMARY
         if [ "$percent" -gt 10 ]; then
-          echo "⚠️ El porcentaje de errores supera el límite establecido por los antiguos sabios (10%)."
+          echo "⚠️ El porcentaje de errores supera el límite establecido por los antiguos sabios (10%)." >> $GITHUB_STEP_SUMMARY
           exit 1
         fi
 
     - name: Generar el reporte de cobertura con las artes de Jacoco
-      run: mvn jacoco:report
+      run: |
+        echo "📊 Generando reporte de cobertura con Jacoco..." >> $GITHUB_STEP_SUMMARY
+        mvn jacoco:report
+        echo "✅ Reporte de cobertura generado exitosamente" >> $GITHUB_STEP_SUMMARY
 
     - name: Extraer la cobertura de código
       id: extract-coverage
@@ -74,12 +84,17 @@ jobs:
           if [ -n "$coverage" ] && [ -n "$total" ]; then
             percent=$((100 * coverage / (coverage + total)))
             echo "coverage=$percent" >> $GITHUB_OUTPUT
-            echo "📊 Cobertura de código: $percent%"
+            echo "📊 Cobertura de código extraída exitosamente:" >> $GITHUB_STEP_SUMMARY
+            echo "- Porcentaje de cobertura: $percent%" >> $GITHUB_STEP_SUMMARY
+            echo "- Instrucciones cubiertas: $coverage" >> $GITHUB_STEP_SUMMARY
+            echo "- Instrucciones totales: $((coverage + total))" >> $GITHUB_STEP_SUMMARY
           else
             echo "coverage=0" >> $GITHUB_OUTPUT
+            echo "⚠️ No se pudieron extraer métricas de cobertura" >> $GITHUB_STEP_SUMMARY
           fi
         else
           echo "coverage=0" >> $GITHUB_OUTPUT
+          echo "❌ No se encontró el archivo de reporte Jacoco" >> $GITHUB_STEP_SUMMARY
         fi
 
     - name: Preservar los resultados de las pruebas para la posteridad
@@ -90,20 +105,49 @@ jobs:
         path: |
           target/surefire-reports/
           target/site/jacoco/
+          
+    - name: Reportar la preservación de artefactos
+      if: always()
+      run: |
+        echo "📦 Artefactos preservados exitosamente:" >> $GITHUB_STEP_SUMMARY
+        echo "- Reportes de pruebas (Surefire)" >> $GITHUB_STEP_SUMMARY
+        echo "- Reportes de cobertura (Jacoco)" >> $GITHUB_STEP_SUMMARY
+        echo "- Nombre del artefacto: resultados-pruebas-y-cobertura" >> $GITHUB_STEP_SUMMARY
 
     - name: Generar la insignia de Jacoco como los heraldos de antaño
+      id: jacoco-badge
       uses: cicirello/jacoco-badge-generator@v2
       with:
         jacoco-csv-file: target/site/jacoco/jacoco.csv
         badges-directory: .github/badges
+        
+    - name: Reportar la creación de insignias en las crónicas
+      run: |
+        echo "🏅 Insignia de Jacoco generada exitosamente" >> $GITHUB_STEP_SUMMARY
+        echo "📊 Cobertura reportada: ${{ steps.extract-coverage.outputs.coverage }}%" >> $GITHUB_STEP_SUMMARY
+        echo "📍 Ubicación: .github/badges/jacoco.svg" >> $GITHUB_STEP_SUMMARY
+        if [ -f ".github/badges/jacoco.svg" ]; then
+          echo "✅ Archivo de insignia creado correctamente" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "❌ Error: Archivo de insignia no encontrado" >> $GITHUB_STEP_SUMMARY
+        fi
 
     - name: Grabar la insignia en los anales del repositorio
       run: |
         git config --global user.name 'github-actions'
         git config --global user.email 'github-actions@github.com'
-        git add .github/badges/jacoco.svg
-        git commit -m "Actualiza insignia de cobertura Jacoco [skip ci]" || echo "Sin cambios en las insignias"
-        git push || echo "No hay cambios para inscribir"
+        if [ -f ".github/badges/jacoco.svg" ]; then
+          git add .github/badges/jacoco.svg
+          if git diff --staged --quiet; then
+            echo "📝 Sin cambios en la insignia - mantiene el estado anterior" >> $GITHUB_STEP_SUMMARY
+          else
+            git commit -m "Actualiza insignia de cobertura Jacoco [skip ci]"
+            git push
+            echo "✅ Insignia actualizada y guardada en los anales" >> $GITHUB_STEP_SUMMARY
+          fi
+        else
+          echo "⚠️ No se pudo encontrar la insignia para grabar" >> $GITHUB_STEP_SUMMARY
+        fi
 
   # Segundo oficio: Preparar los datos para el análisis de la IA
   prepare-data:
@@ -125,6 +169,15 @@ jobs:
         with:
           name: resultados-pruebas-y-cobertura
           path: resultados/
+      
+      - name: Reportar la descarga de pergaminos
+        run: |
+          echo "📥 Artefactos descargados exitosamente" >> $GITHUB_STEP_SUMMARY
+          echo "📂 Contenido descargado en: resultados/" >> $GITHUB_STEP_SUMMARY
+          if [ -d "resultados" ]; then
+            file_count=$(find resultados -type f | wc -l)
+            echo "📄 Archivos encontrados: $file_count" >> $GITHUB_STEP_SUMMARY
+          fi
       
       - name: Verificar la existencia de los pergaminos de pruebas
         id: check-files
@@ -159,9 +212,17 @@ jobs:
               cat resultados/jacoco.xml
               echo "DELIMITER"
             } >> $GITHUB_OUTPUT
+            echo "✅ Pergamino de cobertura leído exitosamente" >> $GITHUB_STEP_SUMMARY
           else
             echo "COVERAGE_CONTENT=No se encontró el pergamino de cobertura" >> $GITHUB_OUTPUT
+            echo "❌ Pergamino de cobertura no encontrado" >> $GITHUB_STEP_SUMMARY
           fi
+          
+      - name: Finalizar la preparación de pergaminos
+        run: |
+          echo "📋 Resumen de la preparación:" >> $GITHUB_STEP_SUMMARY
+          echo "- Pergaminos XML: ${{ steps.check-files.outputs.exists }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Estado: Preparación completada para el análisis de IA" >> $GITHUB_STEP_SUMMARY
 
   # Tercer oficio: Invocar las artes de la inteligencia artificial
   ai-analysis:
@@ -226,6 +287,15 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          
+      - name: Reportar el resultado del análisis de IA
+        run: |
+          echo "🤖 Análisis de IA completado exitosamente" >> $GITHUB_STEP_SUMMARY
+          echo "📊 Datos analizados:" >> $GITHUB_STEP_SUMMARY
+          echo "- Pruebas totales: ${{ needs.build-and-test.outputs.tests-total }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Cobertura: ${{ needs.build-and-test.outputs.coverage-percentage }}%" >> $GITHUB_STEP_SUMMARY
+          echo "- Pergaminos procesados: ${{ needs.prepare-data.outputs.file-exists }}" >> $GITHUB_STEP_SUMMARY
+          echo "🎯 El análisis detallado será inscrito en la issue correspondiente" >> $GITHUB_STEP_SUMMARY
 
   # Cuarto oficio: Generar el resumen del flujo de trabajo
   generate-summary:
@@ -258,7 +328,7 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "## 📝 Nota sobre el Análisis de IA" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "El análisis detallado generado por las artes de la inteligencia artificial ha sido inscrito como comentario en la issue especificada (#${{ github.event.inputs.issue_number }})." >> $GITHUB_STEP_SUMMARY
+          echo "El análisis detallado generado por las artes de la inteligencia artificial ha sido inscrito como comentario en la issue #${{ github.event.inputs.issue_number || '7' }}." >> $GITHUB_STEP_SUMMARY
 
   # Quinto oficio: Inscribir el análisis en las crónicas de la issue
   comment-on-issue:
@@ -272,13 +342,21 @@ jobs:
       - name: Preparar el contenido para las crónicas
         id: prepare-comment
         run: |
-          echo "🎯 Preparando la inscripción para la issue #${{ github.event.inputs.issue_number }}"
+          # Determinar el número de issue a usar
+          ISSUE_NUM="${{ github.event.inputs.issue_number }}"
+          if [ -z "$ISSUE_NUM" ] || [ "$ISSUE_NUM" = "" ]; then
+            ISSUE_NUM="7"
+          fi
+          echo "issue-number=$ISSUE_NUM" >> $GITHUB_OUTPUT
+          echo "🎯 Preparando la inscripción para la issue #$ISSUE_NUM" >> $GITHUB_STEP_SUMMARY
+          echo "📝 Comentario con análisis de IA será publicado" >> $GITHUB_STEP_SUMMARY
       
       - name: Inscribir en las crónicas de GitHub
+        id: create-comment
         uses: peter-evans/create-or-update-comment@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          issue-number: ${{ github.event.inputs.issue_number }}
+          issue-number: ${{ steps.prepare-comment.outputs.issue-number }}
           body: |
             ## 🤖 Análisis por las Artes de la Inteligencia Artificial
 
@@ -304,10 +382,16 @@ jobs:
             - [Ver repositorio](${{ github.server_url }}/${{ github.repository }})
             
             *Generado automáticamente por GitHub Actions con las bendiciones de los antiguos maestros*
+            
+      - name: Confirmar la inscripción en las crónicas
+        run: |
+          echo "✅ Comentario publicado exitosamente en issue #${{ steps.prepare-comment.outputs.issue-number }}" >> $GITHUB_STEP_SUMMARY
+          echo "🔗 El análisis completo de IA está disponible en la issue" >> $GITHUB_STEP_SUMMARY
+          echo "📊 Métricas incluidas: ${{ needs.build-and-test.outputs.tests-total }} pruebas, ${{ needs.build-and-test.outputs.coverage-percentage }}% cobertura" >> $GITHUB_STEP_SUMMARY
 
   # Sexto oficio: Finalización y ceremonias de clausura
   finalize:
-    name:  Ceremonias de Clausura
+    name: 🎯 Ceremonias de Clausura
     runs-on: ubuntu-latest
     needs: [build-and-test, prepare-data, ai-analysis, generate-summary, comment-on-issue]
     if: always() # Se ejecuta incluso si los oficios anteriores fallan
@@ -316,27 +400,40 @@ jobs:
     steps:
       - name: Estado final del flujo de trabajo
         run: |
-          echo "🎉 Pipeline de análisis por IA completado con los honores debidos"
-          echo ""
-          echo "📊 Estado de los oficios realizados:"
-          echo "- build-and-test: ${{ needs.build-and-test.result }}"
-          echo "- prepare-data: ${{ needs.prepare-data.result }}"
-          echo "- ai-analysis: ${{ needs.ai-analysis.result }}"
-          echo "- generate-summary: ${{ needs.generate-summary.result }}"
-          echo "- comment-on-issue: ${{ needs.comment-on-issue.result }}"
-          echo ""
-          if [ "${{ needs.ai-analysis.result }}" = "success" ]; then
-            echo "✅ Las artes de la IA han sido invocadas con éxito"
-          else
-            echo "❌ Error en la invocación de las artes de la IA"
+          echo "🎉 Pipeline de análisis por IA completado con los honores debidos" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "📊 Estado de los oficios realizados:" >> $GITHUB_STEP_SUMMARY
+          echo "- build-and-test: ${{ needs.build-and-test.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- prepare-data: ${{ needs.prepare-data.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- ai-analysis: ${{ needs.ai-analysis.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- generate-summary: ${{ needs.generate-summary.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- comment-on-issue: ${{ needs.comment-on-issue.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # Determinar el número de issue utilizado
+          ISSUE_USED="${{ github.event.inputs.issue_number }}"
+          if [ -z "$ISSUE_USED" ] || [ "$ISSUE_USED" = "" ]; then
+            ISSUE_USED="7"
           fi
           
-          if [ "${{ github.event.inputs.issue_number }}" != "" ]; then
-            if [ "${{ needs.comment-on-issue.result }}" = "success" ]; then
-              echo "✅ Crónicas inscritas en la issue #${{ github.event.inputs.issue_number }}"
-            else
-              echo "❌ Error al inscribir en las crónicas de la issue"
-            fi
+          if [ "${{ needs.ai-analysis.result }}" = "success" ]; then
+            echo "✅ Las artes de la IA han sido invocadas con éxito" >> $GITHUB_STEP_SUMMARY
           else
-            echo "ℹ️ Se utilizó el valor por defecto (issue #1) para las crónicas"
+            echo "❌ Error en la invocación de las artes de la IA" >> $GITHUB_STEP_SUMMARY
           fi
+          
+          if [ "${{ needs.comment-on-issue.result }}" = "success" ]; then
+            echo "✅ Crónicas inscritas exitosamente en la issue #$ISSUE_USED" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ Error al inscribir en las crónicas de la issue #$ISSUE_USED" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "🏆 **Resumen Final:**" >> $GITHUB_STEP_SUMMARY
+          echo "- Issue utilizada: #$ISSUE_USED" >> $GITHUB_STEP_SUMMARY
+          echo "- Pruebas ejecutadas: ${{ needs.build-and-test.outputs.tests-total }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Cobertura alcanzada: ${{ needs.build-and-test.outputs.coverage-percentage }}%" >> $GITHUB_STEP_SUMMARY
+          echo "- Pipeline status: ${{ job.status }}" >> $GITHUB_STEP_SUMMARY
+          
+          echo ""
+          echo "Pipeline de análisis completado por los antiguos maestros 🧙‍♂️"
