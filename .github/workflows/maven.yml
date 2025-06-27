@@ -179,29 +179,29 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: resultados-pruebas-y-cobertura
-          path: resultados/
+          path: target/
       
       - name: Reportar la descarga de pergaminos
         run: |
           echo "📥 Artefactos descargados exitosamente" >> $GITHUB_STEP_SUMMARY
-          echo "📂 Contenido descargado en: resultados/" >> $GITHUB_STEP_SUMMARY
-          if [ -d "resultados" ]; then
-            file_count=$(find resultados -type f | wc -l)
+          echo "📂 Contenido descargado en: target/" >> $GITHUB_STEP_SUMMARY
+          if [ -d "target" ]; then
+            file_count=$(find target -type f | wc -l)
             echo "📄 Archivos encontrados: $file_count" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
             echo "🔍 Estructura de directorios:" >> $GITHUB_STEP_SUMMARY
             echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-            tree resultados/ 2>/dev/null || find resultados -type f | head -10 >> $GITHUB_STEP_SUMMARY
+            tree target/ 2>/dev/null || find target -type f | head -10 >> $GITHUB_STEP_SUMMARY
             echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
           fi
       
       - name: Verificar la existencia de los pergaminos de pruebas
         id: check-files
         run: |
-          if ls resultados/TEST-*.xml 1> /dev/null 2>&1; then
+          if ls target/surefire-reports/TEST-*.xml 1> /dev/null 2>&1; then
             echo "exists=true" >> $GITHUB_OUTPUT
             echo "✅ Pergaminos de pruebas hallados" >> $GITHUB_STEP_SUMMARY
-            file_count=$(ls resultados/TEST-*.xml | wc -l)
+            file_count=$(ls target/surefire-reports/TEST-*.xml | wc -l)
             echo "📄 Archivos XML encontrados: $file_count" >> $GITHUB_STEP_SUMMARY
           else
             echo "exists=false" >> $GITHUB_OUTPUT
@@ -211,12 +211,23 @@ jobs:
       - name: Leer el contenido de los pergaminos XML
         id: read-xml
         run: |
-          if ls resultados/TEST-*.xml 1> /dev/null 2>&1; then
+          if ls target/surefire-reports/TEST-*.xml 1> /dev/null 2>&1; then
+            # Crear un resumen del contenido XML en lugar de todo el contenido
             {
-              echo "XML_CONTENT<<DELIMITER"
-              cat resultados/TEST-*.xml
-              echo "DELIMITER"
+              echo "XML_CONTENT<<GITHUB_XML_END_OF_CONTENT"
+              echo "=== RESUMEN DE PERGAMINOS XML ==="
+              echo "Archivos encontrados: $(ls target/surefire-reports/TEST-*.xml | wc -l)"
+              echo ""
+              echo "=== CONTENIDO DE LOS PRIMEROS 3 ARCHIVOS ==="
+              ls target/surefire-reports/TEST-*.xml | head -3 | while read file; do
+                echo "--- ARCHIVO: $file ---"
+                head -50 "$file"  # Solo primeras 50 líneas de cada archivo
+                echo ""
+              done
+              echo "GITHUB_XML_END_OF_CONTENT"
             } >> $GITHUB_OUTPUT
+            xml_count=$(ls target/surefire-reports/TEST-*.xml | wc -l)
+            echo "✅ $xml_count pergaminos XML procesados (resumen generado)" >> $GITHUB_STEP_SUMMARY
           else
             echo "XML_CONTENT=No se encontraron pergaminos de pruebas" >> $GITHUB_OUTPUT
           fi
@@ -224,23 +235,29 @@ jobs:
       - name: Leer el contenido del reporte de cobertura
         id: read-coverage
         run: |
-          if [ -f "resultados/site/jacoco/jacoco.xml" ]; then
+          if [ -f "target/site/jacoco/jacoco.xml" ]; then
             {
-              echo "COVERAGE_CONTENT<<DELIMITER"
-              cat resultados/site/jacoco/jacoco.xml
-              echo "DELIMITER"
+              echo "COVERAGE_CONTENT<<GITHUB_COVERAGE_END_OF_CONTENT"
+              echo "=== REPORTE DE COBERTURA JACOCO ==="
+              echo "Archivo: target/site/jacoco/jacoco.xml"
+              echo ""
+              # Tomar solo las partes más relevantes del XML de cobertura
+              head -100 target/site/jacoco/jacoco.xml
+              echo ""
+              echo "=== ESTADÍSTICAS DE COBERTURA ==="
+              grep -E "(counter|package|class)" target/site/jacoco/jacoco.xml | head -20
+              echo "GITHUB_COVERAGE_END_OF_CONTENT"
             } >> $GITHUB_OUTPUT
-            echo "✅ Pergamino de cobertura leído exitosamente" >> $GITHUB_STEP_SUMMARY
-            echo "📄 Ubicación: resultados/site/jacoco/jacoco.xml" >> $GITHUB_STEP_SUMMARY
+            echo "✅ Pergamino de cobertura procesado (resumen generado)" >> $GITHUB_STEP_SUMMARY
+            echo "📄 Ubicación: target/site/jacoco/jacoco.xml" >> $GITHUB_STEP_SUMMARY
           else
             echo "COVERAGE_CONTENT=No se encontró el pergamino de cobertura" >> $GITHUB_OUTPUT
-            echo "❌ Pergamino de cobertura no encontrado en resultados/site/jacoco/jacoco.xml" >> $GITHUB_STEP_SUMMARY
-            # Buscar en ubicaciones alternativas
-            if [ -f "resultados/jacoco.xml" ]; then
-              echo "⚠️ Encontrado en ubicación alternativa: resultados/jacoco.xml" >> $GITHUB_STEP_SUMMARY
-            fi
-            echo "📂 Contenido del directorio resultados:" >> $GITHUB_STEP_SUMMARY
-            ls -la resultados/ || echo "No se pudo listar el directorio" >> $GITHUB_STEP_SUMMARY
+            echo "❌ Pergamino de cobertura no encontrado en target/site/jacoco/jacoco.xml" >> $GITHUB_STEP_SUMMARY
+            # Buscar en ubicaciones alternativas y diagnosticar
+            echo "🔍 Buscando archivos de cobertura en ubicaciones alternativas..." >> $GITHUB_STEP_SUMMARY
+            echo "📂 Explorando estructura completa del directorio target:" >> $GITHUB_STEP_SUMMARY
+            find target -name "*.xml" 2>/dev/null >> $GITHUB_STEP_SUMMARY || echo "No se encontraron archivos XML" >> $GITHUB_STEP_SUMMARY
+            find target -name "jacoco*" 2>/dev/null >> $GITHUB_STEP_SUMMARY || echo "No se encontraron archivos de Jacoco" >> $GITHUB_STEP_SUMMARY
           fi
           
       - name: Finalizar la preparación de pergaminos
