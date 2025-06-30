@@ -1,4 +1,4 @@
-# 🧮 Spring Boot Math Service - Guía de Pruebas
+# 🧮 Spring Boot Math Service - Guía de Pruebas Unitarias
 
 Una aplicación Spring Boot que proporciona operaciones matemáticas básicas a través de endpoints REST, completamente probada con JUnit 5, Mockito y Jacoco para análisis de cobertura.
 
