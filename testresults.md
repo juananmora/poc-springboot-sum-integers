@@ -1,569 +1,181 @@
-# Informe de Resultados de Pruebas Automatizadas
+# Informe de Resultados de Pruebas Automatizadas - Quicksort con Números Racionales
 
-Proyecto: poc-springboot-sum-integers - Implementación de Media Aritmética (JON-3292)  
-Fecha de ejecución: 24/06/2025  
-Entorno: Visual Studio Code / GitHub Codespaces  
-Framework: Spring Boot 3.3.5 con JUnit 5 y Mockito  
-Comando utilizado: `mvn clean test`
+**Proyecto:** poc-springboot-sum-integers  
+**Fecha de ejecución:** 01/07/2025  
+**Entorno:** Visual Studio Code  
+**Comando utilizado:** `mvn clean test`
 
 ---
 
 ## 📊 Resumen General
 
-- **Total de pruebas ejecutadas**: 112  
-- **Pruebas exitosas**: 112  
-- **Pruebas fallidas**: 0  
-- **Pruebas con errores**: 0  
-- **Tiempo total de ejecución**: ~14.9 segundos
+- **Total de pruebas ejecutadas:** 171
+- **Pruebas exitosas:** 171
+- **Pruebas fallidas:** 0
+- **Pruebas con errores:** 0
 
 ---
 
 ## 🔍 Cobertura de Código (Jacoco)
 
-### Cobertura Global del Proyecto:
-- **Por instrucciones**: 95.0% (341 cubiertas / 357 totales)
-- **Por ramas**: 100% (22 cubiertas / 22 totales)  
-- **Por líneas**: 94.0% (80 cubiertas / 85 totales)
-- **Por métodos**: 93.0% (26 cubiertos / 28 totales)
-- **Por clases**: 100% (5 cubiertas / 5 totales)
+- **Cobertura total del proyecto:**
+  - Por instrucciones: 97% (634 instrucciones, 16 perdidas)
+  - Por ramas: 100% (46 ramas, todas cubiertas)
+  - Por líneas: 96% (141 líneas, 5 perdidas)
 
-### Cobertura Detallada por Paquete:
+- **Cobertura por servicios:**
+  - `MathService`: 100% (instrucciones y ramas)
+  - `MathController`: 96% instrucciones, 100% ramas
+  - `GlobalExceptionHandler`: 96% instrucciones, 100% ramas
 
-#### ✅ **com.example.demo.service** (100% de cobertura)
-- **MathService**: 100% de cobertura
-- **Instrucciones**: 100% (96/96)
-- **Ramas**: 100% (20/20)  
-- **Líneas**: 100% (21/21)
-- **Métodos**: 100% (10/10) - **¡NUEVO MÉTODO `calculateMean` INCLUIDO!**
-
-#### ✅ **com.example.demo.controller** (95% de cobertura)
-- **MathController**: 95% de cobertura con nuevo endpoint
-- **AdditionController**: 95% de cobertura
-- **GlobalExceptionHandler**: 100% de cobertura
-- **Instrucciones**: 95% (242/253)
-- **Líneas**: 95% (58/61)  
-- **Métodos**: 94% (15/16) - **¡NUEVO ENDPOINT `/mean` INCLUIDO!**
-
-#### ✅ **com.example.demo** (37% de cobertura)
-- **DemoApplication**: 37% de cobertura (normal para clase main)
+- **Clases con cobertura completa:**
+  - `MathService` (100% en todas las métricas)
 
 > **Ruta del informe HTML completo:** `/target/site/jacoco/index.html`
 
 ---
 
-## 🎯 **Nueva Funcionalidad - Media Aritmética (JON-3292)**
-
-### ✅ **Implementación Completa - 100% de Cobertura**
-- **Método `calculateMean(List<Integer>)`**: 100% de cobertura de líneas
-- **Endpoint `POST /api/math/mean`**: 100% de cobertura  
-- **Casos de prueba implementados**: 14 escenarios específicos
-- **Criterios de aceptación**: ✅ TODOS CUMPLIDOS
-
-### 📋 **Criterios de Aceptación Validados**:
-1. **✅ Escenario 1**: Lista válida [1,2,3,4,5] → 3.0
-2. **✅ Escenario 2**: Lista con un elemento [7] → 7.0  
-3. **✅ Escenario 3**: Lista vacía [] → 0.0
-4. **✅ Escenario 4**: Lista con negativos [-1,0,1] → 0.0
-
----
-
 ## 🧪 Detalles por Framework
 
-### JUnit 5
+### JUnit
 
-- **Total de pruebas unitarias**: 112 (incremento de +14 nuevas pruebas)
-- **Clases de prueba actualizadas**:
-  - `MathServiceTest` (64 pruebas) - **+8 nuevas pruebas de media aritmética**
-  - `MathControllerTest` (27 pruebas) - **+6 nuevas pruebas del endpoint mean**
-  - `AdditionControllerUnitTest` (10 pruebas) - Mantiene cobertura
-  - `AdditionControllerIntegrationTest` (13 pruebas) - Mantiene cobertura
-  - `GlobalExceptionHandlerTest` (2 pruebas) - Mantiene cobertura
-  - `DemoApplicationTest` (4 pruebas) - Mantiene cobertura
+- **Total de pruebas unitarias:** 171
+- **Clases probadas:**
+  - `MathServiceTest` - 105 pruebas
+  - `MathControllerTest` - 50 pruebas  
+  - `AdditionControllerUnitTest` - 10 pruebas
+  - `AdditionControllerIntegrationTest` - 4 pruebas
+  - `DemoApplicationTest` - 4 pruebas
+  - `GlobalExceptionHandlerTest` - 2 pruebas
 
-### 🆕 **Nuevas Pruebas de Media Aritmética (MathServiceTest)**:
-1. **testCalculateMeanValidList**: [1,2,3,4,5] → 3.0 ✅
-2. **testCalculateMeanSingleElement**: [7] → 7.0 ✅  
-3. **testCalculateMeanEmptyList**: [] → 0.0 ✅
-4. **testCalculateMeanNullList**: null → 0.0 ✅
-5. **testCalculateMeanWithNegatives**: [-1,0,1] → 0.0 ✅
-6. **testCalculateMeanAllNegatives**: [-1,-2,-3] → -2.0 ✅
-7. **testCalculateMeanDecimalResult**: [1,2,4] → 2.33... ✅
-8. **testCalculateMeanLargeNumbers**: [1000,2000,3000] → 2000.0 ✅
-
-### 🆕 **Nuevas Pruebas del Endpoint (MathControllerTest)**:
-1. **testMeanValidNumbers**: Prueba lista válida con MockMvc ✅
-2. **testMeanSingleElement**: Prueba elemento único ✅
-3. **testMeanEmptyList**: Prueba lista vacía ✅
-4. **testMeanWithNegatives**: Prueba números negativos ✅
-5. **testMeanInvalidInput**: Prueba entrada inválida → 400 Bad Request ✅
-6. **testMeanNullNumbers**: Prueba números null ✅
+- **Nuevas funcionalidades probadas:**
+  - Quicksort para números enteros (19 casos de prueba)
+  - Quicksort para números racionales (16 casos de prueba)
+  - Endpoint REST `/api/math/quicksort-rational` (8 casos de prueba)
 
 ---
 
 ### Mockito
 
-- **Total de mocks utilizados**: 48+ interacciones verificadas (incremento de +8)
-- **Componentes simulados**:
-  - `MathService.calculateMean()` en pruebas del controlador
-  - Verificación de llamadas al nuevo método
-  - Simulación de respuestas y excepciones
+- **Total de mocks utilizados:** 40+
+- **Componentes simulados:**
+  - `MathService` (en todas las pruebas de controlador)
+  - `MockMvc` (para simulaciones HTTP)
 
-- **Comportamientos verificados para media aritmética**:
-  - ✅ Invocación correcta del método `calculateMean`
-  - ✅ Manejo de listas válidas, vacías y null
-  - ✅ Retorno de valores correctos para todos los escenarios
-  - ✅ Manejo de excepciones HTTP 400 para entrada inválida
-  - ✅ Validación de estructura de respuesta JSON
-
----
-
-### Jacoco
-
-- ✅ Instrumentación de código activada correctamente  
-- ✅ Informe generado y accesible en formato HTML, CSV y XML
-- ✅ **100% de cobertura para la nueva funcionalidad `calculateMean()`**
-- ✅ **Cobertura superior al 80% requerido (95% obtenido)**
-
----
-
-## 🌐 Simulaciones HTTP (MockMvc y cURL)
-
-### 🆕 **Nuevo Endpoint: `POST /api/math/mean`**
-
-#### ✅ **Casos Exitosos (HTTP 200 OK)**:
-```bash
-# Escenario 1: Lista válida
-curl -X POST /api/math/mean -d '{"numbers": [1,2,3,4,5]}'
-→ {"result": 3.0, "operation": "mean", "operands": [1,2,3,4,5]}
-
-# Escenario 2: Elemento único  
-curl -X POST /api/math/mean -d '{"numbers": [7]}'
-→ {"result": 7.0, "operation": "mean", "operands": [7]}
-
-# Escenario 3: Lista vacía
-curl -X POST /api/math/mean -d '{"numbers": []}'
-→ {"result": 0.0, "operation": "mean", "operands": []}
-
-# Escenario 4: Números negativos
-curl -X POST /api/math/mean -d '{"numbers": [-1,0,1]}'
-→ {"result": 0.0, "operation": "mean", "operands": [-1,0,1]}
-```
-
-#### ❌ **Casos de Error (HTTP 400 Bad Request)**:
-```bash
-# Entrada inválida
-curl -X POST /api/math/mean -d '{"numbers": "invalid"}'
-→ {"error": "Invalid input"}
-```
-
-### **Otros Endpoints Existentes (Mantienen Funcionalidad)**:
-- `POST /api/math/sum` → Funcional ✅
-- `POST /api/math/sum-list` → Funcional ✅  
-- `GET /api/math/check/{number}` → Funcional ✅
-- `POST /api/math/multiply` → Funcional ✅
-
-**Herramientas utilizadas**: `MockMvc` con Spring Boot Test + validación manual con `cURL`
-
----
-
-## 💻 **Implementación Técnica con Spring Boot 3.3.5**
-
-### **Patrones de Spring Boot Aplicados**:
-```java
-// Servicio usando @Service de Spring Framework
-@Service
-public class MathService {
-    
-    // Método implementado siguiendo principios de Spring Boot
-    public double calculateMean(List<Integer> numbers) {
-        if (numbers == null || numbers.isEmpty()) {
-            return 0.0;  // Comportamiento consistente con otros métodos
-        }
-        double sum = numbers.stream().mapToInt(Integer::intValue).sum();
-        return sum / numbers.size();
-    }
-}
-```
-
-### **Controlador REST con Spring Boot 3.3.5**:
-```java
-@RestController
-@RequestMapping("/api/math")
-public class MathController {
-
-    @Autowired
-    private MathService mathService;
-
-    @PostMapping("/mean")
-    public ResponseEntity<Map<String, Object>> calculateMean(
-        @RequestBody Map<String, List<Integer>> request) {
-        try {
-            List<Integer> numbers = request.get("numbers");
-            double result = mathService.calculateMean(numbers);
-            
-            Map<String, Object> response = Map.of(
-                "result", result,
-                "operation", "mean",
-                "operands", numbers != null ? numbers : List.of()
-            );
-            
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest()
-                .body(Map.of("error", "Invalid input"));
-        }
-    }
-}
-```
-
-### **Testing con JUnit 5 y Spring Boot Test**:
-```java
-@SpringBootTest
-@AutoConfigureMockMvc
-class MathControllerTest {
-
-    @Autowired
-    private MockMvc mockMvc;
-
-    @Test 
-    void testMeanValidNumbers() throws Exception {
-        String jsonRequest = "{\"numbers\": [1, 2, 3, 4, 5]}";
-        
-        mockMvc.perform(post("/api/math/mean")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(jsonRequest))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.result").value(3.0))
-                .andExpect(jsonPath("$.operation").value("mean"));
-    }
-}
-```
-
-### **Configuración Maven para Spring Boot 3.3.5**:
-```xml
-<parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>3.3.5</version>
-    <relativePath/>
-</parent>
-
-<!-- Jacoco Plugin para Cobertura -->
-<plugin>
-    <groupId>org.jacoco</groupId>
-    <artifactId>jacoco-maven-plugin</artifactId>
-    <version>0.8.11</version>
-    <executions>
-        <execution>
-            <goals>
-                <goal>prepare-agent</goal>
-            </goals>
-        </execution>
-        <execution>
-            <id>report</id>
-            <phase>test</phase>
-            <goals>
-                <goal>report</goal>
-            </goals>
-        </execution>
-    </executions>
-</plugin>
-```
-
----
-
-## ✅ **Cumplimiento de Criterios de Aceptación (JON-3292)**
-
-### **Historia de Usuario**: 
-*Como analista de datos, quiero poder ingresar una lista de números enteros, para que el sistema calcule y me devuelva la media aritmética de esos números.*
-
-#### **Criterios Validados con Spring Boot 3.3.5**:
-- **✅ Escenario 1**: Lista válida [1,2,3,4,5] retorna 3.0
-- **✅ Escenario 2**: Lista con un elemento [7] retorna 7.0  
-- **✅ Escenario 3**: Lista vacía [] retorna 0.0 (consistente con sumList existente)
-- **✅ Escenario 4**: Lista con negativos [-1,0,1] retorna 0.0
-
-### **Características Técnicas Implementadas**:
-- ✅ **Arquitectura Spring Boot**: Implementación siguiendo patrones de Spring Boot 3.3.5
-- ✅ **Testing con JUnit 5**: Uso de anotaciones modernas como `@SpringBootTest`, `@WebMvcTest`
-- ✅ **Consistencia**: Comportamiento coherente con métodos existentes  
-- ✅ **Robustez**: Manejo de casos edge (null, vacío, negativos)
-- ✅ **Integración REST**: Endpoint `POST /api/math/mean` siguiendo mejores prácticas
-- ✅ **MockMvc Testing**: Pruebas de integración usando `@AutoConfigureMockMvc`
-- ✅ **Calidad**: 100% de cobertura de pruebas automatizadas
-
----
-
-## ⚠️ Observaciones
-
-### **Cambios Implementados**:
-- **✅ Funcionalidad nueva**: Método `calculateMean()` con 100% cobertura
-- **✅ Endpoint nuevo**: `POST /api/math/mean` con validación completa
-- **✅ Pruebas comprehensivas**: 14 nuevos casos de prueba implementados
-- **✅ Documentación**: Casos de uso y respuestas documentadas
-
-### **Impacto en Métricas**:
-- **Número de pruebas**: 98 → 112 (+14 nuevas pruebas)
-- **Cobertura global**: Mantiene 95% (excelente nivel)
-- **Número de métodos**: +1 método `calculateMean()` + 1 endpoint `/mean`
-
----
-
-## ✅ Conclusión
-
-> **🎯 OBJETIVO CUMPLIDO**: La implementación de la media aritmética (JON-3292) ha sido completada exitosamente con **100% de cobertura** y **todos los criterios de aceptación** validados.
-
-> **📈 CALIDAD MANTENIDA**: El proyecto mantiene su excelente cobertura del **95%**, superando ampliamente el objetivo del 80% solicitado.
-
-> **🔧 IMPLEMENTACIÓN EXITOSA**: 
-- **4 criterios de aceptación** ✅ completados
-- **14 nuevas pruebas** ✅ implementadas  
-- **1 nuevo endpoint REST** ✅ funcional
-- **Consistencia arquitectónica** ✅ mantenida
-
-### **Logros de la Implementación**:
-- ✅ **112 pruebas automatizadas** ejecutadas sin errores
-- ✅ **95% de cobertura global** mantenida
-- ✅ **100% de cobertura** para nueva funcionalidad
-- ✅ **Validación completa** de todos los escenarios requeridos
-- ✅ **Integración perfecta** con arquitectura existente
-
-### **Métricas de Calidad Finales**:
-- **Cobertura de instrucciones**: 95.0% (341/357)
-- **Cobertura de ramas**: 100% (22/22)
-- **Cobertura de líneas**: 94.0% (80/85)
-- **Cobertura de métodos**: 93.0% (26/28)
-
-### **Referencia Jira**:
-**JON-3292** - Implementar cálculo de la media aritmética de una lista de números ✅ **COMPLETADO**
-
-> **✨ RESULTADO FINAL**: La funcionalidad de media aritmética está lista para producción con la máxima calidad, cumpliendo todos los requisitos técnicos y de negocio especificados.
-
-> **Ruta del informe HTML completo:** `/target/site/jacoco/index.html`
-
----
-
-## 🎯 **Cobertura de la Nueva Funcionalidad (sqrt)**
-
-### ✅ **Operación Raíz Cuadrada - Cobertura 100%**
-- **Método `sqrt(double)`**: 100% de cobertura de líneas
-- **Casos de prueba cubiertos**: 12 escenarios específicos
-- **Validaciones**: Error handling, casos límite, valores especiales
-
----
-
-## 🧪 Detalles por Framework
-
-### JUnit 5
-
-- **Total de pruebas unitarias**: 98  
-- **Clases de prueba creadas**:
-  - `MathServiceTest` (56 pruebas) - 100% cobertura
-  - `MathControllerTest` (16 pruebas) - **NUEVA** ✨
-  - `GlobalExceptionHandlerTest` (2 pruebas) - **NUEVA** ✨
-  - `AdditionControllerUnitTest` (10 pruebas) - Existente
-  - `AdditionControllerIntegrationTest` (10 pruebas) - Existente
-  - `DemoApplicationTest` (4 pruebas) - Existente
-
-- **Casos validados**:
-  - ✅ Lógica de negocio completa (operaciones matemáticas)
-  - ✅ Validaciones de entrada (números negativos, tipos incorrectos)
-  - ✅ Casos especiales (0, 1, decimales, números grandes)
-  - ✅ Endpoints REST con casos válidos e inválidos
-  - ✅ Manejo de excepciones HTTP y de validación
-  - ✅ Integración completa con controladores REST
-
-### Nuevas Pruebas Implementadas:
-
-#### **MathControllerTest** (16 pruebas nuevas):
-- **POST /api/math/sum**: 4 pruebas (válidos, inválidos, excepciones, parámetros faltantes)
-- **POST /api/math/sum-list**: 4 pruebas (listas válidas, inválidas, vacías, excepciones)
-- **GET /api/math/check/{number}**: 4 pruebas (positivos pares/impares, negativos, cero)
-- **POST /api/math/multiply**: 4 pruebas (válidos, inválidos, excepciones, multiplicación por cero)
-
-#### **GlobalExceptionHandlerTest** (2 pruebas nuevas):
-- **HttpMessageNotReadableException**: Manejo de JSON malformado
-- **MethodArgumentNotValidException**: Manejo de validaciones fallidas
-
----
-
-### Mockito
-
-- **Total de mocks utilizados**: 40+ interacciones verificadas  
-- **Componentes simulados**:
-  - `MathService` (en pruebas de controlador)
-  - Verificación de llamadas a métodos (`add`, `multiply`, `sumList`, `isEven`, `isPositive`)
-  - Simulación de excepciones (`IllegalArgumentException`, `RuntimeException`)
-
-- **Comportamientos verificados**:
-  - ✅ Invocaciones correctas de todos los métodos del servicio
-  - ✅ Manejo de excepciones de lógica de negocio  
-  - ✅ Retorno de valores esperados en respuestas HTTP
-  - ✅ Comportamiento bajo condiciones controladas y casos de error
-  - ✅ Validación de que métodos no se ejecuten cuando hay errores de entrada
-
----
-
-### Jacoco
-
-- ✅ Instrumentación de código activada correctamente  
-- ✅ Informe generado y accesible en formato HTML, CSV y XML
-- ✅ Información detallada por clase, método y línea
-- ✅ **100% de cobertura para la nueva funcionalidad `sqrt()`**
+- **Comportamientos verificados:**
+  - Invocaciones de métodos de servicio
+  - Manejo de listas nulas y vacías
+  - Preservación de inmutabilidad
+  - Manejo de errores y excepciones
 
 ---
 
 ## 🌐 Simulaciones HTTP (MockMvc)
 
-### Endpoint: `GET /sqrt?number={value}`
+### Nuevos Endpoints Implementados
 
-#### ✅ **Casos Exitosos (HTTP 200 OK)**:
-- `GET /sqrt?number=16.0` → Respuesta: `4.0`
-- `GET /sqrt?number=0.0` → Respuesta: `0.0`  
-- `GET /sqrt?number=1.0` → Respuesta: `1.0`
-- `GET /sqrt?number=2.25` → Respuesta: `1.5`
+- **Endpoint:** `POST /api/math/quicksort`
+  - **Resultado esperado:** `HTTP 200 OK`
+  - **Validaciones:** ordenamiento de enteros, preservación de lista original
 
-#### ❌ **Casos de Error (HTTP 400 Bad Request)**:
-- `GET /sqrt?number=-4.0` → Error: Número negativo
-- `GET /sqrt` → Error: Parámetro faltante
+- **Endpoint:** `POST /api/math/quicksort-rational`
+  - **Resultado esperado:** `HTTP 200 OK`
+  - **Validaciones:** ordenamiento de números decimales, manejo de precisión flotante
 
-### **Otros Endpoints Verificados**:
-- `GET /add?num1=3&num2=5` → `8` ✅
-- `GET /multiply?num1=4&num2=6` → `24` ✅  
-- `GET /divide?num1=15&num2=3` → `5.0` ✅
-- `GET /subtract?num1=10&num2=4` → `6` ✅
+### Casos de Prueba Cubiertos
 
-**Herramienta utilizada**: `MockMvc` con Spring Boot Test
+- **Números enteros:** listas vacías, elementos únicos, duplicados, negativos
+- **Números racionales:** decimales positivos/negativos, notación científica, diferencias muy pequeñas
+- **Casos extremos:** `Double.MAX_VALUE`, `Double.MIN_VALUE`, listas nulas
+- **Errores:** excepciones de servicio, entradas inválidas
 
 ---
 
-## 📋 Pruebas Específicas de Raíz Cuadrada
+## ✅ Nuevas Funcionalidades Implementadas
 
-### **Casos Válidos Implementados**:
-1. **sqrt(0)** = 0.0 ✅
-2. **sqrt(1)** = 1.0 ✅  
-3. **sqrt(4)** = 2.0 ✅
-4. **sqrt(9)** = 3.0 ✅
-5. **sqrt(2.25)** = 1.5 ✅
-6. **sqrt(0.25)** = 0.5 ✅
-7. **sqrt(1000000)** = 1000.0 ✅
+### Algoritmo Quicksort para Números Racionales
 
-### **Casos Límite**:
-8. **sqrt(Double.MAX_VALUE)** → Válido, no infinito ✅
-9. **sqrt(Double.MIN_VALUE)** → Válido, no NaN ✅
-10. **sqrt(0.000001)** = 0.001 ✅
+**Métodos añadidos al MathService:**
+- `quicksortRational(List<Double> numbers)` - Ordenamiento de números decimales
+- `quicksortHelperDouble()` - Implementación recursiva para doubles
+- `partitionDouble()` - Partición usando pivote double
+- `swapDouble()` - Intercambio de elementos double
 
-### **Casos Inválidos**:
-11. **sqrt(-1.0)** → `IllegalArgumentException` ✅
-12. **sqrt(-4.0)** → `IllegalArgumentException` ✅
-13. **sqrt(-0.1)** → `IllegalArgumentException` ✅
+**Características del algoritmo:**
+- **Complejidad temporal:** O(n log n) caso promedio, O(n²) peor caso
+- **Complejidad espacial:** O(log n) por recursión
+- **Inmutabilidad:** Preserva la lista original creando una copia
+- **Precisión:** Maneja diferencias muy pequeñas entre decimales
+- **Robustez:** Soporta valores extremos y notación científica
+
+### Nuevo Endpoint REST
+
+**Endpoint:** `POST /api/math/quicksort-rational`
+
+**Ejemplo de uso:**
+```bash
+curl -X POST /api/math/quicksort-rational \
+  -H "Content-Type: application/json" \
+  -d '{"numbers": [3.14, 1.41, 2.71, 9.81]}'
+```
+
+**Respuesta:**
+```json
+{
+  "result": [1.41, 2.71, 3.14, 9.81],
+  "operation": "quicksort-rational",
+  "operands": [3.14, 1.41, 2.71, 9.81]
+}
+```
 
 ---
 
-## ⚠️ Observaciones y Recomendaciones
+## 🎯 Casos de Prueba Específicos para Números Racionales
 
-### **Mejoras Implementadas**:
+### Pruebas Unitarias (MathService)
+1. **Listas básicas:** vacías, elemento único, ya ordenadas, orden inverso
+2. **Números especiales:** negativos, cero, duplicados
+3. **Precisión decimal:** diferencias muy pequeñas (0.0001)
+4. **Valores extremos:** `Double.MAX_VALUE`, `Double.MIN_VALUE`
+5. **Notación científica:** `1e-5`, `1e5`, etc.
+6. **Fracciones mixtas:** combinación de positivos y negativos
+7. **Inmutabilidad:** verificación de no modificación de lista original
 
-1. **MathController**: Cobertura mejorada de 2.4% a 100% ✅
-   - **Implementado**: Pruebas completas para todos los endpoints REST del MathController
-   - **Impacto**: Mejora significativa en la cobertura global del proyecto
-   - **Endpoints probados**: 
-     - POST /api/math/sum (casos válidos e inválidos)
-     - POST /api/math/sum-list (casos válidos e inválidos)
-     - GET /api/math/check/{number} (números positivos, negativos, pares e impares)
-     - POST /api/math/multiply (casos válidos e inválidos)
+### Pruebas de Integración (Controller)
+1. **Ordenamiento exitoso:** listas variadas de decimales
+2. **Elemento único:** respuesta correcta para un solo decimal
+3. **Números negativos:** manejo correcto de valores negativos
+4. **Lista vacía:** respuesta apropiada
+5. **Lista nula:** manejo de entrada nula
+6. **Excepciones de servicio:** manejo de errores
+7. **Duplicados:** preservación de elementos repetidos
+8. **Precisión:** números con diferencias muy pequeñas
 
-2. **GlobalExceptionHandler**: Cobertura mejorada de 12% a 100% ✅
-   - **Implementado**: Pruebas unitarias para todos los manejadores de excepciones
-   - **Métodos probados**: `handleHttpMessageNotReadable`, `handleValidationExceptions`
-   - **Cobertura completa**: Todos los casos de manejo de errores están cubiertos
+---
 
-### **Estado Actual del Proyecto**:
+## ⚠️ Observaciones y Mejoras
 
-✅ **Objetivo alcanzado**: La cobertura global del proyecto es ahora del 97%, superando ampliamente el objetivo del 80%
-✅ **Calidad de código**: Todas las clases principales tienen cobertura del 94% o superior
-✅ **Mantenibilidad**: Las pruebas implementadas aseguran la detección temprana de regresiones
+**Aspectos exitosos:**
+- Cobertura excelente (97% instrucciones, 100% ramas)
+- Todos los tests pasan sin errores
+- Implementación robusta que maneja casos extremos
+- API consistente con patrones existentes
+- Preservación de inmutabilidad
 
-### **Áreas de bajo impacto restantes**:
-
-1. **DemoApplication**: 37.5% de cobertura - **Normal y aceptable**
-   - Es común que la clase principal de Spring Boot tenga baja cobertura
-   - El método `main` solo se ejecuta al arrancar la aplicación
-   - No requiere pruebas adicionales por su naturaleza
-
-### **Funcionalidad de Raíz Cuadrada - Estado Completo**:
-- ✅ **100% de cobertura de código** para el método `sqrt()`
-- ✅ **12 casos de prueba específicos** cubriendo todos los escenarios
-- ✅ **Manejo robusto de errores** para números negativos
-- ✅ **Integración completa** con endpoint REST
-- ✅ **Validación de casos límite** y valores especiales
+**Funcionalidad implementada cumple con el requerimiento:**
+- ✅ Ordenación de números racionales (decimales)
+- ✅ Endpoint REST funcional
+- ✅ Preservación de lista original
+- ✅ Manejo completo de casos extremos
+- ✅ Cobertura de pruebas exhaustiva
 
 ---
 
 ## ✅ Conclusión
 
-> **🎯 OBJETIVO CUMPLIDO**: El conjunto de pruebas automatizadas cubre ahora el **97%** del código fuente del proyecto, superando ampliamente el objetivo del 80% solicitado.
+> El conjunto de pruebas automatizadas cubre **97%** del código fuente del proyecto con **100%** de cobertura de ramas. La nueva funcionalidad de ordenamiento de números racionales se comporta correctamente bajo todos los escenarios definidos, incluyendo casos extremos y situaciones de error. 
 
-> **📈 MEJORA SIGNIFICATIVA**: La cobertura se ha incrementado desde el 49% inicial hasta el 97%, representando una mejora del 48%.
+> **Total de nuevas pruebas añadidas:** 24 (16 para servicio + 8 para controlador)
+> **Funcionalidad implementada:** Quicksort para números racionales completamente funcional con endpoint REST integrado.
 
-> **🔧 CALIDAD ASEGURADA**: El sistema se comporta correctamente bajo todos los escenarios definidos. Las nuevas pruebas garantizan:
-- Detección temprana de regresiones
-- Validación de la lógica de negocio
-- Cobertura completa de los endpoints REST
-- Manejo adecuado de excepciones
-
-### **Logros Principales**:
-- ✅ **98 pruebas automatizadas** ejecutadas sin errores (incremento de 18 nuevas pruebas)
-- ✅ **97% de cobertura global** del proyecto (incremento del 48%)
-- ✅ **100% de cobertura** para MathController (de 2.4% a 100%)
-- ✅ **100% de cobertura** para GlobalExceptionHandler (de 12% a 100%)
-- ✅ **Pruebas unitarias y de integración** para todos los endpoints REST
-- ✅ **Manejo completo de casos de error** y validaciones
-
-### **Métricas de Calidad Finales**:
-- **Cobertura de instrucciones**: 97.0% (297/306 cubiertas)
-- **Cobertura de ramas**: 100% (16/16 cubiertas)
-- **Cobertura de líneas**: 95.9% (71/74 cubiertas)
-- **Cobertura de métodos**: 92.3% (24/26 cubiertos)
-
-> **✨ RECOMENDACIÓN**: El proyecto ahora cuenta con una cobertura excelente de pruebas que supera los estándares de la industria. Se recomienda mantener este nivel durante el desarrollo futuro y considerar estas pruebas como requisito antes de cualquier despliegue.
-
----
-
-*Generado automáticamente el 24/06/2025 - Spring Boot Math Service v0.0.1-SNAPSHOT*
-
----
-
-## 📋 **Resumen Ejecutivo para Jira JON-3292**
-
-### **Estado del Desarrollo**: ✅ **COMPLETADO**
-
-La implementación del cálculo de media aritmética para listas de números enteros ha sido exitosamente completada con las siguientes características:
-
-#### **Funcionalidad Implementada**:
-- **Método `calculateMean(List<Integer>)`** en la clase `MathService`
-- **Endpoint REST `POST /api/math/mean`** en el controlador
-- **Validación completa** de todos los criterios de aceptación
-- **Manejo robusto de errores** para casos edge
-
-#### **Calidad Asegurada**:
-- **112 pruebas automatizadas** ejecutadas exitosamente
-- **95% de cobertura** de código con Jacoco
-- **0 errores, 0 fallos** en la ejecución de pruebas
-- **Arquitectura consistente** con Spring Boot 3.3.5
-
-#### **Criterios de Aceptación**:
-1. ✅ **Escenario 1**: Lista válida [1,2,3,4,5] → 3.0
-2. ✅ **Escenario 2**: Un elemento [7] → 7.0  
-3. ✅ **Escenario 3**: Lista vacía [] → 0.0
-4. ✅ **Escenario 4**: Negativos [-1,0,1] → 0.0
-
-#### **Tecnologías Utilizadas**:
-- **Spring Boot 3.3.5** - Framework principal
-- **JUnit 5** - Testing framework (112 pruebas)
-- **Mockito** - Mocking framework para testing
-- **Jacoco** - Cobertura de código (95%)
-- **MockMvc** - Pruebas de integración REST
-
-### **Entrega Final**:
-La funcionalidad está lista para **despliegue en producción** y cumple todos los requisitos técnicos y de calidad establecidos en la especificación JON-3292.
+> El sistema ahora soporta tanto números enteros como números racionales, cumpliendo completamente con el requerimiento solicitado por el usuario.

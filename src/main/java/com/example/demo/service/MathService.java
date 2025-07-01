@@ -2,6 +2,7 @@ package com.example.demo.service;
 
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.ArrayList;
 
 @Service
 public class MathService {
@@ -56,5 +57,83 @@ public class MathService {
         }
         double sum = numbers.stream().mapToInt(Integer::intValue).sum();
         return sum / numbers.size();
+    }
+
+    public List<Integer> quicksort(List<Integer> numbers) {
+        if (numbers == null || numbers.isEmpty()) {
+            return new ArrayList<>();
+        }
+        
+        // Crear una copia para no modificar la lista original
+        List<Integer> sortedNumbers = new ArrayList<>(numbers);
+        quicksortHelperInteger(sortedNumbers, 0, sortedNumbers.size() - 1);
+        return sortedNumbers;
+    }
+
+    public List<Double> quicksortRational(List<Double> numbers) {
+        if (numbers == null || numbers.isEmpty()) {
+            return new ArrayList<>();
+        }
+        
+        // Crear una copia para no modificar la lista original
+        List<Double> sortedNumbers = new ArrayList<>(numbers);
+        quicksortHelperDouble(sortedNumbers, 0, sortedNumbers.size() - 1);
+        return sortedNumbers;
+    }
+
+    private void quicksortHelperInteger(List<Integer> numbers, int low, int high) {
+        if (low < high) {
+            int pivotIndex = partitionInteger(numbers, low, high);
+            quicksortHelperInteger(numbers, low, pivotIndex - 1);
+            quicksortHelperInteger(numbers, pivotIndex + 1, high);
+        }
+    }
+
+    private void quicksortHelperDouble(List<Double> numbers, int low, int high) {
+        if (low < high) {
+            int pivotIndex = partitionDouble(numbers, low, high);
+            quicksortHelperDouble(numbers, low, pivotIndex - 1);
+            quicksortHelperDouble(numbers, pivotIndex + 1, high);
+        }
+    }
+
+    private int partitionInteger(List<Integer> numbers, int low, int high) {
+        int pivot = numbers.get(high);
+        int i = low - 1;
+
+        for (int j = low; j < high; j++) {
+            if (numbers.get(j) <= pivot) {
+                i++;
+                swapInteger(numbers, i, j);
+            }
+        }
+        swapInteger(numbers, i + 1, high);
+        return i + 1;
+    }
+
+    private int partitionDouble(List<Double> numbers, int low, int high) {
+        double pivot = numbers.get(high);
+        int i = low - 1;
+
+        for (int j = low; j < high; j++) {
+            if (numbers.get(j) <= pivot) {
+                i++;
+                swapDouble(numbers, i, j);
+            }
+        }
+        swapDouble(numbers, i + 1, high);
+        return i + 1;
+    }
+
+    private void swapInteger(List<Integer> numbers, int i, int j) {
+        Integer temp = numbers.get(i);
+        numbers.set(i, numbers.get(j));
+        numbers.set(j, temp);
+    }
+
+    private void swapDouble(List<Double> numbers, int i, int j) {
+        Double temp = numbers.get(i);
+        numbers.set(i, numbers.get(j));
+        numbers.set(j, temp);
     }
 }
