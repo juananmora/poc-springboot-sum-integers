@@ -7,10 +7,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.Arguments;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.ArrayList;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -317,6 +321,136 @@ class MathServiceTest {
         void testCalculateMeanLargeNumbers() {
             List<Integer> numbers = Arrays.asList(1000, 2000, 3000);
             assertEquals(2000.0, mathService.calculateMean(numbers), 0.0001);
+        }
+    }
+
+    @Nested
+    @DisplayName("Quicksort Tests")
+    class QuicksortTests {
+
+        @Test
+        @DisplayName("Should sort empty list")
+        void testQuicksortEmptyList() {
+            List<Integer> numbers = Arrays.asList();
+            List<Integer> result = mathService.quicksort(numbers);
+            assertTrue(result.isEmpty());
+        }
+
+        @Test
+        @DisplayName("Should return empty list for null input")
+        void testQuicksortNullInput() {
+            List<Integer> result = mathService.quicksort(null);
+            assertTrue(result.isEmpty());
+        }
+
+        @Test
+        @DisplayName("Should sort single element list")
+        void testQuicksortSingleElement() {
+            List<Integer> numbers = Arrays.asList(42);
+            List<Integer> result = mathService.quicksort(numbers);
+            assertEquals(Arrays.asList(42), result);
+        }
+
+        @Test
+        @DisplayName("Should sort already sorted list")
+        void testQuicksortAlreadySorted() {
+            List<Integer> numbers = Arrays.asList(1, 2, 3, 4, 5);
+            List<Integer> result = mathService.quicksort(numbers);
+            assertEquals(Arrays.asList(1, 2, 3, 4, 5), result);
+        }
+
+        @Test
+        @DisplayName("Should sort reverse sorted list")
+        void testQuicksortReverseSorted() {
+            List<Integer> numbers = Arrays.asList(5, 4, 3, 2, 1);
+            List<Integer> result = mathService.quicksort(numbers);
+            assertEquals(Arrays.asList(1, 2, 3, 4, 5), result);
+        }
+
+        @Test
+        @DisplayName("Should sort random order list")
+        void testQuicksortRandomOrder() {
+            List<Integer> numbers = Arrays.asList(3, 1, 4, 1, 5, 9, 2, 6, 5, 3);
+            List<Integer> result = mathService.quicksort(numbers);
+            assertEquals(Arrays.asList(1, 1, 2, 3, 3, 4, 5, 5, 6, 9), result);
+        }
+
+        @Test
+        @DisplayName("Should sort list with duplicates")
+        void testQuicksortWithDuplicates() {
+            List<Integer> numbers = Arrays.asList(5, 5, 5, 5, 5);
+            List<Integer> result = mathService.quicksort(numbers);
+            assertEquals(Arrays.asList(5, 5, 5, 5, 5), result);
+        }
+
+        @Test
+        @DisplayName("Should sort list with negative numbers")
+        void testQuicksortWithNegatives() {
+            List<Integer> numbers = Arrays.asList(-3, 1, -2, 5, 0, -1);
+            List<Integer> result = mathService.quicksort(numbers);
+            assertEquals(Arrays.asList(-3, -2, -1, 0, 1, 5), result);
+        }
+
+        @Test
+        @DisplayName("Should sort list with two elements")
+        void testQuicksortTwoElements() {
+            List<Integer> numbers = Arrays.asList(2, 1);
+            List<Integer> result = mathService.quicksort(numbers);
+            assertEquals(Arrays.asList(1, 2), result);
+        }
+
+        @Test
+        @DisplayName("Should not modify original list")
+        void testQuicksortDoesNotModifyOriginal() {
+            List<Integer> original = new ArrayList<>(Arrays.asList(3, 1, 4, 1, 5));
+            List<Integer> originalCopy = new ArrayList<>(original);
+            
+            mathService.quicksort(original);
+            
+            // Verificar que la lista original no se modificó
+            assertEquals(originalCopy, original);
+        }
+
+        @Test
+        @DisplayName("Should handle large list efficiently")
+        void testQuicksortLargeList() {
+            // Crear una lista grande con números aleatorios pero predecibles
+            List<Integer> numbers = Arrays.asList(
+                100, 50, 150, 25, 75, 125, 175, 12, 37, 62, 87, 112, 137, 162, 187,
+                6, 18, 31, 43, 56, 68, 81, 93, 106, 118, 131, 143, 156, 168, 181, 193
+            );
+            
+            List<Integer> result = mathService.quicksort(numbers);
+            
+            // Verificar que está ordenado
+            for (int i = 1; i < result.size(); i++) {
+                assertTrue(result.get(i-1) <= result.get(i), 
+                    "Lista no está ordenada en posición " + i);
+            }
+            
+            // Verificar que contiene todos los elementos
+            assertEquals(numbers.size(), result.size());
+        }
+
+        @ParameterizedTest
+        @DisplayName("Should sort various small lists correctly")
+        @MethodSource("provideSortTestCases")
+        void testQuicksortVariousCases(List<Integer> input, List<Integer> expected) {
+            List<Integer> result = mathService.quicksort(input);
+            assertEquals(expected, result);
+        }
+
+        private static Stream<Arguments> provideSortTestCases() {
+            return Stream.of(
+                Arguments.of(Arrays.asList(1), Arrays.asList(1)),
+                Arguments.of(Arrays.asList(2, 1), Arrays.asList(1, 2)),
+                Arguments.of(Arrays.asList(1, 2), Arrays.asList(1, 2)),
+                Arguments.of(Arrays.asList(3, 2, 1), Arrays.asList(1, 2, 3)),
+                Arguments.of(Arrays.asList(1, 3, 2), Arrays.asList(1, 2, 3)),
+                Arguments.of(Arrays.asList(2, 3, 1), Arrays.asList(1, 2, 3)),
+                Arguments.of(Arrays.asList(-1, 0, 1), Arrays.asList(-1, 0, 1)),
+                Arguments.of(Arrays.asList(1, 0, -1), Arrays.asList(-1, 0, 1))
+            );
         }
     }
 }
