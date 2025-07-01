@@ -104,4 +104,20 @@ public class MathController {
             return ResponseEntity.badRequest().body(Map.of("error", "Invalid input"));
         }
     }
+
+    @PostMapping("/quicksort-rational")
+    public ResponseEntity<Map<String, Object>> quicksortRational(@RequestBody Map<String, List<Double>> request) {
+        try {
+            List<Double> numbers = request.get("numbers");
+            List<Double> result = mathService.quicksortRational(numbers);
+            
+            return ResponseEntity.ok(Map.of(
+                "result", result,
+                "operation", "quicksort-rational",
+                "operands", numbers != null ? numbers : List.of()
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Invalid input"));
+        }
+    }
 }

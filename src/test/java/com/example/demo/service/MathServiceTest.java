@@ -452,5 +452,168 @@ class MathServiceTest {
                 Arguments.of(Arrays.asList(1, 0, -1), Arrays.asList(-1, 0, 1))
             );
         }
+
+        // ===============================
+        // Tests para Quicksort Rational Numbers
+        // ===============================
+
+        @Test
+        @DisplayName("Should sort empty double list")
+        void testQuicksortRationalEmptyList() {
+            List<Double> numbers = Arrays.asList();
+            List<Double> result = mathService.quicksortRational(numbers);
+            assertTrue(result.isEmpty());
+        }
+
+        @Test
+        @DisplayName("Should return empty list for null input in rational quicksort")
+        void testQuicksortRationalNullInput() {
+            List<Double> result = mathService.quicksortRational(null);
+            assertTrue(result.isEmpty());
+        }
+
+        @Test
+        @DisplayName("Should sort single double element list")
+        void testQuicksortRationalSingleElement() {
+            List<Double> numbers = Arrays.asList(42.5);
+            List<Double> result = mathService.quicksortRational(numbers);
+            assertEquals(Arrays.asList(42.5), result);
+        }
+
+        @Test
+        @DisplayName("Should sort already sorted double list")
+        void testQuicksortRationalAlreadySorted() {
+            List<Double> numbers = Arrays.asList(1.1, 2.2, 3.3, 4.4, 5.5);
+            List<Double> result = mathService.quicksortRational(numbers);
+            assertEquals(Arrays.asList(1.1, 2.2, 3.3, 4.4, 5.5), result);
+        }
+
+        @Test
+        @DisplayName("Should sort reverse sorted double list")
+        void testQuicksortRationalReverseSorted() {
+            List<Double> numbers = Arrays.asList(5.5, 4.4, 3.3, 2.2, 1.1);
+            List<Double> result = mathService.quicksortRational(numbers);
+            assertEquals(Arrays.asList(1.1, 2.2, 3.3, 4.4, 5.5), result);
+        }
+
+        @Test
+        @DisplayName("Should sort random order double list")
+        void testQuicksortRationalRandomOrder() {
+            List<Double> numbers = Arrays.asList(3.14, 1.41, 4.13, 1.41, 5.99, 9.81, 2.71, 6.28);
+            List<Double> result = mathService.quicksortRational(numbers);
+            
+            // Verificar que está ordenado
+            for (int i = 1; i < result.size(); i++) {
+                assertTrue(result.get(i-1) <= result.get(i), 
+                    "Lista no está ordenada en posición " + i);
+            }
+            
+            // Verificar que contiene todos los elementos
+            assertEquals(numbers.size(), result.size());
+            assertTrue(result.contains(1.41)); // Verificar duplicados
+            assertEquals(2, result.stream().mapToLong(d -> d.equals(1.41) ? 1 : 0).sum());
+        }
+
+        @Test
+        @DisplayName("Should sort double list with duplicates")
+        void testQuicksortRationalWithDuplicates() {
+            List<Double> numbers = Arrays.asList(5.5, 5.5, 5.5, 5.5, 5.5);
+            List<Double> result = mathService.quicksortRational(numbers);
+            assertEquals(Arrays.asList(5.5, 5.5, 5.5, 5.5, 5.5), result);
+        }
+
+        @Test
+        @DisplayName("Should sort double list with negative numbers")
+        void testQuicksortRationalWithNegatives() {
+            List<Double> numbers = Arrays.asList(-3.3, 1.1, -2.2, 5.5, 0.0, -1.1);
+            List<Double> result = mathService.quicksortRational(numbers);
+            assertEquals(Arrays.asList(-3.3, -2.2, -1.1, 0.0, 1.1, 5.5), result);
+        }
+
+        @Test
+        @DisplayName("Should sort double list with two elements")
+        void testQuicksortRationalTwoElements() {
+            List<Double> numbers = Arrays.asList(2.5, 1.5);
+            List<Double> result = mathService.quicksortRational(numbers);
+            assertEquals(Arrays.asList(1.5, 2.5), result);
+        }
+
+        @Test
+        @DisplayName("Should not modify original double list")
+        void testQuicksortRationalDoesNotModifyOriginal() {
+            List<Double> original = new ArrayList<>(Arrays.asList(3.3, 1.1, 4.4, 1.1, 5.5));
+            List<Double> originalCopy = new ArrayList<>(original);
+            
+            mathService.quicksortRational(original);
+            
+            // Verificar que la lista original no se modificó
+            assertEquals(originalCopy, original);
+        }
+
+        @Test
+        @DisplayName("Should handle very small decimal differences")
+        void testQuicksortRationalSmallDifferences() {
+            List<Double> numbers = Arrays.asList(1.0001, 1.0002, 1.0000, 1.0003);
+            List<Double> result = mathService.quicksortRational(numbers);
+            assertEquals(Arrays.asList(1.0000, 1.0001, 1.0002, 1.0003), result);
+        }
+
+        @Test
+        @DisplayName("Should handle scientific notation numbers")
+        void testQuicksortRationalScientificNotation() {
+            List<Double> numbers = Arrays.asList(1e-5, 1e5, 1e-3, 1e3);
+            List<Double> result = mathService.quicksortRational(numbers);
+            
+            // Verificar que está ordenado
+            for (int i = 1; i < result.size(); i++) {
+                assertTrue(result.get(i-1) <= result.get(i), 
+                    "Lista no está ordenada en posición " + i);
+            }
+        }
+
+        @Test
+        @DisplayName("Should handle mixed positive and negative fractions")
+        void testQuicksortRationalMixedFractions() {
+            List<Double> numbers = Arrays.asList(0.5, -0.5, 0.25, -0.25, 0.75, -0.75);
+            List<Double> result = mathService.quicksortRational(numbers);
+            assertEquals(Arrays.asList(-0.75, -0.5, -0.25, 0.25, 0.5, 0.75), result);
+        }
+
+        @Test
+        @DisplayName("Should handle Double.MAX_VALUE and Double.MIN_VALUE")
+        void testQuicksortRationalExtremeValues() {
+            List<Double> numbers = Arrays.asList(Double.MAX_VALUE, Double.MIN_VALUE, 0.0, 1.0, -1.0);
+            List<Double> result = mathService.quicksortRational(numbers);
+            
+            // Verificar que está ordenado
+            for (int i = 1; i < result.size(); i++) {
+                assertTrue(result.get(i-1) <= result.get(i), 
+                    "Lista no está ordenada en posición " + i);
+            }
+            
+            // Verificar que contiene todos los elementos
+            assertEquals(numbers.size(), result.size());
+        }
+
+        @ParameterizedTest
+        @DisplayName("Should sort various rational number lists correctly")
+        @MethodSource("provideRationalSortTestCases")
+        void testQuicksortRationalVariousCases(List<Double> input, List<Double> expected) {
+            List<Double> result = mathService.quicksortRational(input);
+            assertEquals(expected, result);
+        }
+
+        private static Stream<Arguments> provideRationalSortTestCases() {
+            return Stream.of(
+                Arguments.of(Arrays.asList(1.0), Arrays.asList(1.0)),
+                Arguments.of(Arrays.asList(2.5, 1.5), Arrays.asList(1.5, 2.5)),
+                Arguments.of(Arrays.asList(1.1, 2.2), Arrays.asList(1.1, 2.2)),
+                Arguments.of(Arrays.asList(3.3, 2.2, 1.1), Arrays.asList(1.1, 2.2, 3.3)),
+                Arguments.of(Arrays.asList(1.5, 3.5, 2.5), Arrays.asList(1.5, 2.5, 3.5)),
+                Arguments.of(Arrays.asList(2.7, 3.7, 1.7), Arrays.asList(1.7, 2.7, 3.7)),
+                Arguments.of(Arrays.asList(-1.1, 0.0, 1.1), Arrays.asList(-1.1, 0.0, 1.1)),
+                Arguments.of(Arrays.asList(1.1, 0.0, -1.1), Arrays.asList(-1.1, 0.0, 1.1))
+            );
+        }
     }
 }

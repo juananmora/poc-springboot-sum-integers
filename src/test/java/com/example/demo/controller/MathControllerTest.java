@@ -704,4 +704,191 @@ class MathControllerTest {
             verify(mathService, times(1)).quicksort(numbers);
         }
     }
+
+    @Nested
+    @DisplayName("Quicksort Rational Numbers Endpoint Tests")
+    class QuicksortRationalEndpointTests {
+
+        @Test
+        @DisplayName("Should sort list of rational numbers successfully")
+        void testQuicksortRationalSuccess() throws Exception {
+            // Given
+            List<Double> numbers = Arrays.asList(3.14, 1.41, 2.71, 9.81);
+            List<Double> sortedNumbers = Arrays.asList(1.41, 2.71, 3.14, 9.81);
+            Map<String, List<Double>> request = Map.of("numbers", numbers);
+            when(mathService.quicksortRational(numbers)).thenReturn(sortedNumbers);
+
+            // When & Then
+            mockMvc.perform(post("/api/math/quicksort-rational")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(request)))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.result").isArray())
+                    .andExpect(jsonPath("$.result[0]").value(1.41))
+                    .andExpect(jsonPath("$.result[1]").value(2.71))
+                    .andExpect(jsonPath("$.result[2]").value(3.14))
+                    .andExpect(jsonPath("$.result[3]").value(9.81))
+                    .andExpect(jsonPath("$.operation").value("quicksort-rational"))
+                    .andExpect(jsonPath("$.operands").isArray())
+                    .andExpect(jsonPath("$.operands[0]").value(3.14))
+                    .andExpect(jsonPath("$.operands[1]").value(1.41))
+                    .andExpect(jsonPath("$.operands[2]").value(2.71))
+                    .andExpect(jsonPath("$.operands[3]").value(9.81));
+
+            verify(mathService, times(1)).quicksortRational(numbers);
+        }
+
+        @Test
+        @DisplayName("Should handle single decimal element")
+        void testQuicksortRationalSingleElement() throws Exception {
+            // Given
+            List<Double> numbers = Arrays.asList(42.5);
+            List<Double> sortedNumbers = Arrays.asList(42.5);
+            Map<String, List<Double>> request = Map.of("numbers", numbers);
+            when(mathService.quicksortRational(numbers)).thenReturn(sortedNumbers);
+
+            // When & Then
+            mockMvc.perform(post("/api/math/quicksort-rational")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(request)))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.result").isArray())
+                    .andExpect(jsonPath("$.result[0]").value(42.5))
+                    .andExpect(jsonPath("$.operation").value("quicksort-rational"));
+
+            verify(mathService, times(1)).quicksortRational(numbers);
+        }
+
+        @Test
+        @DisplayName("Should sort decimal numbers with negative values")
+        void testQuicksortRationalWithNegatives() throws Exception {
+            // Given
+            List<Double> numbers = Arrays.asList(-2.5, 1.5, 0.0, -1.5, 2.5);
+            List<Double> sortedNumbers = Arrays.asList(-2.5, -1.5, 0.0, 1.5, 2.5);
+            Map<String, List<Double>> request = Map.of("numbers", numbers);
+            when(mathService.quicksortRational(numbers)).thenReturn(sortedNumbers);
+
+            // When & Then
+            mockMvc.perform(post("/api/math/quicksort-rational")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(request)))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.result").isArray())
+                    .andExpect(jsonPath("$.result[0]").value(-2.5))
+                    .andExpect(jsonPath("$.result[1]").value(-1.5))
+                    .andExpect(jsonPath("$.result[2]").value(0.0))
+                    .andExpect(jsonPath("$.result[3]").value(1.5))
+                    .andExpect(jsonPath("$.result[4]").value(2.5))
+                    .andExpect(jsonPath("$.operation").value("quicksort-rational"));
+
+            verify(mathService, times(1)).quicksortRational(numbers);
+        }
+
+        @Test
+        @DisplayName("Should handle empty rational list")
+        void testQuicksortRationalEmptyList() throws Exception {
+            // Given
+            List<Double> numbers = Collections.emptyList();
+            List<Double> sortedNumbers = Collections.emptyList();
+            Map<String, List<Double>> request = Map.of("numbers", numbers);
+            when(mathService.quicksortRational(numbers)).thenReturn(sortedNumbers);
+
+            // When & Then
+            mockMvc.perform(post("/api/math/quicksort-rational")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(request)))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.result").isArray())
+                    .andExpect(jsonPath("$.result").isEmpty())
+                    .andExpect(jsonPath("$.operation").value("quicksort-rational"))
+                    .andExpect(jsonPath("$.operands").isEmpty());
+
+            verify(mathService, times(1)).quicksortRational(numbers);
+        }
+
+        @Test
+        @DisplayName("Should handle null rational list")
+        void testQuicksortRationalNullList() throws Exception {
+            // Given
+            when(mathService.quicksortRational(null)).thenReturn(Collections.emptyList());
+
+            // When & Then
+            mockMvc.perform(post("/api/math/quicksort-rational")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content("{\"numbers\": null}"))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.result").isArray())
+                    .andExpect(jsonPath("$.result").isEmpty())
+                    .andExpect(jsonPath("$.operation").value("quicksort-rational"))
+                    .andExpect(jsonPath("$.operands").isEmpty());
+
+            verify(mathService, times(1)).quicksortRational(null);
+        }
+
+        @Test
+        @DisplayName("Should return error when service throws exception")
+        void testQuicksortRationalServiceException() throws Exception {
+            // Given
+            List<Double> numbers = Arrays.asList(1.1, 2.2, 3.3);
+            Map<String, List<Double>> request = Map.of("numbers", numbers);
+            when(mathService.quicksortRational(numbers)).thenThrow(new RuntimeException("Service error"));
+
+            // When & Then
+            mockMvc.perform(post("/api/math/quicksort-rational")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(request)))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.error").value("Invalid input"));
+
+            verify(mathService, times(1)).quicksortRational(numbers);
+        }
+
+        @Test
+        @DisplayName("Should handle rational list with duplicate values")
+        void testQuicksortRationalWithDuplicates() throws Exception {
+            // Given
+            List<Double> numbers = Arrays.asList(3.3, 1.1, 3.3, 1.1, 2.2);
+            List<Double> sortedNumbers = Arrays.asList(1.1, 1.1, 2.2, 3.3, 3.3);
+            Map<String, List<Double>> request = Map.of("numbers", numbers);
+            when(mathService.quicksortRational(numbers)).thenReturn(sortedNumbers);
+
+            // When & Then
+            mockMvc.perform(post("/api/math/quicksort-rational")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(request)))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.result").isArray())
+                    .andExpect(jsonPath("$.result[0]").value(1.1))
+                    .andExpect(jsonPath("$.result[1]").value(1.1))
+                    .andExpect(jsonPath("$.result[2]").value(2.2))
+                    .andExpect(jsonPath("$.result[3]").value(3.3))
+                    .andExpect(jsonPath("$.result[4]").value(3.3))
+                    .andExpect(jsonPath("$.operation").value("quicksort-rational"));
+
+            verify(mathService, times(1)).quicksortRational(numbers);
+        }
+
+        @Test
+        @DisplayName("Should handle very small decimal differences")
+        void testQuicksortRationalSmallDifferences() throws Exception {
+            // Given
+            List<Double> numbers = Arrays.asList(1.0001, 1.0002, 1.0000);
+            List<Double> sortedNumbers = Arrays.asList(1.0000, 1.0001, 1.0002);
+            Map<String, List<Double>> request = Map.of("numbers", numbers);
+            when(mathService.quicksortRational(numbers)).thenReturn(sortedNumbers);
+
+            // When & Then
+            mockMvc.perform(post("/api/math/quicksort-rational")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(request)))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.result").isArray())
+                    .andExpect(jsonPath("$.result[0]").value(1.0000))
+                    .andExpect(jsonPath("$.result[1]").value(1.0001))
+                    .andExpect(jsonPath("$.result[2]").value(1.0002))
+                    .andExpect(jsonPath("$.operation").value("quicksort-rational"));
+
+            verify(mathService, times(1)).quicksortRational(numbers);
+        }
+    }
 }

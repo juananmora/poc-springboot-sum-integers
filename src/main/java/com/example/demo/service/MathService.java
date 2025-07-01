@@ -66,34 +66,73 @@ public class MathService {
         
         // Crear una copia para no modificar la lista original
         List<Integer> sortedNumbers = new ArrayList<>(numbers);
-        quicksortHelper(sortedNumbers, 0, sortedNumbers.size() - 1);
+        quicksortHelperInteger(sortedNumbers, 0, sortedNumbers.size() - 1);
         return sortedNumbers;
     }
 
-    private void quicksortHelper(List<Integer> numbers, int low, int high) {
+    public List<Double> quicksortRational(List<Double> numbers) {
+        if (numbers == null || numbers.isEmpty()) {
+            return new ArrayList<>();
+        }
+        
+        // Crear una copia para no modificar la lista original
+        List<Double> sortedNumbers = new ArrayList<>(numbers);
+        quicksortHelperDouble(sortedNumbers, 0, sortedNumbers.size() - 1);
+        return sortedNumbers;
+    }
+
+    private void quicksortHelperInteger(List<Integer> numbers, int low, int high) {
         if (low < high) {
-            int pivotIndex = partition(numbers, low, high);
-            quicksortHelper(numbers, low, pivotIndex - 1);
-            quicksortHelper(numbers, pivotIndex + 1, high);
+            int pivotIndex = partitionInteger(numbers, low, high);
+            quicksortHelperInteger(numbers, low, pivotIndex - 1);
+            quicksortHelperInteger(numbers, pivotIndex + 1, high);
         }
     }
 
-    private int partition(List<Integer> numbers, int low, int high) {
+    private void quicksortHelperDouble(List<Double> numbers, int low, int high) {
+        if (low < high) {
+            int pivotIndex = partitionDouble(numbers, low, high);
+            quicksortHelperDouble(numbers, low, pivotIndex - 1);
+            quicksortHelperDouble(numbers, pivotIndex + 1, high);
+        }
+    }
+
+    private int partitionInteger(List<Integer> numbers, int low, int high) {
         int pivot = numbers.get(high);
         int i = low - 1;
 
         for (int j = low; j < high; j++) {
             if (numbers.get(j) <= pivot) {
                 i++;
-                swap(numbers, i, j);
+                swapInteger(numbers, i, j);
             }
         }
-        swap(numbers, i + 1, high);
+        swapInteger(numbers, i + 1, high);
         return i + 1;
     }
 
-    private void swap(List<Integer> numbers, int i, int j) {
+    private int partitionDouble(List<Double> numbers, int low, int high) {
+        double pivot = numbers.get(high);
+        int i = low - 1;
+
+        for (int j = low; j < high; j++) {
+            if (numbers.get(j) <= pivot) {
+                i++;
+                swapDouble(numbers, i, j);
+            }
+        }
+        swapDouble(numbers, i + 1, high);
+        return i + 1;
+    }
+
+    private void swapInteger(List<Integer> numbers, int i, int j) {
         Integer temp = numbers.get(i);
+        numbers.set(i, numbers.get(j));
+        numbers.set(j, temp);
+    }
+
+    private void swapDouble(List<Double> numbers, int i, int j) {
+        Double temp = numbers.get(i);
         numbers.set(i, numbers.get(j));
         numbers.set(j, temp);
     }
