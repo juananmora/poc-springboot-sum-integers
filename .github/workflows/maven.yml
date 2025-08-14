@@ -125,40 +125,6 @@ jobs:
           ls target/site/jacoco/jacoco.csv 2>/dev/null >> $GITHUB_STEP_SUMMARY || echo "No se encontró jacoco.csv" >> $GITHUB_STEP_SUMMARY
         fi
 
-    - name: Generar la insignia de Jacoco como los heraldos de antaño
-      id: jacoco-badge
-      uses: cicirello/jacoco-badge-generator@v2
-      with:
-        jacoco-csv-file: target/site/jacoco/jacoco.csv
-        badges-directory: .github/badges
-        
-    - name: Reportar la creación de insignias en las crónicas
-      run: |
-        echo "🏅 Insignia de Jacoco generada exitosamente" >> $GITHUB_STEP_SUMMARY
-        echo "📊 Cobertura reportada: ${{ steps.extract-coverage.outputs.coverage }}%" >> $GITHUB_STEP_SUMMARY
-        echo "📍 Ubicación: .github/badges/jacoco.svg" >> $GITHUB_STEP_SUMMARY
-        if [ -f ".github/badges/jacoco.svg" ]; then
-          echo "✅ Archivo de insignia creado correctamente" >> $GITHUB_STEP_SUMMARY
-        else
-          echo "❌ Error: Archivo de insignia no encontrado" >> $GITHUB_STEP_SUMMARY
-        fi
-
-    - name: Grabar la insignia en los anales del repositorio
-      run: |
-        git config --global user.name 'github-actions'
-        git config --global user.email 'github-actions@github.com'
-        if [ -f ".github/badges/jacoco.svg" ]; then
-          git add .github/badges/jacoco.svg
-          if git diff --staged --quiet; then
-            echo "📝 Sin cambios en la insignia - mantiene el estado anterior" >> $GITHUB_STEP_SUMMARY
-          else
-            git commit -m "Actualiza insignia de cobertura Jacoco [skip ci]"
-            git push
-            echo "✅ Insignia actualizada y guardada en los anales" >> $GITHUB_STEP_SUMMARY
-          fi
-        else
-          echo "⚠️ No se pudo encontrar la insignia para grabar" >> $GITHUB_STEP_SUMMARY
-        fi
 
   # Segundo oficio: Preparar los datos para el análisis de la IA
   prepare-data:
