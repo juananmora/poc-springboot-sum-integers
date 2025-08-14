@@ -3,6 +3,9 @@ package com.example.demo.service;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Collections;
 
 @Service
 public class MathService {
@@ -135,5 +138,37 @@ public class MathService {
         Double temp = numbers.get(i);
         numbers.set(i, numbers.get(j));
         numbers.set(j, temp);
+    }
+
+    public List<Integer> calculateMode(List<Integer> numbers) {
+        if (numbers == null || numbers.isEmpty()) {
+            return new ArrayList<>();
+        }
+        
+        // Contar frecuencias
+        Map<Integer, Integer> frequencyMap = new HashMap<>();
+        for (Integer number : numbers) {
+            frequencyMap.put(number, frequencyMap.getOrDefault(number, 0) + 1);
+        }
+        
+        // Encontrar la frecuencia máxima
+        int maxFrequency = 0;
+        for (int frequency : frequencyMap.values()) {
+            if (frequency > maxFrequency) {
+                maxFrequency = frequency;
+            }
+        }
+        
+        // Recopilar todos los números con la frecuencia máxima
+        List<Integer> modes = new ArrayList<>();
+        for (Map.Entry<Integer, Integer> entry : frequencyMap.entrySet()) {
+            if (entry.getValue() == maxFrequency) {
+                modes.add(entry.getKey());
+            }
+        }
+        
+        // Ordenar la lista de modas para consistencia
+        Collections.sort(modes);
+        return modes;
     }
 }

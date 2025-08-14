@@ -120,4 +120,20 @@ public class MathController {
             return ResponseEntity.badRequest().body(Map.of("error", "Invalid input"));
         }
     }
+
+    @PostMapping("/mode")
+    public ResponseEntity<Map<String, Object>> calculateMode(@RequestBody Map<String, List<Integer>> request) {
+        try {
+            List<Integer> numbers = request.get("numbers");
+            List<Integer> result = mathService.calculateMode(numbers);
+            
+            return ResponseEntity.ok(Map.of(
+                "result", result,
+                "operation", "mode",
+                "operands", numbers != null ? numbers : List.of()
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Invalid input"));
+        }
+    }
 }

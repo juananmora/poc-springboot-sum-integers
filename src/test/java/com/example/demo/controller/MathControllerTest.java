@@ -891,4 +891,223 @@ class MathControllerTest {
             verify(mathService, times(1)).quicksortRational(numbers);
         }
     }
+
+    @Nested
+    @DisplayName("POST /api/math/mode endpoint tests")
+    class ModeEndpointTests {
+
+        @Test
+        @DisplayName("Should calculate mode for valid number list with clear mode")
+        void testModeValidNumbersWithClearMode() throws Exception {
+            // Given
+            List<Integer> numbers = Arrays.asList(1, 2, 2, 3, 2);
+            List<Integer> modeResult = Arrays.asList(2);
+            Map<String, List<Integer>> request = Map.of("numbers", numbers);
+            when(mathService.calculateMode(numbers)).thenReturn(modeResult);
+
+            // When & Then
+            mockMvc.perform(post("/api/math/mode")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(request)))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.result").isArray())
+                    .andExpect(jsonPath("$.result[0]").value(2))
+                    .andExpect(jsonPath("$.operation").value("mode"))
+                    .andExpect(jsonPath("$.operands").isArray())
+                    .andExpect(jsonPath("$.operands[0]").value(1))
+                    .andExpect(jsonPath("$.operands[1]").value(2))
+                    .andExpect(jsonPath("$.operands[2]").value(2))
+                    .andExpect(jsonPath("$.operands[3]").value(3))
+                    .andExpect(jsonPath("$.operands[4]").value(2));
+
+            verify(mathService, times(1)).calculateMode(numbers);
+        }
+
+        @Test
+        @DisplayName("Should calculate mode for list with multiple modes")
+        void testModeMultipleModes() throws Exception {
+            // Given
+            List<Integer> numbers = Arrays.asList(1, 1, 2, 2, 3);
+            List<Integer> modeResult = Arrays.asList(1, 2);
+            Map<String, List<Integer>> request = Map.of("numbers", numbers);
+            when(mathService.calculateMode(numbers)).thenReturn(modeResult);
+
+            // When & Then
+            mockMvc.perform(post("/api/math/mode")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(request)))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.result").isArray())
+                    .andExpect(jsonPath("$.result[0]").value(1))
+                    .andExpect(jsonPath("$.result[1]").value(2))
+                    .andExpect(jsonPath("$.operation").value("mode"));
+
+            verify(mathService, times(1)).calculateMode(numbers);
+        }
+
+        @Test
+        @DisplayName("Should calculate mode for single element list")
+        void testModeSingleElement() throws Exception {
+            // Given
+            List<Integer> numbers = Arrays.asList(42);
+            List<Integer> modeResult = Arrays.asList(42);
+            Map<String, List<Integer>> request = Map.of("numbers", numbers);
+            when(mathService.calculateMode(numbers)).thenReturn(modeResult);
+
+            // When & Then
+            mockMvc.perform(post("/api/math/mode")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(request)))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.result").isArray())
+                    .andExpect(jsonPath("$.result[0]").value(42))
+                    .andExpect(jsonPath("$.operation").value("mode"))
+                    .andExpect(jsonPath("$.operands[0]").value(42));
+
+            verify(mathService, times(1)).calculateMode(numbers);
+        }
+
+        @Test
+        @DisplayName("Should return empty result for empty list")
+        void testModeEmptyList() throws Exception {
+            // Given
+            List<Integer> numbers = Collections.emptyList();
+            List<Integer> modeResult = Collections.emptyList();
+            Map<String, List<Integer>> request = Map.of("numbers", numbers);
+            when(mathService.calculateMode(numbers)).thenReturn(modeResult);
+
+            // When & Then
+            mockMvc.perform(post("/api/math/mode")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(request)))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.result").isArray())
+                    .andExpect(jsonPath("$.result").isEmpty())
+                    .andExpect(jsonPath("$.operation").value("mode"))
+                    .andExpect(jsonPath("$.operands").isEmpty());
+
+            verify(mathService, times(1)).calculateMode(numbers);
+        }
+
+        @Test
+        @DisplayName("Should handle mode calculation with negative numbers")
+        void testModeWithNegativeNumbers() throws Exception {
+            // Given
+            List<Integer> numbers = Arrays.asList(-1, -1, 0, 1, -1);
+            List<Integer> modeResult = Arrays.asList(-1);
+            Map<String, List<Integer>> request = Map.of("numbers", numbers);
+            when(mathService.calculateMode(numbers)).thenReturn(modeResult);
+
+            // When & Then
+            mockMvc.perform(post("/api/math/mode")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(request)))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.result").isArray())
+                    .andExpect(jsonPath("$.result[0]").value(-1))
+                    .andExpect(jsonPath("$.operation").value("mode"));
+
+            verify(mathService, times(1)).calculateMode(numbers);
+        }
+
+        @Test
+        @DisplayName("Should handle all elements with same frequency")
+        void testModeAllSameFrequency() throws Exception {
+            // Given
+            List<Integer> numbers = Arrays.asList(1, 2, 3, 4);
+            List<Integer> modeResult = Arrays.asList(1, 2, 3, 4);
+            Map<String, List<Integer>> request = Map.of("numbers", numbers);
+            when(mathService.calculateMode(numbers)).thenReturn(modeResult);
+
+            // When & Then
+            mockMvc.perform(post("/api/math/mode")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(request)))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.result").isArray())
+                    .andExpect(jsonPath("$.result[0]").value(1))
+                    .andExpect(jsonPath("$.result[1]").value(2))
+                    .andExpect(jsonPath("$.result[2]").value(3))
+                    .andExpect(jsonPath("$.result[3]").value(4))
+                    .andExpect(jsonPath("$.operation").value("mode"));
+
+            verify(mathService, times(1)).calculateMode(numbers);
+        }
+
+        @Test
+        @DisplayName("Should return error for invalid input")
+        void testModeInvalidInput() throws Exception {
+            // Given
+            Map<String, Object> request = Map.of("numbers", "invalid");
+
+            // When & Then
+            mockMvc.perform(post("/api/math/mode")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(request)))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.error").value("Invalid input"));
+
+            verify(mathService, never()).calculateMode(anyList());
+        }
+
+        @Test
+        @DisplayName("Should handle null numbers in request")
+        void testModeNullNumbers() throws Exception {
+            // Given
+            Map<String, List<Integer>> request = Map.of();
+            when(mathService.calculateMode(null)).thenReturn(Collections.emptyList());
+
+            // When & Then
+            mockMvc.perform(post("/api/math/mode")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(request)))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.result").isArray())
+                    .andExpect(jsonPath("$.result").isEmpty())
+                    .andExpect(jsonPath("$.operation").value("mode"))
+                    .andExpect(jsonPath("$.operands").isEmpty());
+
+            verify(mathService, times(1)).calculateMode(null);
+        }
+
+        @Test
+        @DisplayName("Should return error when service throws exception")
+        void testModeServiceException() throws Exception {
+            // Given
+            List<Integer> numbers = Arrays.asList(1, 2, 3);
+            Map<String, List<Integer>> request = Map.of("numbers", numbers);
+            when(mathService.calculateMode(numbers)).thenThrow(new RuntimeException("Service error"));
+
+            // When & Then
+            mockMvc.perform(post("/api/math/mode")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(request)))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.error").value("Invalid input"));
+
+            verify(mathService, times(1)).calculateMode(numbers);
+        }
+
+        @Test
+        @DisplayName("Should handle complex mode pattern")
+        void testModeComplexPattern() throws Exception {
+            // Given
+            List<Integer> numbers = Arrays.asList(1, 2, 3, 1, 2, 1, 4, 4, 4);
+            List<Integer> modeResult = Arrays.asList(1, 4);
+            Map<String, List<Integer>> request = Map.of("numbers", numbers);
+            when(mathService.calculateMode(numbers)).thenReturn(modeResult);
+
+            // When & Then
+            mockMvc.perform(post("/api/math/mode")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(request)))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.result").isArray())
+                    .andExpect(jsonPath("$.result[0]").value(1))
+                    .andExpect(jsonPath("$.result[1]").value(4))
+                    .andExpect(jsonPath("$.operation").value("mode"));
+
+            verify(mathService, times(1)).calculateMode(numbers);
+        }
+    }
 }
