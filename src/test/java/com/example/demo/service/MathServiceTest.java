@@ -616,4 +616,141 @@ class MathServiceTest {
             );
         }
     }
+
+    @Nested
+    @DisplayName("Calculate Mode Tests")
+    class CalculateModeTests {
+
+        @Test
+        @DisplayName("Should return empty list for null input")
+        void testCalculateModeNullList() {
+            List<Integer> result = mathService.calculateMode(null);
+            assertTrue(result.isEmpty());
+        }
+
+        @Test
+        @DisplayName("Should return empty list for empty input")
+        void testCalculateModeEmptyList() {
+            List<Integer> result = mathService.calculateMode(Collections.emptyList());
+            assertTrue(result.isEmpty());
+        }
+
+        @Test
+        @DisplayName("Should return single element for single element list")
+        void testCalculateModeSingleElement() {
+            List<Integer> numbers = Arrays.asList(42);
+            List<Integer> result = mathService.calculateMode(numbers);
+            assertEquals(Arrays.asList(42), result);
+        }
+
+        @Test
+        @DisplayName("Should return mode for list with clear mode")
+        void testCalculateModeWithClearMode() {
+            // [1, 2, 2, 3, 2] -> [2]
+            List<Integer> numbers = Arrays.asList(1, 2, 2, 3, 2);
+            List<Integer> result = mathService.calculateMode(numbers);
+            assertEquals(Arrays.asList(2), result);
+        }
+
+        @Test
+        @DisplayName("Should return multiple modes when tied")
+        void testCalculateModeWithMultipleModes() {
+            // [1, 1, 2, 2, 3] -> [1, 2] (ambos aparecen 2 veces)
+            List<Integer> numbers = Arrays.asList(1, 1, 2, 2, 3);
+            List<Integer> result = mathService.calculateMode(numbers);
+            assertEquals(Arrays.asList(1, 2), result);
+        }
+
+        @Test
+        @DisplayName("Should return all elements when all have same frequency")
+        void testCalculateModeAllSameFrequency() {
+            // [1, 2, 3, 4] -> [1, 2, 3, 4] (todos aparecen 1 vez)
+            List<Integer> numbers = Arrays.asList(1, 2, 3, 4);
+            List<Integer> result = mathService.calculateMode(numbers);
+            assertEquals(Arrays.asList(1, 2, 3, 4), result);
+        }
+
+        @Test
+        @DisplayName("Should handle list with all same elements")
+        void testCalculateModeAllSameElements() {
+            // [5, 5, 5, 5] -> [5]
+            List<Integer> numbers = Arrays.asList(5, 5, 5, 5);
+            List<Integer> result = mathService.calculateMode(numbers);
+            assertEquals(Arrays.asList(5), result);
+        }
+
+        @Test
+        @DisplayName("Should handle negative numbers correctly")
+        void testCalculateModeWithNegativeNumbers() {
+            // [-1, -1, 0, 1, -1] -> [-1]
+            List<Integer> numbers = Arrays.asList(-1, -1, 0, 1, -1);
+            List<Integer> result = mathService.calculateMode(numbers);
+            assertEquals(Arrays.asList(-1), result);
+        }
+
+        @Test
+        @DisplayName("Should handle mixed positive and negative numbers")
+        void testCalculateModeMixedNumbers() {
+            // [-2, -1, -1, 0, 1, 1, 2] -> [-1, 1]
+            List<Integer> numbers = Arrays.asList(-2, -1, -1, 0, 1, 1, 2);
+            List<Integer> result = mathService.calculateMode(numbers);
+            assertEquals(Arrays.asList(-1, 1), result);
+        }
+
+        @Test
+        @DisplayName("Should return modes in sorted order")
+        void testCalculateModeSortedResult() {
+            // [3, 1, 3, 1, 5] -> [1, 3] (ordenado)
+            List<Integer> numbers = Arrays.asList(3, 1, 3, 1, 5);
+            List<Integer> result = mathService.calculateMode(numbers);
+            assertEquals(Arrays.asList(1, 3), result);
+        }
+
+        @Test
+        @DisplayName("Should handle large numbers correctly")
+        void testCalculateModeWithLargeNumbers() {
+            List<Integer> numbers = Arrays.asList(1000000, 999999, 1000000, 999998);
+            List<Integer> result = mathService.calculateMode(numbers);
+            assertEquals(Arrays.asList(1000000), result);
+        }
+
+        @Test
+        @DisplayName("Should handle zero correctly")
+        void testCalculateModeWithZero() {
+            // [0, 1, 0, 2, 0] -> [0]
+            List<Integer> numbers = Arrays.asList(0, 1, 0, 2, 0);
+            List<Integer> result = mathService.calculateMode(numbers);
+            assertEquals(Arrays.asList(0), result);
+        }
+
+        @Test
+        @DisplayName("Should handle complex frequency pattern")
+        void testCalculateModeComplexPattern() {
+            // [1, 2, 3, 1, 2, 1, 4, 4, 4] -> [1, 4] (ambos aparecen 3 veces)
+            List<Integer> numbers = Arrays.asList(1, 2, 3, 1, 2, 1, 4, 4, 4);
+            List<Integer> result = mathService.calculateMode(numbers);
+            assertEquals(Arrays.asList(1, 4), result);
+        }
+
+        @ParameterizedTest
+        @DisplayName("Should calculate mode correctly for various cases")
+        @MethodSource("provideModeTestCases")
+        void testCalculateModeVariousCases(List<Integer> input, List<Integer> expected) {
+            List<Integer> result = mathService.calculateMode(input);
+            assertEquals(expected, result);
+        }
+
+        private static Stream<Arguments> provideModeTestCases() {
+            return Stream.of(
+                Arguments.of(Arrays.asList(1), Arrays.asList(1)),
+                Arguments.of(Arrays.asList(1, 2), Arrays.asList(1, 2)),
+                Arguments.of(Arrays.asList(1, 1), Arrays.asList(1)),
+                Arguments.of(Arrays.asList(1, 2, 1), Arrays.asList(1)),
+                Arguments.of(Arrays.asList(1, 2, 2, 3), Arrays.asList(2)),
+                Arguments.of(Arrays.asList(5, 1, 3, 1, 5), Arrays.asList(1, 5)),
+                Arguments.of(Arrays.asList(-1, -1, -2), Arrays.asList(-1)),
+                Arguments.of(Arrays.asList(0, 0, 1, 1, 2), Arrays.asList(0, 1))
+            );
+        }
+    }
 }
