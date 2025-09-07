@@ -1,7 +1,7 @@
-# Informe de Resultados de Pruebas Automatizadas - Quicksort con Números Racionales
+# Informe de Resultados de Pruebas Automatizadas - Algoritmo de Dijkstra (A → F)
 
 **Proyecto:** poc-springboot-sum-integers  
-**Fecha de ejecución:** 01/07/2025  
+**Fecha de ejecución:** 07/09/2025  
 **Entorno:** Visual Studio Code  
 **Comando utilizado:** `mvn clean test`
 
@@ -9,29 +9,75 @@
 
 ## 📊 Resumen General
 
-- **Total de pruebas ejecutadas:** 171
-- **Pruebas exitosas:** 171
+- **Total de pruebas ejecutadas:** 224
+- **Pruebas exitosas:** 224
 - **Pruebas fallidas:** 0
 - **Pruebas con errores:** 0
+
+**Pruebas específicas del Algoritmo de Dijkstra:** 19
+- **DijkstraServiceTest:** 16 pruebas unitarias
+- **DijkstraControllerTest:** 1 prueba unitaria  
+- **DijkstraControllerIntegrationTest:** 2 pruebas de integración
 
 ---
 
 ## 🔍 Cobertura de Código (Jacoco)
 
 - **Cobertura total del proyecto:**
-  - Por instrucciones: 97% (634 instrucciones, 16 perdidas)
-  - Por ramas: 100% (46 ramas, todas cubiertas)
-  - Por líneas: 96% (141 líneas, 5 perdidas)
+  - Por instrucciones: 94% (943 instrucciones cubiertas, 56 perdidas)
+  - Por ramas: 100% (98 ramas, todas cubiertas)
+  - Por líneas: 96% (177 líneas cubiertas, 8 perdidas)
 
-- **Cobertura por servicios:**
-  - `MathService`: 100% (instrucciones y ramas)
-  - `MathController`: 96% instrucciones, 100% ramas
-  - `GlobalExceptionHandler`: 96% instrucciones, 100% ramas
+- **Cobertura específica del componente Dijkstra:**
+  - `DijkstraService`: 100% instrucciones, 100% ramas, 100% líneas
+  - `DijkstraController`: 71% instrucciones, 100% ramas, 76% líneas
+  - `DijkstraResult`: 81% instrucciones, 100% ramas, 96% líneas
 
 - **Clases con cobertura completa:**
+  - `DijkstraService` (100% en todas las métricas)
   - `MathService` (100% en todas las métricas)
 
 > **Ruta del informe HTML completo:** `/target/site/jacoco/index.html`
+
+---
+
+## 🎯 Análisis del Camino Óptimo A → F
+
+### Estructura del Grafo
+```
+Nodos: A, B, C, D, E, F
+Aristas con pesos:
+A → B: peso 4    |    C → D: peso 8    |    D → F: peso 6
+A → C: peso 2    |    C → E: peso 10   |    E → F: peso 2
+B → C: peso 1    |    B → D: peso 5    |    D → E: peso 2
+```
+
+### Camino Óptimo Encontrado
+**Ruta:** A → B → D → E → F  
+**Distancia total:** 13
+
+**Desglose del cálculo:**
+- A → B: 4 unidades
+- B → D: 5 unidades  
+- D → E: 2 unidades
+- E → F: 2 unidades
+- **Total:** 4 + 5 + 2 + 2 = 13 unidades
+
+### Análisis de Rutas Alternativas
+
+1. **Ruta A → C → D → E → F:**
+   - A → C: 2 + C → D: 8 + D → E: 2 + E → F: 2 = **14 unidades** ❌
+   - 1 unidad más larga que el óptimo
+
+2. **Ruta A → C → E → F:**
+   - A → C: 2 + C → E: 10 + E → F: 2 = **14 unidades** ❌
+   - 1 unidad más larga que el óptimo
+
+3. **Ruta A → B → C → D → E → F:**
+   - A → B: 4 + B → C: 1 + C → D: 8 + D → E: 2 + E → F: 2 = **17 unidades** ❌
+   - 4 unidades más larga que el óptimo
+
+**Conclusión:** El algoritmo de Dijkstra correctamente identifica A → B → D → E → F como el camino de menor costo.
 
 ---
 
@@ -39,143 +85,171 @@
 
 ### JUnit
 
-- **Total de pruebas unitarias:** 171
+- **Total de pruebas Dijkstra:** 19
 - **Clases probadas:**
-  - `MathServiceTest` - 105 pruebas
-  - `MathControllerTest` - 50 pruebas  
-  - `AdditionControllerUnitTest` - 10 pruebas
-  - `AdditionControllerIntegrationTest` - 4 pruebas
-  - `DemoApplicationTest` - 4 pruebas
-  - `GlobalExceptionHandlerTest` - 2 pruebas
+  - `DijkstraServiceTest` - 16 pruebas unitarias
+  - `DijkstraControllerTest` - 1 prueba unitaria
+  - `DijkstraControllerIntegrationTest` - 2 pruebas de integración
+
+- **Casos validados:**
+  - ✅ Camino óptimo A → F (distancia: 13)
+  - ✅ Camino alternativo A → D (distancia: 9)
+  - ✅ Camino directo A → C (distancia: 2)
+  - ✅ Manejo de nodos origen/destino iguales
+  - ✅ Validación de nodos inexistentes
+  - ✅ Grafos desconectados
+  - ✅ Casos extremos (grafo nulo, listas vacías)
 
 - **Nuevas funcionalidades probadas:**
-  - Quicksort para números enteros (19 casos de prueba)
-  - Quicksort para números racionales (16 casos de prueba)
-  - Endpoint REST `/api/math/quicksort-rational` (8 casos de prueba)
+  - Algoritmo de Dijkstra para encontrar caminos óptimos (19 casos de prueba)
+  - Endpoints REST `/api/dijkstra/path-a-to-f` y `/api/dijkstra/shortest-path` (3 casos de prueba)
+  - Validación completa de grafos y manejo de errores
 
 ---
 
 ### Mockito
 
-- **Total de mocks utilizados:** 40+
+- **Total de mocks utilizados:** 3 (Dijkstra específicos)
 - **Componentes simulados:**
-  - `MathService` (en todas las pruebas de controlador)
+  - `DijkstraService` (en pruebas de controlador)
   - `MockMvc` (para simulaciones HTTP)
 
 - **Comportamientos verificados:**
-  - Invocaciones de métodos de servicio
-  - Manejo de listas nulas y vacías
-  - Preservación de inmutabilidad
-  - Manejo de errores y excepciones
+  - Invocaciones correctas del servicio Dijkstra
+  - Respuestas HTTP apropiadas (200 OK, 400 Bad Request)
+  - Serialización/deserialización JSON correcta para grafos
 
 ---
 
 ## 🌐 Simulaciones HTTP (MockMvc)
 
-### Nuevos Endpoints Implementados
+### Endpoints Específicos Probados
 
-- **Endpoint:** `POST /api/math/quicksort`
+- **Endpoint:** `GET /api/dijkstra/path-a-to-f`
   - **Resultado esperado:** `HTTP 200 OK`
-  - **Validaciones:** ordenamiento de enteros, preservación de lista original
+  - **Validaciones:** 
+    - Camino específico A → F
+    - Distancia correcta (13)
+    - Estructura de respuesta JSON válida
 
-- **Endpoint:** `POST /api/math/quicksort-rational`
+- **Endpoint:** `GET /api/dijkstra/shortest-path?source=A&destination=F`
   - **Resultado esperado:** `HTTP 200 OK`
-  - **Validaciones:** ordenamiento de números decimales, manejo de precisión flotante
+  - **Validaciones:**
+    - Parámetros de consulta correctos
+    - Mismo resultado que endpoint específico
+    - Manejo de errores para nodos inválidos
+
+### Estructura de Respuesta JSON
+```json
+{
+  "source": "A",
+  "destination": "F", 
+  "path": ["A", "B", "D", "E", "F"],
+  "distance": 13,
+  "pathFound": true
+}
+```
 
 ### Casos de Prueba Cubiertos
 
-- **Números enteros:** listas vacías, elementos únicos, duplicados, negativos
-- **Números racionales:** decimales positivos/negativos, notación científica, diferencias muy pequeñas
-- **Casos extremos:** `Double.MAX_VALUE`, `Double.MIN_VALUE`, listas nulas
-- **Errores:** excepciones de servicio, entradas inválidas
+- **Grafos válidos:** caminos óptimos, alternativos, directos
+- **Casos extremos:** nodos inexistentes, grafos desconectados, nodos origen/destino iguales
+- **Errores:** excepciones de servicio, entradas inválidas (grafo nulo, parámetros vacíos)
 
 ---
 
 ## ✅ Nuevas Funcionalidades Implementadas
 
-### Algoritmo Quicksort para Números Racionales
+### Algoritmo de Dijkstra para Encontrar Caminos Óptimos
 
-**Métodos añadidos al MathService:**
-- `quicksortRational(List<Double> numbers)` - Ordenamiento de números decimales
-- `quicksortHelperDouble()` - Implementación recursiva para doubles
-- `partitionDouble()` - Partición usando pivote double
-- `swapDouble()` - Intercambio de elementos double
+**Métodos añadidos al DijkstraService:**
+- `findShortestPath(Graph graph, String source, String destination)` - Algoritmo principal
+- `createDefaultGraph()` - Creación del grafo predefinido de pruebas
+- `reconstructPath()` - Reconstrucción del camino óptimo encontrado
 
 **Características del algoritmo:**
-- **Complejidad temporal:** O(n log n) caso promedio, O(n²) peor caso
-- **Complejidad espacial:** O(log n) por recursión
-- **Inmutabilidad:** Preserva la lista original creando una copia
-- **Precisión:** Maneja diferencias muy pequeñas entre decimales
-- **Robustez:** Soporta valores extremos y notación científica
+- **Complejidad temporal:** O((V + E) log V) donde V=6 nodos, E=8 aristas
+- **Complejidad espacial:** O(V) para estructuras de datos auxiliares
+- **Implementación:** Priority Queue optimizada con PriorityQueue de Java
+- **Robustez:** Maneja grafos desconectados, nodos inexistentes y casos extremos
+- **Precisión:** Encuentra garantizadamente el camino de menor costo
 
-### Nuevo Endpoint REST
+### Nuevos Endpoints REST
 
-**Endpoint:** `POST /api/math/quicksort-rational`
+**Endpoint específico:** `GET /api/dijkstra/path-a-to-f`
+- Encuentra directamente el camino óptimo de A a F
+- Respuesta: ruta A→B→D→E→F con distancia 13
+
+**Endpoint genérico:** `GET /api/dijkstra/shortest-path?source=A&destination=F`
+- Permite especificar cualquier par de nodos origen/destino
+- Validación completa de parámetros y manejo de errores
 
 **Ejemplo de uso:**
 ```bash
-curl -X POST /api/math/quicksort-rational \
-  -H "Content-Type: application/json" \
-  -d '{"numbers": [3.14, 1.41, 2.71, 9.81]}'
+curl "http://localhost:8080/api/dijkstra/path-a-to-f"
 ```
 
 **Respuesta:**
 ```json
 {
-  "result": [1.41, 2.71, 3.14, 9.81],
-  "operation": "quicksort-rational",
-  "operands": [3.14, 1.41, 2.71, 9.81]
+  "source": "A",
+  "destination": "F",
+  "path": ["A", "B", "D", "E", "F"],
+  "distance": 13,
+  "pathFound": true
 }
 ```
 
 ---
 
-## 🎯 Casos de Prueba Específicos para Números Racionales
+## 🎯 Casos de Prueba Específicos para Algoritmo de Dijkstra
 
-### Pruebas Unitarias (MathService)
-1. **Listas básicas:** vacías, elemento único, ya ordenadas, orden inverso
-2. **Números especiales:** negativos, cero, duplicados
-3. **Precisión decimal:** diferencias muy pequeñas (0.0001)
-4. **Valores extremos:** `Double.MAX_VALUE`, `Double.MIN_VALUE`
-5. **Notación científica:** `1e-5`, `1e5`, etc.
-6. **Fracciones mixtas:** combinación de positivos y negativos
-7. **Inmutabilidad:** verificación de no modificación de lista original
+### Pruebas Unitarias (DijkstraService) - 16 casos
+1. **Camino óptimo A→F:** verificación de ruta y distancia 13
+2. **Caminos alternativos:** A→C, A→D con cálculos precisos
+3. **Casos especiales:** nodos origen=destino (distancia 0)
+4. **Validaciones:** grafos nulos, nodos inexistentes
+5. **Grafos desconectados:** detección de imposibilidad de ruta
+6. **Casos extremos:** listas de adyacencia nulas, grafos de un solo nodo
 
-### Pruebas de Integración (Controller)
-1. **Ordenamiento exitoso:** listas variadas de decimales
-2. **Elemento único:** respuesta correcta para un solo decimal
-3. **Números negativos:** manejo correcto de valores negativos
-4. **Lista vacía:** respuesta apropiada
-5. **Lista nula:** manejo de entrada nula
-6. **Excepciones de servicio:** manejo de errores
-7. **Duplicados:** preservación de elementos repetidos
-8. **Precisión:** números con diferencias muy pequeñas
+### Pruebas de Integración (Controller) - 3 casos
+1. **Endpoint específico A→F:** respuesta HTTP 200 con datos correctos
+2. **Endpoint genérico:** funcionalidad con parámetros de consulta
+3. **Manejo de errores:** validación de nodos inválidos y errores de servicio
 
 ---
 
-## ⚠️ Observaciones y Mejoras
+## ⚠️ Observaciones y Análisis del Camino A → F
 
 **Aspectos exitosos:**
-- Cobertura excelente (97% instrucciones, 100% ramas)
-- Todos los tests pasan sin errores
-- Implementación robusta que maneja casos extremos
-- API consistente con patrones existentes
-- Preservación de inmutabilidad
+- ✅ Cobertura excelente: 100% en DijkstraService
+- ✅ Todos los tests pasan sin errores (224/224)
+- ✅ Implementación robusta que maneja casos extremos
+- ✅ API REST funcional con validación completa
+- ✅ Algoritmo optimizado con Priority Queue
+
+**Análisis del camino óptimo A → F:**
+- **Ruta encontrada:** A → B → D → E → F
+- **Distancia total:** 13 unidades
+- **Verificación:** Es efectivamente el camino de menor costo
+- **Rutas alternativas evaluadas:** Todas son subóptimas (14+ unidades)
 
 **Funcionalidad implementada cumple con el requerimiento:**
-- ✅ Ordenación de números racionales (decimales)
-- ✅ Endpoint REST funcional
-- ✅ Preservación de lista original
-- ✅ Manejo completo de casos extremos
-- ✅ Cobertura de pruebas exhaustiva
+- ✅ Algoritmo de Dijkstra completamente funcional
+- ✅ Encontrar camino óptimo A → F validado
+- ✅ Endpoints REST operativos
+- ✅ Manejo completo de casos extremos y errores
+- ✅ Cobertura de pruebas exhaustiva (19 pruebas específicas)
 
 ---
 
 ## ✅ Conclusión
 
-> El conjunto de pruebas automatizadas cubre **97%** del código fuente del proyecto con **100%** de cobertura de ramas. La nueva funcionalidad de ordenamiento de números racionales se comporta correctamente bajo todos los escenarios definidos, incluyendo casos extremos y situaciones de error. 
+> El conjunto de pruebas automatizadas cubre **94%** del código fuente del proyecto con **100%** de cobertura de ramas. El algoritmo de Dijkstra implementado encuentra correctamente el camino óptimo de A a F con una distancia de **13 unidades**, siguiendo la ruta **A → B → D → E → F**. 
 
-> **Total de nuevas pruebas añadidas:** 24 (16 para servicio + 8 para controlador)
-> **Funcionalidad implementada:** Quicksort para números racionales completamente funcional con endpoint REST integrado.
+> **Camino óptimo confirmado:** A → B → D → E → F (distancia: 13)
+> **Rutas alternativas analizadas:** Todas las posibles rutas A→F son subóptimas
+> **Total de pruebas Dijkstra añadidas:** 19 (16 unitarias + 3 integración)
+> **Funcionalidad implementada:** Algoritmo de Dijkstra completamente funcional con endpoints REST integrados.
 
-> El sistema ahora soporta tanto números enteros como números racionales, cumpliendo completamente con el requerimiento solicitado por el usuario.
+> El sistema ahora incluye tanto operaciones matemáticas básicas como algoritmos de grafos avanzados, cumpliendo completamente con el requerimiento de encontrar el camino óptimo de A a F mediante el algoritmo de Dijkstra.
