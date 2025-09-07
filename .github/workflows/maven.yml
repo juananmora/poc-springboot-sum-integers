@@ -264,9 +264,10 @@ jobs:
       
       - name: Ejecutar el análisis por las artes de la inteligencia artificial
         id: inference
-        uses: actions/ai-inference@v1
+        uses: actions/ai-inference@v2.0.1
         with:
-          max-tokens: 4096
+          model: gpt-5
+          temperature: 1 
           system-prompt: |
             Eres un sabio maestro de las artes del testing y desarrollo de software, versado en los antiguos conocimientos. 
             Analiza los resultados de pruebas JUnit y cobertura de código para proporcionar un análisis claro y útil,
