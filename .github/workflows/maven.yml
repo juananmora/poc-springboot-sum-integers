@@ -1,5 +1,8 @@
-# Workflow optimizado para análisis de pruebas Dijkstra únicamente
-name: Análisis Dijkstra con IA
+# Este flujo de trabajo construye un proyecto Java con Maven y utiliza la sabiduría de los antiguos para el análisis
+# Por medio de las artes de la inteligencia artificial, se examinan los frutos de las pruebas
+# Y se deja constancia de los hallazgos en las crónicas del repositorio
+
+name: Análisis de Calidad con Maven e IA
 
 on:
   push:
@@ -9,118 +12,499 @@ on:
   workflow_dispatch:
     inputs:
       issue_number:
-        description: 'Issue número para comentarios'
+        description: 'Número de la issue donde comentar el análisis'
         required: false
         default: '7'
         type: string
 
 jobs:
-  dijkstra-tests:
-    name: 🎯 Pruebas Dijkstra
+  # Primer oficio: Forjar el código y ejecutar las pruebas sagradas
+  build-and-test:
+    name: 🔨 Construcción y Pruebas del Códice
     runs-on: ubuntu-latest
     outputs:
-      test-count: ${{ steps.extract.outputs.tests }}
-      test-errors: ${{ steps.extract.outputs.errors }}
-      test-failures: ${{ steps.extract.outputs.failures }}
-      optimal-path: ${{ steps.extract.outputs.path }}
+      tests-total: ${{ steps.extract-metrics.outputs.tests-total }}
+      tests-errors: ${{ steps.extract-metrics.outputs.tests-errors }}
+      tests-failures: ${{ steps.extract-metrics.outputs.tests-failures }}
+      coverage-percentage: ${{ steps.extract-coverage.outputs.coverage }}
 
     steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-java@v4
+    - name: Obtener los pergaminos del repositorio
+      uses: actions/checkout@v4
+
+    - name: Preparar las herramientas de Java, como los antiguos maestros
+      uses: actions/setup-java@v4
       with:
         java-version: '17'
         distribution: 'temurin'
 
-    - name: Ejecutar solo pruebas Dijkstra
-      run: mvn clean test -Dtest="*Dijkstra*" jacoco:report
-
-    - name: Extraer resultados específicos
-      id: extract
+    - name: Forjar con Maven y ejecutar las pruebas de la sabiduría
       run: |
-        dijkstra_files=$(ls target/surefire-reports/TEST-*Dijkstra*.xml 2>/dev/null || echo "")
-        if [ -n "$dijkstra_files" ]; then
-          tests=$(grep -o 'tests="[0-9]\+"' $dijkstra_files | grep -o '[0-9]\+' | awk '{s+=$1} END {print s}')
-          errors=$(grep -o 'errors="[0-9]\+"' $dijkstra_files | grep -o '[0-9]\+' | awk '{s+=$1} END {print s}')
-          failures=$(grep -o 'failures="[0-9]\+"' $dijkstra_files | grep -o '[0-9]\+' | awk '{s+=$1} END {print s}')
-          echo "tests=$tests" >> $GITHUB_OUTPUT
-          echo "errors=$errors" >> $GITHUB_OUTPUT
-          echo "failures=$failures" >> $GITHUB_OUTPUT
-          echo "path=A->B->D->E->F" >> $GITHUB_OUTPUT
-        else
-          echo "tests=0" >> $GITHUB_OUTPUT
-          echo "errors=1" >> $GITHUB_OUTPUT
-          echo "failures=0" >> $GITHUB_OUTPUT
-          echo "path=NO_ENCONTRADO" >> $GITHUB_OUTPUT
+        echo "🔨 Iniciando la construcción y pruebas del códice..." >> $GITHUB_STEP_SUMMARY
+        mvn clean test
+        echo "✅ Construcción y pruebas completadas exitosamente" >> $GITHUB_STEP_SUMMARY
+
+    - name: Extraer las métricas de las pruebas realizadas
+      id: extract-metrics
+      run: |
+        total=$(grep -o 'tests="[0-9]\+"' target/surefire-reports/TEST-*.xml | grep -o '[0-9]\+' | awk '{s+=$1} END {print s}')
+        errors=$(grep -o 'errors="[0-9]\+"' target/surefire-reports/TEST-*.xml | grep -o '[0-9]\+' | awk '{s+=$1} END {print s}')
+        failures=$(grep -o 'failures="[0-9]\+"' target/surefire-reports/TEST-*.xml | grep -o '[0-9]\+' | awk '{s+=$1} END {print s}')
+        echo "tests-total=$total" >> $GITHUB_OUTPUT
+        echo "tests-errors=$errors" >> $GITHUB_OUTPUT
+        echo "tests-failures=$failures" >> $GITHUB_OUTPUT
+        failed=$((errors + failures))
+        if [ "$total" -eq 0 ]; then
+          echo "❌ No se hallaron pruebas en los pergaminos." >> $GITHUB_STEP_SUMMARY
+          exit 1
+        fi
+        percent=$((100 * failed / total))
+        echo "🧪 Métricas extraídas de las pruebas:" >> $GITHUB_STEP_SUMMARY
+        echo "- Total de pruebas: $total" >> $GITHUB_STEP_SUMMARY
+        echo "- Errores: $errors" >> $GITHUB_STEP_SUMMARY
+        echo "- Fallos: $failures" >> $GITHUB_STEP_SUMMARY
+        echo "- Porcentaje de fallos: $percent%" >> $GITHUB_STEP_SUMMARY
+        if [ "$percent" -gt 10 ]; then
+          echo "⚠️ El porcentaje de errores supera el límite establecido por los antiguos sabios (10%)." >> $GITHUB_STEP_SUMMARY
+          exit 1
         fi
 
-    - name: Preservar artefactos
+    - name: Generar el reporte de cobertura con las artes de Jacoco
+      run: |
+        echo "📊 Generando reporte de cobertura con Jacoco..." >> $GITHUB_STEP_SUMMARY
+        mvn jacoco:report
+        echo "✅ Reporte de cobertura generado exitosamente" >> $GITHUB_STEP_SUMMARY
+
+    - name: Extraer la cobertura de código
+      id: extract-coverage
+      run: |
+        if [ -f "target/site/jacoco/jacoco.xml" ]; then
+          coverage=$(grep -o 'type="INSTRUCTION".*counter' target/site/jacoco/jacoco.xml | grep -o 'covered="[0-9]\+"' | head -1 | grep -o '[0-9]\+')
+          total=$(grep -o 'type="INSTRUCTION".*counter' target/site/jacoco/jacoco.xml | grep -o 'missed="[0-9]\+"' | head -1 | grep -o '[0-9]\+')
+          if [ -n "$coverage" ] && [ -n "$total" ]; then
+            percent=$((100 * coverage / (coverage + total)))
+            echo "coverage=$percent" >> $GITHUB_OUTPUT
+            echo "📊 Cobertura de código extraída exitosamente:" >> $GITHUB_STEP_SUMMARY
+            echo "- Porcentaje de cobertura: $percent%" >> $GITHUB_STEP_SUMMARY
+            echo "- Instrucciones cubiertas: $coverage" >> $GITHUB_STEP_SUMMARY
+            echo "- Instrucciones totales: $((coverage + total))" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "coverage=0" >> $GITHUB_OUTPUT
+            echo "⚠️ No se pudieron extraer métricas de cobertura" >> $GITHUB_STEP_SUMMARY
+          fi
+        else
+          echo "coverage=0" >> $GITHUB_OUTPUT
+          echo "❌ No se encontró el archivo de reporte Jacoco" >> $GITHUB_STEP_SUMMARY
+        fi
+
+    - name: Preservar los resultados de las pruebas para la posteridad
+      if: always()
       uses: actions/upload-artifact@v4
       with:
-        name: dijkstra-results
-        path: target/surefire-reports/TEST-*Dijkstra*.xml
+        name: resultados-pruebas-y-cobertura
+        path: |
+          target/surefire-reports/
+          target/site/jacoco/
+          
+    - name: Reportar la preservación de artefactos
+      if: always()
+      run: |
+        echo "📦 Artefactos preservados exitosamente:" >> $GITHUB_STEP_SUMMARY
+        echo "- Reportes de pruebas (Surefire)" >> $GITHUB_STEP_SUMMARY
+        echo "- Reportes de cobertura (Jacoco)" >> $GITHUB_STEP_SUMMARY
+        echo "- Nombre del artefacto: resultados-pruebas-y-cobertura" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "🔍 Archivos que se incluirán en el artefacto:" >> $GITHUB_STEP_SUMMARY
+        echo "**Surefire Reports:**" >> $GITHUB_STEP_SUMMARY
+        if [ -d "target/surefire-reports" ]; then
+          ls target/surefire-reports/TEST-*.xml 2>/dev/null | head -5 >> $GITHUB_STEP_SUMMARY || echo "No se encontraron archivos TEST-*.xml" >> $GITHUB_STEP_SUMMARY
+        fi
+        echo "**Jacoco Reports:**" >> $GITHUB_STEP_SUMMARY
+        if [ -d "target/site/jacoco" ]; then
+          ls target/site/jacoco/jacoco.xml 2>/dev/null >> $GITHUB_STEP_SUMMARY || echo "No se encontró jacoco.xml" >> $GITHUB_STEP_SUMMARY
+          ls target/site/jacoco/jacoco.csv 2>/dev/null >> $GITHUB_STEP_SUMMARY || echo "No se encontró jacoco.csv" >> $GITHUB_STEP_SUMMARY
+        fi
 
-  ai-analysis:
-    name: 🤖 Análisis IA
+
+  # Segundo oficio: Preparar los datos para el análisis de la IA
+  prepare-data:
+    name: 📜 Preparación de los Pergaminos
     runs-on: ubuntu-latest
-    needs: dijkstra-tests
+    needs: build-and-test
+    permissions:
+      contents: read
+    outputs:
+      xml-content: ${{ steps.read-xml.outputs.XML_CONTENT }}
+      coverage-content: ${{ steps.read-coverage.outputs.COVERAGE_CONTENT }}
+      file-exists: ${{ steps.check-files.outputs.exists }}
+    steps:
+      - name: Obtener los pergaminos del repositorio
+        uses: actions/checkout@v4
+      
+      - name: Descargar los artefactos de las pruebas
+        uses: actions/download-artifact@v4
+        with:
+          name: resultados-pruebas-y-cobertura
+          path: target/
+      
+      - name: Reportar la descarga de pergaminos
+        run: |
+          echo "📥 Artefactos descargados exitosamente" >> $GITHUB_STEP_SUMMARY
+          echo "📂 Contenido descargado en: target/" >> $GITHUB_STEP_SUMMARY
+          if [ -d "target" ]; then
+            file_count=$(find target -type f | wc -l)
+            echo "📄 Archivos encontrados: $file_count" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "🔍 Estructura de directorios:" >> $GITHUB_STEP_SUMMARY
+            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+            tree target/ 2>/dev/null || find target -type f | head -10 >> $GITHUB_STEP_SUMMARY
+            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          fi
+      
+      - name: Verificar la existencia de los pergaminos de pruebas
+        id: check-files
+        run: |
+          if ls target/surefire-reports/TEST-*.xml 1> /dev/null 2>&1; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+            echo "✅ Pergaminos de pruebas hallados" >> $GITHUB_STEP_SUMMARY
+            file_count=$(ls target/surefire-reports/TEST-*.xml | wc -l)
+            echo "📄 Archivos XML encontrados: $file_count" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+            echo "❌ Pergaminos de pruebas extraviados" >> $GITHUB_STEP_SUMMARY
+          fi
+      
+      - name: Leer el contenido de los pergaminos XML
+        id: read-xml
+        run: |
+          if ls target/surefire-reports/TEST-*.xml 1> /dev/null 2>&1; then
+            # Extraer solo métricas esenciales - sin contenido XML crudo
+            {
+              echo "XML_CONTENT<<GITHUB_XML_END_OF_CONTENT"
+              echo "=== RESUMEN DE PRUEBAS ==="
+              echo "Archivos: $(ls target/surefire-reports/*Dijkstra*.xml | wc -l)"
+              echo "Total: $(grep -o 'tests="[0-9]\+"' target/surefire-reports/*Dijkstra*.xml | grep -o '[0-9]\+' | awk '{s+=$1} END {print s}')"
+              echo "Errores: $(grep -o 'errors="[0-9]\+"' target/surefire-reports/*Dijkstra*.xml | grep -o '[0-9]\+' | awk '{s+=$1} END {print s}')"
+              echo "Fallos: $(grep -o 'failures="[0-9]\+"' target/surefire-reports/*Dijkstra*.xml | grep -o '[0-9]\+' | awk '{s+=$1} END {print s}')"
+              echo "=== CLASES PRINCIPALES ==="
+              grep 'testsuite.*name=' target/surefire-reports/*Dijkstra*.xml | head -5 | sed 's/.*name="//;s/".*//' || echo "Sin clases"
+              echo "GITHUB_XML_END_OF_CONTENT"
+            } >> $GITHUB_OUTPUT
+            xml_count=$(ls target/surefire-reports/*Dijkstra*.xml | wc -l)
+            echo "✅ $xml_count pergaminos XML procesados (solo métricas)" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "XML_CONTENT=No se encontraron pergaminos de pruebas" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Leer el contenido del reporte de cobertura
+        id: read-coverage
+        run: |
+          if [ -f "target/site/jacoco/jacoco.xml" ]; then
+            {
+              echo "COVERAGE_CONTENT<<GITHUB_COVERAGE_END_OF_CONTENT"
+              echo "=== COBERTURA JACOCO ==="
+              echo "Archivo: target/site/jacoco/jacoco.xml"
+              echo "=== MÉTRICAS ==="
+              # Solo extraer números de cobertura esenciales
+              grep -E 'counter.*type="INSTRUCTION"' target/site/jacoco/jacoco.xml | head -2
+              grep -E 'counter.*type="BRANCH"' target/site/jacoco/jacoco.xml | head -2
+              echo "=== PAQUETES ==="
+              grep -E 'package.*name=' target/site/jacoco/jacoco.xml | head -3 | sed 's/.*name="//;s/".*//' || echo "Sin paquetes"
+              echo "GITHUB_COVERAGE_END_OF_CONTENT"
+            } >> $GITHUB_OUTPUT
+            echo "✅ Pergamino de cobertura procesado (solo métricas)" >> $GITHUB_STEP_SUMMARY
+            echo "📄 Ubicación: target/site/jacoco/jacoco.xml" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "COVERAGE_CONTENT=No se encontró el pergamino de cobertura" >> $GITHUB_OUTPUT
+            echo "❌ Pergamino de cobertura no encontrado en target/site/jacoco/jacoco.xml" >> $GITHUB_STEP_SUMMARY
+            # Buscar en ubicaciones alternativas y diagnosticar
+            echo "🔍 Buscando archivos de cobertura en ubicaciones alternativas..." >> $GITHUB_STEP_SUMMARY
+            echo "📂 Explorando estructura completa del directorio target:" >> $GITHUB_STEP_SUMMARY
+            find target -name "*.xml" 2>/dev/null >> $GITHUB_STEP_SUMMARY || echo "No se encontraron archivos XML" >> $GITHUB_STEP_SUMMARY
+            find target -name "jacoco*" 2>/dev/null >> $GITHUB_STEP_SUMMARY || echo "No se encontraron archivos de Jacoco" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+      - name: Finalizar la preparación de pergaminos
+        run: |
+          echo "📋 Resumen de la preparación:" >> $GITHUB_STEP_SUMMARY
+          echo "- Pergaminos XML: ${{ steps.check-files.outputs.exists }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Pergamino de cobertura: ${{ steps.read-coverage.outputs.COVERAGE_CONTENT != 'No se encontró el pergamino de cobertura' }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Estado: Preparación completada para el análisis de IA" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "🔍 Diagnóstico final:" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ steps.check-files.outputs.exists }}" = "true" ]; then
+            echo "✅ Archivos XML listos para análisis" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ Sin archivos XML - verificar el proceso de preservación" >> $GITHUB_STEP_SUMMARY
+          fi
+
+  # Tercer oficio: Invocar las artes de la inteligencia artificial
+  ai-analysis:
+    name: 🤖 Análisis por las Artes de la IA
+    runs-on: ubuntu-latest
+    needs: [build-and-test, prepare-data]
     permissions:
       contents: read
       models: read
+    outputs:
+      ai-response: ${{ steps.inference.outputs.response }}
     steps:
-    - name: Análisis IA optimizado
-      id: ai-analysis
-      uses: azure/ai-inference-action@v1
-      with:
-        azure_endpoint: ${{ secrets.AZURE_ENDPOINT }}
-        azure_api_key: ${{ secrets.AZURE_API_KEY }}
-        model: Phi-3.5-mini-instruct
-        max_tokens: 300
-        system_message: |
-          Analista experto en algoritmos de grafos. Evalúa únicamente resultados de Dijkstra.
-          Enfócate en: corrección del camino A→F, calidad de pruebas. Sé conciso.
-        user_message: |
-          RESULTADOS DIJKSTRA:
-          - Pruebas: ${{ needs.dijkstra-tests.outputs.test-count }}
-          - Errores: ${{ needs.dijkstra-tests.outputs.test-errors }}
-          - Fallos: ${{ needs.dijkstra-tests.outputs.test-failures }}
-          - Camino encontrado: ${{ needs.dijkstra-tests.outputs.optimal-path }}
-          
-          ¿Es correcto el camino óptimo A→F? ¿Las pruebas validan correctamente el algoritmo?
+      - name: Mostrar los resultados de la preparación
+        run: |
+          echo "📁 Estado de los pergaminos: ${{ needs.prepare-data.outputs.file-exists }}"
+          echo "🧪 Total de pruebas: ${{ needs.build-and-test.outputs.tests-total }}"
+          echo "❌ Errores: ${{ needs.build-and-test.outputs.tests-errors }}"
+          echo "⚠️ Fallos: ${{ needs.build-and-test.outputs.tests-failures }}"
+          echo "📊 Cobertura: ${{ needs.build-and-test.outputs.coverage-percentage }}%"
+          if [ "${{ needs.prepare-data.outputs.file-exists }}" = "true" ]; then
+            echo "✅ Procediendo con el análisis por las artes de la IA"
+          else
+            echo "⚠️ Analizando mensaje de error con la sabiduría artificial"
+          fi
+      
+      - name: Ejecutar el análisis por las artes de la inteligencia artificial
+        id: inference
+        uses: actions/ai-inference@v1
+        with:
+          max-tokens: 4096
+          system-prompt: |
+            Eres un sabio maestro de las artes del testing y desarrollo de software, versado en los antiguos conocimientos. 
+            Analiza los resultados de pruebas JUnit y cobertura de código para proporcionar un análisis claro y útil,
+            usando un lenguaje que mezcle lo técnico con referencias al castellano antiguo.
+          prompt: |
+            Analiza estos resultados de pruebas y genera un informe conciso:
 
-  comment-analysis:
-    name: 💬 Comentar Resultados
+            **📊 MÉTRICAS:**
+            - Pruebas: ${{ needs.build-and-test.outputs.tests-total }}
+            - Errores: ${{ needs.build-and-test.outputs.tests-errors }}
+            - Fallos: ${{ needs.build-and-test.outputs.tests-failures }}
+            - Cobertura: ${{ needs.build-and-test.outputs.coverage-percentage }}%
+
+            **🎯 INCLUYE EN TU ANÁLISIS:**
+            1. **Estado General**: ¿Están las pruebas en buen estado?
+            2. **Cobertura**: ¿Es suficiente el ${{ needs.build-and-test.outputs.coverage-percentage }}%?
+            3. **Tecnologías**: ¿Qué frameworks detectas?
+            4. **Recomendaciones**: 2-3 consejos concretos
+
+            **📋 DATOS TÉCNICOS:**
+            ${{ needs.prepare-data.outputs.xml-content }}
+            
+            ${{ needs.prepare-data.outputs.coverage-content }}
+
+            Responde en español con emojis y tono profesional pero amigable.
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          
+      - name: Reportar el resultado del análisis de IA
+        run: |
+          echo "🤖 Análisis de IA completado exitosamente" >> $GITHUB_STEP_SUMMARY
+          echo "📊 Datos analizados:" >> $GITHUB_STEP_SUMMARY
+          echo "- Pruebas totales: ${{ needs.build-and-test.outputs.tests-total }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Cobertura: ${{ needs.build-and-test.outputs.coverage-percentage }}%" >> $GITHUB_STEP_SUMMARY
+          echo "- Pergaminos procesados: ${{ needs.prepare-data.outputs.file-exists }}" >> $GITHUB_STEP_SUMMARY
+          echo "🎯 El análisis detallado será inscrito en la issue correspondiente" >> $GITHUB_STEP_SUMMARY
+
+  # Cuarto oficio: Generar el resumen del flujo de trabajo
+  generate-summary:
+    name: 📋 Generación del Resumen Final
     runs-on: ubuntu-latest
-    needs: [dijkstra-tests, ai-analysis]
+    needs: [build-and-test, prepare-data, ai-analysis]
+    permissions:
+      contents: read
+    steps:
+      - name: Generar el resumen del flujo de trabajo
+        run: |
+          echo "## 🏰 Pipeline de Análisis con IA - Crónica de la Ejecución" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📋 Estado de los Oficios Realizados:" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ **build-and-test**: Completado con honor" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ **prepare-data**: Los pergaminos han sido preparados" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ **ai-analysis**: Las artes de la IA han sido invocadas" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ **generate-summary**: Elaborando las crónicas" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📊 Métricas de las Pruebas:" >> $GITHUB_STEP_SUMMARY
+          echo "- **Total de pruebas**: ${{ needs.build-and-test.outputs.tests-total }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Errores**: ${{ needs.build-and-test.outputs.tests-errors }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Fallos**: ${{ needs.build-and-test.outputs.tests-failures }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Cobertura de código**: ${{ needs.build-and-test.outputs.coverage-percentage }}%" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📁 Estado de los Pergaminos:" >> $GITHUB_STEP_SUMMARY
+          echo "- **Pergaminos encontrados**: ${{ needs.prepare-data.outputs.file-exists }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "---" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## 📝 Nota sobre el Análisis de IA" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "El análisis detallado generado por las artes de la inteligencia artificial ha sido inscrito como comentario en la Pull Request #${{ github.event.number }}." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "El análisis detallado generado por las artes de la inteligencia artificial ha sido inscrito como comentario en la issue #${{ github.event.inputs.issue_number || '7' }}." >> $GITHUB_STEP_SUMMARY
+          fi
+
+  # Quinto oficio: Inscribir el análisis en las crónicas (Issue o PR según el contexto)
+  comment-on-target:
+    name: 💬 Inscripción en las Crónicas
+    runs-on: ubuntu-latest
+    needs: [build-and-test, prepare-data, ai-analysis, generate-summary]
     permissions:
       issues: write
+      pull-requests: write
+      contents: read
     steps:
-    - name: Comentar en issue
-      uses: actions/github-script@v7
-      with:
-        script: |
-          const issueNumber = '${{ github.event.inputs.issue_number }}' || '7';
-          const body = `## 🎯 Análisis Pruebas Dijkstra - Workflow #${{ github.run_number }}
+      - name: Preparar el contenido según el contexto de ejecución
+        id: prepare-context
+        run: |
+          # Determinar si estamos en un PR o necesitamos usar una issue
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "context=pr" >> $GITHUB_OUTPUT
+            echo "target-number=${{ github.event.number }}" >> $GITHUB_OUTPUT
+            echo "🎯 Contexto detectado: Pull Request #${{ github.event.number }}" >> $GITHUB_STEP_SUMMARY
+            echo "📝 Comentario se publicará en la PR" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "context=issue" >> $GITHUB_OUTPUT
+            ISSUE_NUM="${{ github.event.inputs.issue_number }}"
+            if [ -z "$ISSUE_NUM" ] || [ "$ISSUE_NUM" = "" ]; then
+              ISSUE_NUM="7"
+            fi
+            echo "target-number=$ISSUE_NUM" >> $GITHUB_OUTPUT
+            echo "🎯 Contexto detectado: Issue #$ISSUE_NUM (push/workflow_dispatch)" >> $GITHUB_STEP_SUMMARY
+            echo "📝 Comentario se publicará en la issue" >> $GITHUB_STEP_SUMMARY
+          fi
+      
+      - name: Inscribir en las crónicas de Pull Request
+        if: steps.prepare-context.outputs.context == 'pr'
+        id: create-pr-comment
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          issue-number: ${{ steps.prepare-context.outputs.target-number }}
+          body: |
+            ## 🤖 Análisis por las Artes de la Inteligencia Artificial
+            > 📝 **Análisis automático de Pull Request #${{ github.event.number }}**
+
+            ### 📋 Información del Flujo de Trabajo:
+            - **Flujo**: ${{ github.workflow }}
+            - **Ejecución**: #${{ github.run_number }}
+            - **Trigger**: Pull Request
+            - **Branch**: `${{ github.head_ref }}` → `${{ github.base_ref }}`
+            - **Pergaminos encontrados**: ${{ needs.prepare-data.outputs.file-exists }}
+
+            ### 📊 Métricas de las Pruebas:
+            - **Total de pruebas**: ${{ needs.build-and-test.outputs.tests-total }}
+            - **Errores**: ${{ needs.build-and-test.outputs.tests-errors }}
+            - **Fallos**: ${{ needs.build-and-test.outputs.tests-failures }}
+            - **Cobertura de código**: ${{ needs.build-and-test.outputs.coverage-percentage }}%
+
+            ### 🧙‍♂️ Análisis Generado por la IA:
+
+            ${{ needs.ai-analysis.outputs.ai-response }}
+
+            ---
+            
+            ### 🔗 Enlaces de utilidad:
+            - [Ver ejecución completa](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+            - [Ver cambios en esta PR](${{ github.server_url }}/${{ github.repository }}/pull/${{ github.event.number }}/files)
+            
+            *Generado automáticamente por GitHub Actions con las bendiciones de los antiguos maestros*
+
+      - name: Inscribir en las crónicas de Issue
+        if: steps.prepare-context.outputs.context == 'issue'
+        id: create-issue-comment
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          issue-number: ${{ steps.prepare-context.outputs.target-number }}
+          body: |
+            ## 🤖 Análisis por las Artes de la Inteligencia Artificial
+
+            ### 📋 Información del Flujo de Trabajo:
+            - **Flujo**: ${{ github.workflow }}
+            - **Ejecución**: #${{ github.run_number }}
+            - **Trigger**: ${{ github.event_name }}
+            - **Pergaminos encontrados**: ${{ needs.prepare-data.outputs.file-exists }}
+
+            ### 📊 Métricas de las Pruebas:
+            - **Total de pruebas**: ${{ needs.build-and-test.outputs.tests-total }}
+            - **Errores**: ${{ needs.build-and-test.outputs.tests-errors }}
+            - **Fallos**: ${{ needs.build-and-test.outputs.tests-failures }}
+            - **Cobertura de código**: ${{ needs.build-and-test.outputs.coverage-percentage }}%
+
+            ### 🧙‍♂️ Análisis Generado por la IA:
+
+            ${{ needs.ai-analysis.outputs.ai-response }}
+
+            ---
+            
+            ### 🔗 Enlaces de utilidad:
+            - [Ver ejecución completa](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+            - [Ver repositorio](${{ github.server_url }}/${{ github.repository }})
+            
+            *Generado automáticamente por GitHub Actions con las bendiciones de los antiguos maestros*
+            
+      - name: Confirmar la inscripción en las crónicas
+        run: |
+          if [ "${{ steps.prepare-context.outputs.context }}" = "pr" ]; then
+            echo "✅ Comentario publicado exitosamente en PR #${{ steps.prepare-context.outputs.target-number }}" >> $GITHUB_STEP_SUMMARY
+            echo "🔗 El análisis completo de IA está disponible en la Pull Request" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "✅ Comentario publicado exitosamente en issue #${{ steps.prepare-context.outputs.target-number }}" >> $GITHUB_STEP_SUMMARY
+            echo "🔗 El análisis completo de IA está disponible en la issue" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "📊 Métricas incluidas: ${{ needs.build-and-test.outputs.tests-total }} pruebas, ${{ needs.build-and-test.outputs.coverage-percentage }}% cobertura" >> $GITHUB_STEP_SUMMARY
+
+  # Sexto oficio: Finalización y ceremonias de clausura
+  finalize:
+    name: 🎯 Ceremonias de Clausura
+    runs-on: ubuntu-latest
+    needs: [build-and-test, prepare-data, ai-analysis, generate-summary, comment-on-target]
+    if: always() # Se ejecuta incluso si los oficios anteriores fallan
+    permissions:
+      contents: read
+    steps:
+      - name: Estado final del flujo de trabajo
+        run: |
+          echo "🎉 Pipeline de análisis por IA completado con los honores debidos" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "📊 Estado de los oficios realizados:" >> $GITHUB_STEP_SUMMARY
+          echo "- build-and-test: ${{ needs.build-and-test.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- prepare-data: ${{ needs.prepare-data.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- ai-analysis: ${{ needs.ai-analysis.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- generate-summary: ${{ needs.generate-summary.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- comment-on-target: ${{ needs.comment-on-target.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
           
-          ### 📊 Resultados de Pruebas:
-          - **Pruebas ejecutadas:** ${{ needs.dijkstra-tests.outputs.test-count }}
-          - **Errores:** ${{ needs.dijkstra-tests.outputs.test-errors }}
-          - **Fallos:** ${{ needs.dijkstra-tests.outputs.test-failures }}
-          - **Camino óptimo A→F:** ${{ needs.dijkstra-tests.outputs.optimal-path }}
+          # Determinar el contexto de ejecución y target utilizado
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            TARGET_TYPE="PR"
+            TARGET_NUM="${{ github.event.number }}"
+          else
+            TARGET_TYPE="Issue"
+            TARGET_NUM="${{ github.event.inputs.issue_number }}"
+            if [ -z "$TARGET_NUM" ] || [ "$TARGET_NUM" = "" ]; then
+              TARGET_NUM="7"
+            fi
+          fi
           
-          ### 🤖 Análisis de IA:
-          ${{ needs.ai-analysis.outputs.text }}
+          if [ "${{ needs.ai-analysis.result }}" = "success" ]; then
+            echo "✅ Las artes de la IA han sido invocadas con éxito" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ Error en la invocación de las artes de la IA" >> $GITHUB_STEP_SUMMARY
+          fi
           
-          ### ✅ Conclusión:
-          **Camino Óptimo Verificado:** A→B→D→E→F con distancia total de **13**
+          if [ "${{ needs.comment-on-target.result }}" = "success" ]; then
+            echo "✅ Crónicas inscritas exitosamente en $TARGET_TYPE #$TARGET_NUM" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ Error al inscribir en las crónicas de $TARGET_TYPE #$TARGET_NUM" >> $GITHUB_STEP_SUMMARY
+          fi
           
-          **Razonamiento:** El algoritmo de Dijkstra encuentra correctamente el camino más corto considerando todos los pesos de las aristas del grafo.
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "🏆 **Resumen Final:**" >> $GITHUB_STEP_SUMMARY
+          echo "- Contexto: ${{ github.event_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Target utilizado: $TARGET_TYPE #$TARGET_NUM" >> $GITHUB_STEP_SUMMARY
+          echo "- Pruebas ejecutadas: ${{ needs.build-and-test.outputs.tests-total }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Cobertura alcanzada: ${{ needs.build-and-test.outputs.coverage-percentage }}%" >> $GITHUB_STEP_SUMMARY
+          echo "- Pipeline status: ${{ job.status }}" >> $GITHUB_STEP_SUMMARY
           
-          ---
-          *Generado automáticamente el $(date -u '+%Y-%m-%d %H:%M UTC')*`;
-          
-          await github.rest.issues.createComment({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            issue_number: parseInt(issueNumber),
-            body: body
-          });
+          echo ""
+          echo "Pipeline de análisis completado por los antiguos maestros 🧙‍♂️"
