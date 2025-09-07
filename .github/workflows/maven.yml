@@ -266,7 +266,7 @@ jobs:
         id: inference
         uses: actions/ai-inference@v2.0.1
         with:
-          model: openai/gpt-5
+          model: gpt-5
           token: 16000
           temperature: 1 
           system-prompt: |
@@ -280,18 +280,15 @@ jobs:
             - Pruebas: ${{ needs.build-and-test.outputs.tests-total }}
             - Errores: ${{ needs.build-and-test.outputs.tests-errors }}
             - Fallos: ${{ needs.build-and-test.outputs.tests-failures }}
-            - Cobertura: ${{ needs.build-and-test.outputs.coverage-percentage }}%
 
             **🎯 INCLUYE EN TU ANÁLISIS:**
             1. **Estado General**: ¿Están las pruebas en buen estado?
-            2. **Cobertura**: ¿Es suficiente el ${{ needs.build-and-test.outputs.coverage-percentage }}%?
             3. **Tecnologías**: ¿Qué frameworks detectas?
             4. **Recomendaciones**: 2-3 consejos concretos
 
             **📋 DATOS TÉCNICOS:**
             ${{ needs.prepare-data.outputs.xml-content }}
             
-            ${{ needs.prepare-data.outputs.coverage-content }}
 
             Responde en español con emojis y tono profesional pero amigable.
         env:
