@@ -178,20 +178,17 @@ jobs:
         id: read-xml
         run: |
           if ls target/surefire-reports/TEST-*.xml 1> /dev/null 2>&1; then
-            # Extraer solo métricas esenciales - sin contenido XML crudo
+            # Extraer solo métricas mínimas para reducir el tamaño del prompt
             {
               echo "XML_CONTENT<<GITHUB_XML_END_OF_CONTENT"
-              echo "=== RESUMEN DE PRUEBAS ==="
-              echo "Archivos: $(ls target/surefire-reports/TEST-*.xml | wc -l)"
-              echo "Total: $(grep -o 'tests="[0-9]\+"' target/surefire-reports/TEST-*.xml | grep -o '[0-9]\+' | awk '{s+=$1} END {print s}')"
-              echo "Errores: $(grep -o 'errors="[0-9]\+"' target/surefire-reports/TEST-*.xml | grep -o '[0-9]\+' | awk '{s+=$1} END {print s}')"
-              echo "Fallos: $(grep -o 'failures="[0-9]\+"' target/surefire-reports/TEST-*.xml | grep -o '[0-9]\+' | awk '{s+=$1} END {print s}')"
-              echo "=== CLASES PRINCIPALES ==="
-              grep 'testsuite.*name=' target/surefire-reports/TEST-*.xml | head -5 | sed 's/.*name="//;s/".*//' || echo "Sin clases"
+              echo "Tests: $(grep -o 'tests="[0-9]\+"' target/surefire-reports/TEST-*.xml | grep -o '[0-9]\+' | awk '{s+=$1} END {print s}')"
+              echo "Clases: $(ls target/surefire-reports/TEST-*.xml | wc -l)"
+              # Solo mostrar las 3 clases principales más relevantes
+              echo "Principales: $(grep 'testsuite.*name=' target/surefire-reports/TEST-*.xml | head -3 | sed 's/.*name="//;s/".*//' | tr '\n' ', ' | sed 's/,$//')"
               echo "GITHUB_XML_END_OF_CONTENT"
             } >> $GITHUB_OUTPUT
             xml_count=$(ls target/surefire-reports/TEST-*.xml | wc -l)
-            echo "✅ $xml_count pergaminos XML procesados (solo métricas)" >> $GITHUB_STEP_SUMMARY
+            echo "✅ $xml_count pergaminos XML procesados (métricas resumidas)" >> $GITHUB_STEP_SUMMARY
           else
             echo "XML_CONTENT=No se encontraron pergaminos de pruebas" >> $GITHUB_OUTPUT
           fi
@@ -202,26 +199,17 @@ jobs:
           if [ -f "target/site/jacoco/jacoco.xml" ]; then
             {
               echo "COVERAGE_CONTENT<<GITHUB_COVERAGE_END_OF_CONTENT"
-              echo "=== COBERTURA JACOCO ==="
-              echo "Archivo: target/site/jacoco/jacoco.xml"
-              echo "=== MÉTRICAS ==="
-              # Solo extraer números de cobertura esenciales
-              grep -E 'counter.*type="INSTRUCTION"' target/site/jacoco/jacoco.xml | head -2
-              grep -E 'counter.*type="BRANCH"' target/site/jacoco/jacoco.xml | head -2
-              echo "=== PAQUETES ==="
-              grep -E 'package.*name=' target/site/jacoco/jacoco.xml | head -3 | sed 's/.*name="//;s/".*//' || echo "Sin paquetes"
+              # Solo extraer números esenciales de cobertura
+              covered=$(grep -E 'counter.*type="INSTRUCTION"' target/site/jacoco/jacoco.xml | head -1 | grep -o 'covered="[0-9]\+"' | grep -o '[0-9]\+')
+              missed=$(grep -E 'counter.*type="INSTRUCTION"' target/site/jacoco/jacoco.xml | head -1 | grep -o 'missed="[0-9]\+"' | grep -o '[0-9]\+')
+              echo "Cobertura: $covered/$((covered + missed)) instrucciones"
+              echo "Paquetes: $(grep -c 'package.*name=' target/site/jacoco/jacoco.xml)"
               echo "GITHUB_COVERAGE_END_OF_CONTENT"
             } >> $GITHUB_OUTPUT
-            echo "✅ Pergamino de cobertura procesado (solo métricas)" >> $GITHUB_STEP_SUMMARY
-            echo "📄 Ubicación: target/site/jacoco/jacoco.xml" >> $GITHUB_STEP_SUMMARY
+            echo "✅ Pergamino de cobertura procesado (métricas resumidas)" >> $GITHUB_STEP_SUMMARY
           else
-            echo "COVERAGE_CONTENT=No se encontró el pergamino de cobertura" >> $GITHUB_OUTPUT
-            echo "❌ Pergamino de cobertura no encontrado en target/site/jacoco/jacoco.xml" >> $GITHUB_STEP_SUMMARY
-            # Buscar en ubicaciones alternativas y diagnosticar
-            echo "🔍 Buscando archivos de cobertura en ubicaciones alternativas..." >> $GITHUB_STEP_SUMMARY
-            echo "📂 Explorando estructura completa del directorio target:" >> $GITHUB_STEP_SUMMARY
-            find target -name "*.xml" 2>/dev/null >> $GITHUB_STEP_SUMMARY || echo "No se encontraron archivos XML" >> $GITHUB_STEP_SUMMARY
-            find target -name "jacoco*" 2>/dev/null >> $GITHUB_STEP_SUMMARY || echo "No se encontraron archivos de Jacoco" >> $GITHUB_STEP_SUMMARY
+            echo "COVERAGE_CONTENT=No se encontró cobertura" >> $GITHUB_OUTPUT
+            echo "❌ Pergamino de cobertura no encontrado" >> $GITHUB_STEP_SUMMARY
           fi
           
       - name: Finalizar la preparación de pergaminos
@@ -266,32 +254,29 @@ jobs:
         id: inference
         uses: actions/ai-inference@v1
         with:
-          max-tokens: 4096
+          max-tokens: 2048
           system-prompt: |
-            Eres un sabio maestro de las artes del testing y desarrollo de software, versado en los antiguos conocimientos. 
-            Analiza los resultados de pruebas JUnit y cobertura de código para proporcionar un análisis claro y útil,
-            usando un lenguaje que mezcle lo técnico con referencias al castellano antiguo.
+            Eres un experto en análisis de pruebas de software. Analiza métricas de testing y genera un informe conciso en español. Usa emojis y tono profesional.
           prompt: |
-            Analiza estos resultados de pruebas y genera un informe conciso:
+            Analiza estos resultados de pruebas Maven y genera un análisis breve:
 
-            **📊 MÉTRICAS:**
-            - Pruebas: ${{ needs.build-and-test.outputs.tests-total }}
-            - Errores: ${{ needs.build-and-test.outputs.tests-errors }}
-            - Fallos: ${{ needs.build-and-test.outputs.tests-failures }}
-            - Cobertura: ${{ needs.build-and-test.outputs.coverage-percentage }}%
+            **MÉTRICAS PRINCIPALES:**
+            • Pruebas ejecutadas: ${{ needs.build-and-test.outputs.tests-total }}
+            • Errores encontrados: ${{ needs.build-and-test.outputs.tests-errors }}
+            • Pruebas fallidas: ${{ needs.build-and-test.outputs.tests-failures }}
+            • Cobertura de código: ${{ needs.build-and-test.outputs.coverage-percentage }}%
 
-            **🎯 INCLUYE EN TU ANÁLISIS:**
-            1. **Estado General**: ¿Están las pruebas en buen estado?
-            2. **Cobertura**: ¿Es suficiente el ${{ needs.build-and-test.outputs.coverage-percentage }}%?
-            3. **Tecnologías**: ¿Qué frameworks detectas?
-            4. **Recomendaciones**: 2-3 consejos concretos
+            **DATOS DE CONTEXTO:**
+            • Estado de archivos: ${{ needs.prepare-data.outputs.file-exists }}
+            • Resumen XML: ${{ needs.prepare-data.outputs.xml-content }}
+            • Cobertura: ${{ needs.prepare-data.outputs.coverage-content }}
 
-            **📋 DATOS TÉCNICOS:**
-            ${{ needs.prepare-data.outputs.xml-content }}
-            
-            ${{ needs.prepare-data.outputs.coverage-content }}
+            **INCLUYE:**
+            1. Estado general (1-2 frases)
+            2. Evaluación de cobertura
+            3. 2 recomendaciones específicas
 
-            Responde en español con emojis y tono profesional pero amigable.
+            Respuesta máxima: 300 palabras.
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
