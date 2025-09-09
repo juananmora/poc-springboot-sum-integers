@@ -104,31 +104,41 @@ public class DijkstraService {
             new GraphEdge("C", 2)
         ));
         
-        // Nodo B: conecta a D(5) y C(1)
+        // Nodo B: conecta a A(4), D(5) y C(1)  
         adjacencyList.put("B", Arrays.asList(
+            new GraphEdge("A", 4),
             new GraphEdge("D", 5),
             new GraphEdge("C", 1)
         ));
         
-        // Nodo C: conecta a D(8) y E(10)
+        // Nodo C: conecta a A(2), B(1), D(8) y E(10)
         adjacencyList.put("C", Arrays.asList(
+            new GraphEdge("A", 2),
+            new GraphEdge("B", 1),
             new GraphEdge("D", 8),
             new GraphEdge("E", 10)
         ));
         
-        // Nodo D: conecta a E(2) y F(6)
+        // Nodo D: conecta a B(5), C(8), E(2) y F(6)
         adjacencyList.put("D", Arrays.asList(
+            new GraphEdge("B", 5),
+            new GraphEdge("C", 8),
             new GraphEdge("E", 2),
             new GraphEdge("F", 6)
         ));
         
-        // Nodo E: conecta a F(2)
+        // Nodo E: conecta a C(10), D(2) y F(2)
         adjacencyList.put("E", Arrays.asList(
+            new GraphEdge("C", 10),
+            new GraphEdge("D", 2),
             new GraphEdge("F", 2)
         ));
         
-        // Nodo F: no tiene conexiones salientes
-        adjacencyList.put("F", new ArrayList<>());
+        // Nodo F: conecta a D(6) y E(2)
+        adjacencyList.put("F", Arrays.asList(
+            new GraphEdge("D", 6),
+            new GraphEdge("E", 2)
+        ));
         
         return new Graph(adjacencyList);
     }

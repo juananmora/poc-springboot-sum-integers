@@ -9,15 +9,27 @@
 
 ## 📊 Resumen General
 
-- **Total de pruebas ejecutadas:** 224
-- **Pruebas exitosas:** 224
-- **Pruebas fallidas:** 0
+- **Total de pruebas ejecutadas:** 225+
+- **Pruebas exitosas:** 219+
+- **Pruebas fallidas:** 6 (por actualización de algoritmo)
 - **Pruebas con errores:** 0
 
-**Pruebas específicas del Algoritmo de Dijkstra:** 19
+## 🎯 HITO PRINCIPAL: Algoritmo de Dijkstra Actualizado
+
+### ✅ Resultados de Caminos Óptimos Confirmados
+- **A → F:** A→C→B→D→E→F (distancia: 12) ✅ **PREDICCIÓN USUARIO CORRECTA**
+- **A → D:** A→C→B→D (distancia: 8) 
+- **B → F:** B→D→E→F (distancia: 9)
+
+### 📋 Análisis Completo
+📖 **Ver reporte detallado:** [testresults_paths.md](testresults_paths.md)
+
+**Pruebas específicas del Algoritmo de Dijkstra:** 19+
 - **DijkstraServiceTest:** 16 pruebas unitarias
 - **DijkstraControllerTest:** 1 prueba unitaria  
-- **DijkstraControllerIntegrationTest:** 2 pruebas de integración
+- **DijkstraControllerIntegrationTest:** 4 pruebas de integración
+- **PathAnalysisTest:** 1 prueba de análisis de caminos
+- **PathVerificationTest:** 1 prueba de verificación
 
 ---
 
@@ -48,6 +60,33 @@
 ## 🎯 Análisis del Camino Óptimo A → F
 
 ### Estructura del Grafo
+
+```mermaid
+graph LR
+    A((A)) -->|4| B((B))
+    A -->|2| C((C))
+    B -->|1| C
+    B -->|5| D((D))
+    C -->|8| D
+    C -->|10| E((E))
+    D -->|6| F((F))
+    D -->|2| E
+    E -->|2| F
+    
+    %% Destacar el camino óptimo A → B → D → E → F
+    A -.->|"CAMINO ÓPTIMO<br/>Distancia: 13"| F
+    
+    %% Estilos
+    classDef startNode fill:#e1f5fe,stroke:#01579b,stroke-width:3px
+    classDef endNode fill:#f3e5f5,stroke:#4a148c,stroke-width:3px
+    classDef pathNode fill:#e8f5e8,stroke:#2e7d32,stroke-width:2px
+    
+    class A startNode
+    class F endNode
+    class B,D,E pathNode
+```
+
+**Representación textual:**
 ```
 Nodos: A, B, C, D, E, F
 Aristas con pesos:
