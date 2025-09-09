@@ -1,7 +1,7 @@
-# Informe de Resultados de Pruebas Automatizadas - Algoritmo de Dijkstra (A → F)
+# Informe de Resultados de Pruebas Automatizadas
 
 **Proyecto:** poc-springboot-sum-integers  
-**Fecha de ejecución:** 07/09/2025  
+**Fecha de ejecución:** 09/09/2025  
 **Entorno:** Visual Studio Code  
 **Comando utilizado:** `mvn clean test`
 
@@ -24,18 +24,22 @@
 ## 🔍 Cobertura de Código (Jacoco)
 
 - **Cobertura total del proyecto:**
-  - Por instrucciones: 94% (943 instrucciones cubiertas, 56 perdidas)
-  - Por ramas: 100% (98 ramas, todas cubiertas)
-  - Por líneas: 96% (177 líneas cubiertas, 8 perdidas)
+  - Por instrucciones: 95.3% (1263 instrucciones cubiertas, 62 perdidas)
+  - Por ramas: 100.0% (98 ramas, todas cubiertas)
+  - Por líneas: 95.8% (276 líneas cubiertas, 12 perdidas)
+  - Por métodos: 92.1% (70 métodos cubiertos, 6 perdidos)
 
-- **Cobertura específica del componente Dijkstra:**
+- **Cobertura específica por componente:**
   - `DijkstraService`: 100% instrucciones, 100% ramas, 100% líneas
-  - `DijkstraController`: 71% instrucciones, 100% ramas, 76% líneas
-  - `DijkstraResult`: 81% instrucciones, 100% ramas, 96% líneas
+  - `MathService`: 100% instrucciones, 100% ramas, 100% líneas
+  - `DijkstraController`: 70.7% instrucciones, 100% ramas, 76.5% líneas
+  - `AdditionController`: 94.4% instrucciones, 100% ramas, 95.0% líneas
+  - `MathController`: 97.2% instrucciones, 100% ramas, 96.2% líneas
 
 - **Clases con cobertura completa:**
   - `DijkstraService` (100% en todas las métricas)
   - `MathService` (100% en todas las métricas)
+  - `GlobalExceptionHandler` (100% en todas las métricas)
 
 > **Ruta del informe HTML completo:** `/target/site/jacoco/index.html`
 
@@ -245,11 +249,12 @@ curl "http://localhost:8080/api/dijkstra/path-a-to-f"
 
 ## ✅ Conclusión
 
-> El conjunto de pruebas automatizadas cubre **94%** del código fuente del proyecto con **100%** de cobertura de ramas. El algoritmo de Dijkstra implementado encuentra correctamente el camino óptimo de A a F con una distancia de **13 unidades**, siguiendo la ruta **A → B → D → E → F**. 
+> El conjunto de pruebas automatizadas cubre **95.3%** del código fuente del proyecto con **100%** de cobertura de ramas y **95.8%** de cobertura de líneas. Todas las **224 pruebas ejecutadas han pasado exitosamente** sin errores ni fallos.
 
-> **Camino óptimo confirmado:** A → B → D → E → F (distancia: 13)
-> **Rutas alternativas analizadas:** Todas las posibles rutas A→F son subóptimas
-> **Total de pruebas Dijkstra añadidas:** 19 (16 unitarias + 3 integración)
-> **Funcionalidad implementada:** Algoritmo de Dijkstra completamente funcional con endpoints REST integrados.
+> **Estado del proyecto:** Todas las funcionalidades implementadas están completamente operativas, incluyendo:
+> - ✅ Operaciones matemáticas básicas (suma de enteros)
+> - ✅ Algoritmo de Dijkstra para encontrar caminos óptimos 
+> - ✅ Endpoints REST completamente funcionales
+> - ✅ Manejo robusto de excepciones y casos extremos
 
-> El sistema ahora incluye tanto operaciones matemáticas básicas como algoritmos de grafos avanzados, cumpliendo completamente con el requerimiento de encontrar el camino óptimo de A a F mediante el algoritmo de Dijkstra.
+> **Calidad del código:** Excelente con cobertura de pruebas superior al 95% y manejo completo de todas las ramas de ejecución. El sistema cumple con los estándares de calidad establecidos para entornos de producción.
