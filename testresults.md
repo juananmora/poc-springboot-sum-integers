@@ -36,7 +36,7 @@
 ## 🔍 Cobertura de Código (Jacoco)
 
 - **Cobertura total del proyecto:**
-  - Por instrucciones: 95.3% (1263 instrucciones cubiertas, 62 perdidas)
+  - Por instrucciones: 95.6% (1335 instrucciones cubiertas, 62 perdidas)
   - Por ramas: 100.0% (98 ramas, todas cubiertas)
   - Por líneas: 95.8% (276 líneas cubiertas, 12 perdidas)
   - Por métodos: 92.1% (70 métodos cubiertos, 6 perdidos)
@@ -73,8 +73,8 @@ graph LR
     D -->|2| E
     E -->|2| F
     
-    %% Destacar el camino óptimo A → B → D → E → F
-    A -.->|"CAMINO ÓPTIMO<br/>Distancia: 13"| F
+    %% Destacar el camino óptimo A → C → B → D → E → F
+    A -.->|"CAMINO ÓPTIMO<br/>Distancia: 12"| F
     
     %% Estilos
     classDef startNode fill:#e1f5fe,stroke:#01579b,stroke-width:3px
@@ -96,31 +96,32 @@ B → C: peso 1    |    B → D: peso 5    |    D → E: peso 2
 ```
 
 ### Camino Óptimo Encontrado
-**Ruta:** A → B → D → E → F  
-**Distancia total:** 13
+**Ruta:** A → C → B → D → E → F  
+**Distancia total:** 12
 
 **Desglose del cálculo:**
-- A → B: 4 unidades
+- A → C: 2 unidades
+- C → B: 1 unidad
 - B → D: 5 unidades  
 - D → E: 2 unidades
 - E → F: 2 unidades
-- **Total:** 4 + 5 + 2 + 2 = 13 unidades
+- **Total:** 2 + 1 + 5 + 2 + 2 = 12 unidades
 
 ### Análisis de Rutas Alternativas
 
 1. **Ruta A → C → D → E → F:**
    - A → C: 2 + C → D: 8 + D → E: 2 + E → F: 2 = **14 unidades** ❌
-   - 1 unidad más larga que el óptimo
+   - 2 unidades más larga que el óptimo
 
 2. **Ruta A → C → E → F:**
    - A → C: 2 + C → E: 10 + E → F: 2 = **14 unidades** ❌
+   - 2 unidades más larga que el óptimo
+
+3. **Ruta A → B → D → E → F:**
+   - A → B: 4 + B → D: 5 + D → E: 2 + E → F: 2 = **13 unidades** ❌
    - 1 unidad más larga que el óptimo
 
-3. **Ruta A → B → C → D → E → F:**
-   - A → B: 4 + B → C: 1 + C → D: 8 + D → E: 2 + E → F: 2 = **17 unidades** ❌
-   - 4 unidades más larga que el óptimo
-
-**Conclusión:** El algoritmo de Dijkstra correctamente identifica A → B → D → E → F como el camino de menor costo.
+**Conclusión:** El algoritmo de Dijkstra correctamente identifica A → C → B → D → E → F como el camino de menor costo.
 
 ---
 
@@ -135,7 +136,7 @@ B → C: peso 1    |    B → D: peso 5    |    D → E: peso 2
   - `DijkstraControllerIntegrationTest` - 2 pruebas de integración
 
 - **Casos validados:**
-  - ✅ Camino óptimo A → F (distancia: 13)
+  - ✅ Camino óptimo A → F (distancia: 12)
   - ✅ Camino alternativo A → D (distancia: 9)
   - ✅ Camino directo A → C (distancia: 2)
   - ✅ Manejo de nodos origen/destino iguales
@@ -172,7 +173,7 @@ B → C: peso 1    |    B → D: peso 5    |    D → E: peso 2
   - **Resultado esperado:** `HTTP 200 OK`
   - **Validaciones:** 
     - Camino específico A → F
-    - Distancia correcta (13)
+    - Distancia correcta (12)
     - Estructura de respuesta JSON válida
 
 - **Endpoint:** `GET /api/dijkstra/shortest-path?source=A&destination=F`
@@ -187,8 +188,8 @@ B → C: peso 1    |    B → D: peso 5    |    D → E: peso 2
 {
   "source": "A",
   "destination": "F", 
-  "path": ["A", "B", "D", "E", "F"],
-  "distance": 13,
+  "path": ["A", "C", "B", "D", "E", "F"],
+  "distance": 12,
   "pathFound": true
 }
 ```
@@ -221,7 +222,7 @@ B → C: peso 1    |    B → D: peso 5    |    D → E: peso 2
 
 **Endpoint específico:** `GET /api/dijkstra/path-a-to-f`
 - Encuentra directamente el camino óptimo de A a F
-- Respuesta: ruta A→B→D→E→F con distancia 13
+- Respuesta: ruta A→C→B→D→E→F con distancia 12
 
 **Endpoint genérico:** `GET /api/dijkstra/shortest-path?source=A&destination=F`
 - Permite especificar cualquier par de nodos origen/destino
@@ -237,8 +238,8 @@ curl "http://localhost:8080/api/dijkstra/path-a-to-f"
 {
   "source": "A",
   "destination": "F",
-  "path": ["A", "B", "D", "E", "F"],
-  "distance": 13,
+  "path": ["A", "C", "B", "D", "E", "F"],
+  "distance": 12,
   "pathFound": true
 }
 ```
@@ -248,7 +249,7 @@ curl "http://localhost:8080/api/dijkstra/path-a-to-f"
 ## 🎯 Casos de Prueba Específicos para Algoritmo de Dijkstra
 
 ### Pruebas Unitarias (DijkstraService) - 16 casos
-1. **Camino óptimo A→F:** verificación de ruta y distancia 13
+1. **Camino óptimo A→F:** verificación de ruta y distancia 12
 2. **Caminos alternativos:** A→C, A→D con cálculos precisos
 3. **Casos especiales:** nodos origen=destino (distancia 0)
 4. **Validaciones:** grafos nulos, nodos inexistentes
@@ -272,8 +273,8 @@ curl "http://localhost:8080/api/dijkstra/path-a-to-f"
 - ✅ Algoritmo optimizado con Priority Queue
 
 **Análisis del camino óptimo A → F:**
-- **Ruta encontrada:** A → B → D → E → F
-- **Distancia total:** 13 unidades
+- **Ruta encontrada:** A → C → B → D → E → F
+- **Distancia total:** 12 unidades
 - **Verificación:** Es efectivamente el camino de menor costo
 - **Rutas alternativas evaluadas:** Todas son subóptimas (14+ unidades)
 
@@ -288,7 +289,7 @@ curl "http://localhost:8080/api/dijkstra/path-a-to-f"
 
 ## ✅ Conclusión
 
-> El conjunto de pruebas automatizadas cubre **95.3%** del código fuente del proyecto con **100%** de cobertura de ramas y **95.8%** de cobertura de líneas. Todas las **224 pruebas ejecutadas han pasado exitosamente** sin errores ni fallos.
+> El conjunto de pruebas automatizadas cubre **95.6%** del código fuente del proyecto con **100%** de cobertura de ramas y **95.8%** de cobertura de líneas. Todas las **226 pruebas ejecutadas han pasado exitosamente** sin errores ni fallos.
 
 > **Estado del proyecto:** Todas las funcionalidades implementadas están completamente operativas, incluyendo:
 > - ✅ Operaciones matemáticas básicas (suma de enteros)
