@@ -171,4 +171,16 @@ public class MathService {
         Collections.sort(modes);
         return modes;
     }
+
+    public long factorial(int number) {
+        if (number < 0) {
+            throw new IllegalArgumentException("No se puede calcular el factorial de un número negativo");
+        }
+        
+        long result = 1;
+        for (int i = 2; i <= number; i++) {
+            result *= i;
+        }
+        return result;
+    }
 }
