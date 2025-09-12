@@ -344,17 +344,18 @@ poc-springboot-sum-integers/
 ## 📈 Resultados de Pruebas
 
 ### Resumen de Última Ejecución
-- ✅ **Total de Pruebas:** 225+
-- ✅ **Pruebas Exitosas:** 219+ (97%+)
-- ❌ **Pruebas Pendientes:** 6 (actualizaciones por nuevo algoritmo)
+- ✅ **Total de Pruebas:** 226
+- ✅ **Pruebas Exitosas:** 226 (100%)
+- ❌ **Pruebas Fallidas:** 0
 - ⏱️ **Tiempo Total:** ~35 segundos
 - 🎯 **Cobertura:** >95%
 
 ### Hitos Importantes
-- ✅ **Algoritmo de Dijkstra** implementado y funcionando
-- ✅ **Camino A→F = 12** (predicción del usuario confirmada)
+- ✅ **Algoritmo de Dijkstra** implementado y funcionando correctamente
+- ✅ **Camino A→F = 12** (predicción correcta confirmada)
 - ✅ **Grafos bidireccionales** correctamente implementados
 - ✅ **Endpoints REST** funcionando para consultas de rutas
+- ✅ **Todas las pruebas unitarias** pasando exitosamente
 
 ### Ver Reportes Detallados
 ```bash

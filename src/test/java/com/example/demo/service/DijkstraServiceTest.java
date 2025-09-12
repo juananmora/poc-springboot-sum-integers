@@ -40,8 +40,8 @@ class DijkstraServiceTest {
             assertTrue(result.isPathFound());
             assertEquals("A", result.getSource());
             assertEquals("F", result.getDestination());
-            assertEquals(13, result.getDistance()); // A->B(4) + B->D(5) + D->E(2) + E->F(2) = 13
-            List<String> expectedPath = Arrays.asList("A", "B", "D", "E", "F");
+            assertEquals(12, result.getDistance()); // A->C(2) + C->B(1) + B->D(5) + D->E(2) + E->F(2) = 12
+            List<String> expectedPath = Arrays.asList("A", "C", "B", "D", "E", "F");
             assertEquals(expectedPath, result.getPath());
         }
 
@@ -70,8 +70,8 @@ class DijkstraServiceTest {
             assertTrue(result.isPathFound());
             assertEquals("A", result.getSource());
             assertEquals("D", result.getDestination());
-            assertEquals(9, result.getDistance()); // A->B(4) + B->D(5) = 9, vs A->C(2) + C->D(8) = 10
-            List<String> expectedPath = Arrays.asList("A", "B", "D");
+            assertEquals(8, result.getDistance()); // A->C(2) + C->B(1) + B->D(5) = 8, vs A->B(4) + B->D(5) = 9 or A->C(2) + C->D(8) = 10
+            List<String> expectedPath = Arrays.asList("A", "C", "B", "D");
             assertEquals(expectedPath, result.getPath());
         }
 
@@ -220,7 +220,15 @@ class DijkstraServiceTest {
             List<GraphEdge> edgesFromB = graph.getAdjacencyList().get("B");
 
             // Assert
-            assertEquals(2, edgesFromB.size());
+            assertEquals(3, edgesFromB.size());
+            
+            // Verificar B->A(4)
+            GraphEdge edgeToA = edgesFromB.stream()
+                .filter(edge -> "A".equals(edge.getTo()))
+                .findFirst()
+                .orElse(null);
+            assertNotNull(edgeToA);
+            assertEquals(4, edgeToA.getWeight());
             
             // Verificar B->D(5)
             GraphEdge edgeToD = edgesFromB.stream()
@@ -240,15 +248,31 @@ class DijkstraServiceTest {
         }
 
         @Test
-        @DisplayName("Should create graph with F having no outgoing edges")
-        void shouldCreateGraphWithFHavingNoOutgoingEdges() {
+        @DisplayName("Should create graph with F having outgoing edges to D and E")
+        void shouldCreateGraphWithFHavingOutgoingEdges() {
             // Act
             Graph graph = dijkstraService.createDefaultGraph();
             List<GraphEdge> edgesFromF = graph.getAdjacencyList().get("F");
 
             // Assert
             assertNotNull(edgesFromF);
-            assertTrue(edgesFromF.isEmpty());
+            assertEquals(2, edgesFromF.size());
+            
+            // Verificar F->D(6)
+            GraphEdge edgeToD = edgesFromF.stream()
+                .filter(edge -> "D".equals(edge.getTo()))
+                .findFirst()
+                .orElse(null);
+            assertNotNull(edgeToD);
+            assertEquals(6, edgeToD.getWeight());
+            
+            // Verificar F->E(2)
+            GraphEdge edgeToE = edgesFromF.stream()
+                .filter(edge -> "E".equals(edge.getTo()))
+                .findFirst()
+                .orElse(null);
+            assertNotNull(edgeToE);
+            assertEquals(2, edgeToE.getWeight());
         }
     }
 
