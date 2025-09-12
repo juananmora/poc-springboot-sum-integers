@@ -1,0 +1,98 @@
+name: Auto-assign Copilot to Labeled Issues
+
+on:
+  issues:
+    types: [opened, labeled]
+
+permissions:
+  issues: write
+  contents: read
+  repository-projects: write
+
+jobs:
+  assign-copilot:
+    runs-on: ubuntu-latest
+    if: contains(join(github.event.issue.labels.*.name, ','), 'copilot')
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Get Copilot Agent ID
+        id: get-copilot-id
+        env:
+          GITHUB_TOKEN: ${{ secrets.COPILOT_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+        run: |
+          echo "Repository: ${{ github.repository }}"
+          echo "Owner: ${{ github.repository_owner }}"
+          
+          REPO_OWNER="${{ github.repository_owner }}"
+          REPO_NAME=$(echo "${{ github.repository }}" | cut -d'/' -f2)
+          
+          COPILOT_ID="BOT_kgDOC9w8XQ"
+          
+          echo "Using Copilot ID: $COPILOT_ID"
+          
+          VERIFY_RESPONSE=$(gh api graphql -f query='query($id: ID!) { node(id: $id) { id ... on Bot { login } } }' -f id="$COPILOT_ID" 2>/dev/null || echo '{"data":{"node":null}}')
+          
+          VERIFIED_LOGIN=$(echo "$VERIFY_RESPONSE" | jq -r '.data.node.login // empty')
+          
+          if [ "$VERIFIED_LOGIN" = "copilot-swe-agent" ]; then
+            echo "Copilot agent verified successfully"
+            echo "copilot_id=$COPILOT_ID" >> $GITHUB_OUTPUT
+            echo "copilot_available=true" >> $GITHUB_OUTPUT
+          else
+            echo "Copilot agent verification failed"
+            echo "copilot_available=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Assign Copilot to Issue
+        if: steps.get-copilot-id.outputs.copilot_available == 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.COPILOT_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+        run: |
+          ISSUE_ID="${{ github.event.issue.node_id }}"
+          COPILOT_ID="${{ steps.get-copilot-id.outputs.copilot_id }}"
+          
+          echo "Assigning issue to Copilot..."
+          echo "Issue ID: $ISSUE_ID"
+          echo "Copilot ID: $COPILOT_ID"
+          
+          RESULT=$(gh api graphql -f query='mutation($issueId: ID!, $copilotId: ID!) { replaceActorsForAssignable(input: { assignableId: $issueId, actorIds: [$copilotId] }) { assignable { ... on Issue { id assignees(first: 10) { nodes { login } } } } } }' -f issueId="$ISSUE_ID" -f copilotId="$COPILOT_ID" 2>&1)
+          
+          echo "Assignment result:"
+          echo "$RESULT"
+          
+          if echo "$RESULT" | grep -q "Copilot Swe Agent app is not enabled"; then
+            echo "ERROR: Copilot SWE Agent app is not enabled in this repository"
+            
+            gh api repos/${{ github.repository }}/issues/${{ github.event.issue.number }}/comments \
+              -f body="❌ **Unable to assign Copilot automatically** - The GitHub Copilot SWE Agent app is not enabled in this repository. Please contact your organization administrator to enable it."
+            
+            exit 1
+          fi
+          
+          if echo "$RESULT" | jq -e '.data.replaceActorsForAssignable.assignable' > /dev/null 2>&1; then
+            ASSIGNED_LOGINS=$(echo "$RESULT" | jq -r '.data.replaceActorsForAssignable.assignable.assignees.nodes[].login' 2>/dev/null || echo "")
+            
+            if echo "$ASSIGNED_LOGINS" | grep -q "copilot-swe-agent"; then
+              echo "✅ Successfully assigned issue to Copilot!"
+              
+              gh api repos/${{ github.repository }}/issues/${{ github.event.issue.number }}/comments \
+                -f body="🤖 **Copilot has been automatically assigned to this issue!** Copilot will start working on it shortly."
+            else
+              echo "❌ Failed to assign issue to Copilot"
+              exit 1
+            fi
+          else
+            echo "❌ GraphQL mutation failed"
+            echo "$RESULT"
+            exit 1
+          fi
+
+      - name: Log Issue Details
+        if: steps.get-copilot-id.outputs.copilot_available == 'true'
+        run: |
+          echo "Issue #${{ github.event.issue.number }}: ${{ github.event.issue.title }}"
+          echo "Author: ${{ github.event.issue.user.login }}"
+          echo "URL: ${{ github.event.issue.html_url }}"
