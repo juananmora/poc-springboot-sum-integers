@@ -40,8 +40,8 @@ class DijkstraServiceTest {
             assertTrue(result.isPathFound());
             assertEquals("A", result.getSource());
             assertEquals("F", result.getDestination());
-            assertEquals(13, result.getDistance()); // A->B(4) + B->D(5) + D->E(2) + E->F(2) = 13
-            List<String> expectedPath = Arrays.asList("A", "B", "D", "E", "F");
+            assertEquals(12, result.getDistance()); // A->C(2) + C->B(1) + B->D(5) + D->E(2) + E->F(2) = 12
+            List<String> expectedPath = Arrays.asList("A", "C", "B", "D", "E", "F");
             assertEquals(expectedPath, result.getPath());
         }
 
@@ -70,8 +70,8 @@ class DijkstraServiceTest {
             assertTrue(result.isPathFound());
             assertEquals("A", result.getSource());
             assertEquals("D", result.getDestination());
-            assertEquals(9, result.getDistance()); // A->B(4) + B->D(5) = 9, vs A->C(2) + C->D(8) = 10
-            List<String> expectedPath = Arrays.asList("A", "B", "D");
+            assertEquals(8, result.getDistance()); // A->C(2) + C->B(1) + B->D(5) = 8, better than A->B(4) + B->D(5) = 9
+            List<String> expectedPath = Arrays.asList("A", "C", "B", "D");
             assertEquals(expectedPath, result.getPath());
         }
 
@@ -220,7 +220,7 @@ class DijkstraServiceTest {
             List<GraphEdge> edgesFromB = graph.getAdjacencyList().get("B");
 
             // Assert
-            assertEquals(2, edgesFromB.size());
+            assertEquals(3, edgesFromB.size()); // Updated: B has 3 edges in bidirectional graph (C, D, E)
             
             // Verificar B->D(5)
             GraphEdge edgeToD = edgesFromB.stream()
@@ -248,7 +248,7 @@ class DijkstraServiceTest {
 
             // Assert
             assertNotNull(edgesFromF);
-            assertTrue(edgesFromF.isEmpty());
+            assertFalse(edgesFromF.isEmpty()); // Updated: F now has outgoing edges in bidirectional graph (E)
         }
     }
 
