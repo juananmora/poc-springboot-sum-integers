@@ -753,4 +753,121 @@ class MathServiceTest {
             );
         }
     }
+
+    @Nested
+    @DisplayName("Factorial Tests")
+    class FactorialTests {
+
+        @Test
+        @DisplayName("Should return 1 for factorial(0)")
+        void testFactorialZero() {
+            // Given - 0! = 1 by mathematical definition
+            int input = 0;
+            long expected = 1L;
+
+            // When
+            long result = mathService.factorial(input);
+
+            // Then
+            assertEquals(expected, result);
+        }
+
+        @Test
+        @DisplayName("Should return 1 for factorial(1)")
+        void testFactorialOne() {
+            // Given - 1! = 1
+            int input = 1;
+            long expected = 1L;
+
+            // When
+            long result = mathService.factorial(input);
+
+            // Then
+            assertEquals(expected, result);
+        }
+
+        @ParameterizedTest
+        @DisplayName("Should calculate correct factorial for small positive integers")
+        @CsvSource({
+            "2, 2",          // 2! = 2
+            "3, 6",          // 3! = 6
+            "4, 24",         // 4! = 24
+            "5, 120",        // 5! = 120
+            "6, 720",        // 6! = 720
+            "7, 5040"        // 7! = 5040
+        })
+        void testFactorialSmallPositiveNumbers(int input, long expected) {
+            // When
+            long result = mathService.factorial(input);
+
+            // Then
+            assertEquals(expected, result);
+        }
+
+        @ParameterizedTest
+        @DisplayName("Should calculate correct factorial for larger positive integers")
+        @CsvSource({
+            "8, 40320",                    // 8! = 40320
+            "9, 362880",                   // 9! = 362880
+            "10, 3628800",                 // 10! = 3628800
+            "11, 39916800",                // 11! = 39916800
+            "12, 479001600",               // 12! = 479001600
+            "13, 6227020800",              // 13! = 6227020800
+            "14, 87178291200",             // 14! = 87178291200
+            "15, 1307674368000"            // 15! = 1307674368000
+        })
+        void testFactorialLargerPositiveNumbers(int input, long expected) {
+            // When
+            long result = mathService.factorial(input);
+
+            // Then
+            assertEquals(expected, result);
+        }
+
+        @ParameterizedTest
+        @DisplayName("Should throw IllegalArgumentException for negative numbers")
+        @ValueSource(ints = {-1, -2, -10, -100, -1000})
+        void testFactorialNegativeNumbers(int negativeNumber) {
+            // When & Then
+            IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> mathService.factorial(negativeNumber)
+            );
+            assertEquals("No se puede calcular el factorial de un número negativo", exception.getMessage());
+        }
+
+        @Test
+        @DisplayName("Should handle factorial of 20 without overflow")
+        void testFactorialTwenty() {
+            // Given - 20! = 2432902008176640000
+            int input = 20;
+            long expected = 2432902008176640000L;
+
+            // When
+            long result = mathService.factorial(input);
+
+            // Then
+            assertEquals(expected, result);
+            // Verify result is positive (no overflow occurred)
+            assertTrue(result > 0);
+        }
+
+        @Test
+        @DisplayName("Should handle edge case values efficiently")
+        void testFactorialEfficiency() {
+            // Test that method executes quickly for reasonable inputs
+            long startTime = System.nanoTime();
+            
+            // Calculate factorial of 20 multiple times
+            for (int i = 0; i < 1000; i++) {
+                mathService.factorial(20);
+            }
+            
+            long endTime = System.nanoTime();
+            long durationMs = (endTime - startTime) / 1_000_000;
+            
+            // Should complete in reasonable time (less than 100ms for 1000 iterations)
+            assertTrue(durationMs < 100, "Factorial calculation took too long: " + durationMs + "ms");
+        }
+    }
 }
