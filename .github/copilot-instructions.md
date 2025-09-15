@@ -1,13 +1,54 @@
-# Rol
-Eres un desarrollador sénior Full-Stack con más de 10 años de experiencia, especializado en el ecosistema Java y Spring Boot. Tu rol abarca el ciclo de vida completo del desarrollo: interpretas requerimientos de negocio descritos en issues de GitHub, generas código de alta calidad y aseguras su fiabilidad mediante un conjunto exhaustivo de pruebas automatizadas. Dominas JUnit, Mockito y Jacoco, y estás acostumbrado a trabajar en flujos integrados con Jira y GitHub.
+# 🤖 AI Agent Instructions for Spring Boot Math Service
 
-# Tarea
-Tu tarea principal es un ciclo completo de desarrollo y pruebas iniciado por la asignación de una issue en GitHub. El proceso es el siguiente:
-1.  **Interpretar la Issue de GitHub:** Lee y comprende la funcionalidad o el bug descrito en la issue que se te ha asignado.
-2.  **Generar el Código:** Implementa la solución completa (controladores, servicios, repositorios, etc.) basándote en la descripción de la issue. Para ello, **debes seguir obligatoriamente las buenas prácticas y patrones de diseño definidos en el MCP de context7**.
-4.  **Crear y Ejecutar Pruebas:** Desarrolla las pruebas unitarias y de integración necesarias para validar el código que has generado, utilizando JUnit, Mockito y `MockMvc`.
-5.  **Generar Informe de Cobertura:** Mide la cobertura de las pruebas con Jacoco.
-6.  **Reportar en Jira:** Vuelca los resultados detallados de las pruebas como un comentario en la issue de Jira correspondiente.
+## 🎯 Project Overview
+This is a **Spring Boot 3.3.5** application providing mathematical operations and graph algorithms via REST endpoints. The project emphasizes **comprehensive testing** (225+ tests) with JUnit 5, Mockito, and JaCoCo coverage analysis.
+
+## 🏗️ Architecture & Patterns
+
+### Core Components
+- **Controllers**: `MathController`, `AdditionController`, `DijkstraController`
+- **Services**: `MathService` (math ops), `DijkstraService` (graph algorithms)
+- **DTOs**: `DijkstraResult`, `Graph`, `GraphEdge`
+- **Error Handling**: `GlobalExceptionHandler` with consistent error responses
+
+### Key Architectural Patterns
+```java
+// Controller pattern - consistent REST responses
+@PostMapping("/sum")
+public ResponseEntity<Map<String, Object>> sum(@RequestBody Map<String, Object> request) {
+    try {
+        int result = mathService.add(a, b);
+        return ResponseEntity.ok(Map.of(
+            "result", result,
+            "operation", "sum",
+            "operands", List.of(a, b)
+        ));
+    } catch (Exception e) {
+        return ResponseEntity.badRequest().body(Map.of("error", "Invalid input"));
+    }
+}
+```
+
+### Service Layer Patterns
+```java
+// Defensive programming with null checks
+public int sumList(List<Integer> numbers) {
+    if (numbers == null || numbers.isEmpty()) {
+        return 0;
+    }
+    return numbers.stream().mapToInt(Integer::intValue).sum();
+}
+
+// Immutable operations - create copies for sorting
+public List<Integer> quicksort(List<Integer> numbers) {
+    if (numbers == null || numbers.isEmpty()) {
+        return new ArrayList<>();
+    }
+    List<Integer> sortedNumbers = new ArrayList<>(numbers); // Copy
+    quicksortHelperInteger(sortedNumbers, 0, sortedNumbers.size() - 1);
+    return sortedNumbers;
+}
+```
 
 # Detalles Específicos
 - **Lectura de Input:**
@@ -50,6 +91,109 @@ Formas parte de un equipo que utiliza un flujo de trabajo integrado entre GitHub
 - Asegúrate de que el archivo `pom.xml` esté configurado con todas las dependencias necesarias: JUnit, Mockito, Spring Test y Jacoco.
 - Recuerda limpiar y reconstruir el proyecto antes de ejecutar las pruebas (`mvn clean test`).
 - El informe generado por Jacoco debe estar disponible en formato HTML (`/target/site/jacoco/index.html`) y su resumen debe incluirse en el comentario de Jira.
+
+---
+
+## 📘 Plantilla base para el informe de resultados (a publicar en Jira)
+
+*El contenido generado en `testresults.md`, y que será publicado como comentario en Jira, debe seguir la siguiente plantilla:*
+
+```markdown
+# Informe de Resultados de Pruebas Automatizadas
+
+**Proyecto:** [Nombre del proyecto]
+**Fecha de ejecución:** [dd/mm/aaaa]
+**Entorno:** Visual Studio Code
+**Comando utilizado:** `mvn clean test`
+
+---
+
+## 📊 Resumen General
+
+- **Total de pruebas ejecutadas:** [número]
+- **Pruebas exitosas:** [número]
+- **Pruebas fallidas:** [número]
+- **Pruebas con errores:** [número]
+
+---
+
+## 🔍 Cobertura de Código (Jacoco)
+
+- **Cobertura total del proyecto:**
+  - Por clases: [porcentaje]%
+  - Por métodos: [porcentaje]%
+  - Por líneas: [porcentaje]%
+
+- **Clases con menor cobertura:**
+  - `[NombreClase]`: [porcentaje]%
+  - `[NombreClase]`: [porcentaje]%
+
+- **Clases con cobertura completa:**
+  - `[NombreClase]`
+  - `[NombreClase]`
+
+> **Ruta del informe HTML completo:** `/target/site/jacoco/index.html`
+
+---
+
+## 🧪 Detalles por Framework
+
+### JUnit
+
+- **Total de pruebas unitarias:** [número]
+- **Clases probadas:**
+  - `[NombreServicio]Test`
+  - `[NombreControlador]Test`
+
+- **Casos validados:**
+  - Lógica de negocio
+  - Validaciones de entrada
+  - Cálculo de resultados esperados
+
+---
+
+### Mockito
+
+- **Total de mocks utilizados:** [número]
+- **Componentes simulados:**
+  - `[RepositorioX]`
+  - `[ServicioY]`
+
+- **Comportamientos verificados:**
+  - Invocaciones de métodos
+  - Comportamiento bajo condiciones controladas
+
+---
+
+## 🌐 Simulaciones HTTP
+
+- **Endpoint:** `POST /usuarios/crear`
+  - **Resultado esperado:** `HTTP 201 Created`
+  - **Validaciones:** datos obligatorios, formato correcto
+
+- **Endpoint:** `GET /productos/{id}`
+  - **Resultado esperado:** `HTTP 200 OK`
+  - **Validaciones:** ID existente, estructura de respuesta
+
+- **Herramienta utilizada:** `MockMvc`
+
+---
+
+## ⚠️ Fallos o Incidencias Detectadas
+
+- **[Descripción breve del error 1]**
+  - **Clase:** `[NombreClase]`
+  - **Método:** `[nombreMetodo]`
+  - **Análisis:** [posible causa / solución sugerida]
+
+- **[Descripción breve del error 2]**
+
+---
+
+## ✅ Conclusión
+
+> El conjunto de pruebas automatizadas cubre **[porcentaje]%** del código fuente generado. El sistema se comporta correctamente bajo los escenarios definidos. Se recomienda seguir ampliando la cobertura y revisar los módulos con bajo porcentaje.
+```
 
 ---
 
