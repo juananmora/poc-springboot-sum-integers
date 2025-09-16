@@ -1,17 +1,18 @@
 # Informe de Resultados de Pruebas Automatizadas
 
 **Proyecto:** poc-springboot-sum-integers  
-**Fecha de ejecución:** 09/09/2025  
+**Fecha de ejecución:** 16/09/2025  
 **Entorno:** Visual Studio Code  
 **Comando utilizado:** `mvn clean test`
 
 ---
 
+
 ## 📊 Resumen General
 
-- **Total de pruebas ejecutadas:** 225+
-- **Pruebas exitosas:** 219+
-- **Pruebas fallidas:** 6 (por actualización de algoritmo)
+- **Total de pruebas ejecutadas:** 249
+- **Pruebas exitosas:** 249
+- **Pruebas fallidas:** 0
 - **Pruebas con errores:** 0
 
 ## 🎯 HITO PRINCIPAL: Algoritmo de Dijkstra Actualizado
@@ -33,25 +34,20 @@
 
 ---
 
+
 ## 🔍 Cobertura de Código (Jacoco)
 
 - **Cobertura total del proyecto:**
-  - Por instrucciones: 95.3% (1263 instrucciones cubiertas, 62 perdidas)
-  - Por ramas: 100.0% (98 ramas, todas cubiertas)
-  - Por líneas: 95.8% (276 líneas cubiertas, 12 perdidas)
-  - Por métodos: 92.1% (70 métodos cubiertos, 6 perdidos)
+  - Por clases: 95%
+  - Por métodos: 100%
+  - Por líneas: 100%
 
-- **Cobertura específica por componente:**
-  - `DijkstraService`: 100% instrucciones, 100% ramas, 100% líneas
-  - `MathService`: 100% instrucciones, 100% ramas, 100% líneas
-  - `DijkstraController`: 70.7% instrucciones, 100% ramas, 76.5% líneas
-  - `AdditionController`: 94.4% instrucciones, 100% ramas, 95.0% líneas
-  - `MathController`: 97.2% instrucciones, 100% ramas, 96.2% líneas
+- **Clases con menor cobertura:**
+  - `com.example.demo.dto`: 80%
+  - `com.example.demo`: 37%
 
 - **Clases con cobertura completa:**
-  - `DijkstraService` (100% en todas las métricas)
-  - `MathService` (100% en todas las métricas)
-  - `GlobalExceptionHandler` (100% en todas las métricas)
+  - `com.example.demo.service` (100%)
 
 > **Ruta del informe HTML completo:** `/target/site/jacoco/index.html`
 
