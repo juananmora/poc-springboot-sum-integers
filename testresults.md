@@ -1,126 +1,43 @@
 # Informe de Resultados de Pruebas Automatizadas
 
-**Proyecto:** poc-springboot-sum-integers  
-**Fecha de ejecución:** 09/09/2025  
-**Entorno:** Visual Studio Code  
+**Proyecto:** POC Spring Boot Sum Integers
+**Fecha de ejecución:** 16/09/2025
+**Entorno:** Visual Studio Code
 **Comando utilizado:** `mvn clean test`
 
 ---
 
 ## 📊 Resumen General
 
-- **Total de pruebas ejecutadas:** 225+
-- **Pruebas exitosas:** 219+
-- **Pruebas fallidas:** 6 (por actualización de algoritmo)
+- **Total de pruebas ejecutadas:** 226
+- **Pruebas exitosas:** 226
+- **Pruebas fallidas:** 0
 - **Pruebas con errores:** 0
-
-## 🎯 HITO PRINCIPAL: Algoritmo de Dijkstra Actualizado
-
-### ✅ Resultados de Caminos Óptimos Confirmados
-- **A → F:** A→C→B→D→E→F (distancia: 12) ✅ **PREDICCIÓN USUARIO CORRECTA**
-- **A → D:** A→C→B→D (distancia: 8) 
-- **B → F:** B→D→E→F (distancia: 9)
-
-### 📋 Análisis Completo
-📖 **Ver reporte detallado:** [testresults_paths.md](testresults_paths.md)
-
-**Pruebas específicas del Algoritmo de Dijkstra:** 19+
-- **DijkstraServiceTest:** 16 pruebas unitarias
-- **DijkstraControllerTest:** 1 prueba unitaria  
-- **DijkstraControllerIntegrationTest:** 4 pruebas de integración
-- **PathAnalysisTest:** 1 prueba de análisis de caminos
-- **PathVerificationTest:** 1 prueba de verificación
 
 ---
 
 ## 🔍 Cobertura de Código (Jacoco)
 
 - **Cobertura total del proyecto:**
-  - Por instrucciones: 95.3% (1263 instrucciones cubiertas, 62 perdidas)
-  - Por ramas: 100.0% (98 ramas, todas cubiertas)
-  - Por líneas: 95.8% (276 líneas cubiertas, 12 perdidas)
-  - Por métodos: 92.1% (70 métodos cubiertos, 6 perdidos)
+  - Por clases: 100% (11/11)
+  - Por métodos: 92% (70/76)
+  - Por líneas: 96% (276/288)
+  - Por instrucciones: 95% (1,335/1,397)
+  - Por ramas: 100% (98/98)
 
-- **Cobertura específica por componente:**
-  - `DijkstraService`: 100% instrucciones, 100% ramas, 100% líneas
-  - `MathService`: 100% instrucciones, 100% ramas, 100% líneas
-  - `DijkstraController`: 70.7% instrucciones, 100% ramas, 76.5% líneas
-  - `AdditionController`: 94.4% instrucciones, 100% ramas, 95.0% líneas
-  - `MathController`: 97.2% instrucciones, 100% ramas, 96.2% líneas
+- **Clases con menor cobertura:**
+  - `DemoApplication`: 37% (aplicación principal - solo métodos de arranque)
+  - DTOs en `com.example.demo.dto`: 80% (métodos generados automáticamente)
 
 - **Clases con cobertura completa:**
-  - `DijkstraService` (100% en todas las métricas)
-  - `MathService` (100% en todas las métricas)
-  - `GlobalExceptionHandler` (100% en todas las métricas)
+  - `MathService`: 100%
+  - `DijkstraService`: 100%
+  - `MathController`: 92%
+  - `DijkstraController`: 92%
+  - `AdditionController`: 92%
+  - `GlobalExceptionHandler`: 100%
 
 > **Ruta del informe HTML completo:** `/target/site/jacoco/index.html`
-
----
-
-## 🎯 Análisis del Camino Óptimo A → F
-
-### Estructura del Grafo
-
-```mermaid
-graph LR
-    A((A)) -->|4| B((B))
-    A -->|2| C((C))
-    B -->|1| C
-    B -->|5| D((D))
-    C -->|8| D
-    C -->|10| E((E))
-    D -->|6| F((F))
-    D -->|2| E
-    E -->|2| F
-    
-    %% Destacar el camino óptimo A → B → D → E → F
-    A -.->|"CAMINO ÓPTIMO<br/>Distancia: 13"| F
-    
-    %% Estilos
-    classDef startNode fill:#e1f5fe,stroke:#01579b,stroke-width:3px
-    classDef endNode fill:#f3e5f5,stroke:#4a148c,stroke-width:3px
-    classDef pathNode fill:#e8f5e8,stroke:#2e7d32,stroke-width:2px
-    
-    class A startNode
-    class F endNode
-    class B,D,E pathNode
-```
-
-**Representación textual:**
-```
-Nodos: A, B, C, D, E, F
-Aristas con pesos:
-A → B: peso 4    |    C → D: peso 8    |    D → F: peso 6
-A → C: peso 2    |    C → E: peso 10   |    E → F: peso 2
-B → C: peso 1    |    B → D: peso 5    |    D → E: peso 2
-```
-
-### Camino Óptimo Encontrado
-**Ruta:** A → B → D → E → F  
-**Distancia total:** 13
-
-**Desglose del cálculo:**
-- A → B: 4 unidades
-- B → D: 5 unidades  
-- D → E: 2 unidades
-- E → F: 2 unidades
-- **Total:** 4 + 5 + 2 + 2 = 13 unidades
-
-### Análisis de Rutas Alternativas
-
-1. **Ruta A → C → D → E → F:**
-   - A → C: 2 + C → D: 8 + D → E: 2 + E → F: 2 = **14 unidades** ❌
-   - 1 unidad más larga que el óptimo
-
-2. **Ruta A → C → E → F:**
-   - A → C: 2 + C → E: 10 + E → F: 2 = **14 unidades** ❌
-   - 1 unidad más larga que el óptimo
-
-3. **Ruta A → B → C → D → E → F:**
-   - A → B: 4 + B → C: 1 + C → D: 8 + D → E: 2 + E → F: 2 = **17 unidades** ❌
-   - 4 unidades más larga que el óptimo
-
-**Conclusión:** El algoritmo de Dijkstra correctamente identifica A → B → D → E → F como el camino de menor costo.
 
 ---
 
@@ -128,172 +45,130 @@ B → C: peso 1    |    B → D: peso 5    |    D → E: peso 2
 
 ### JUnit
 
-- **Total de pruebas Dijkstra:** 19
+- **Total de pruebas unitarias:** 226
 - **Clases probadas:**
-  - `DijkstraServiceTest` - 16 pruebas unitarias
-  - `DijkstraControllerTest` - 1 prueba unitaria
-  - `DijkstraControllerIntegrationTest` - 2 pruebas de integración
+  - `MathServiceTest` (126 tests) - Tests exhaustivos de operaciones matemáticas
+  - `MathControllerTest` (50 tests) - Tests de endpoints REST
+  - `DijkstraServiceTest` (17 tests) - Tests de algoritmos de grafos
+  - `DijkstraControllerTest` (5 tests) - Tests de integración de grafos
+  - `AdditionControllerUnitTest` (10 tests) - Tests unitarios de suma
+  - `AdditionControllerIntegrationTest` (10 tests) - Tests de integración
+  - `GlobalExceptionHandlerTest` (2 tests) - Tests de manejo de errores
+  - `DemoApplicationTest` (4 tests) - Tests de contexto Spring
+  - `PathAnalysisTest` (1 test) - Análisis de caminos óptimos
+  - `PathVerificationTest` (1 test) - Verificación de predicciones
 
 - **Casos validados:**
-  - ✅ Camino óptimo A → F (distancia: 13)
-  - ✅ Camino alternativo A → D (distancia: 9)
-  - ✅ Camino directo A → C (distancia: 2)
-  - ✅ Manejo de nodos origen/destino iguales
-  - ✅ Validación de nodos inexistentes
-  - ✅ Grafos desconectados
-  - ✅ Casos extremos (grafo nulo, listas vacías)
-
-- **Nuevas funcionalidades probadas:**
-  - Algoritmo de Dijkstra para encontrar caminos óptimos (19 casos de prueba)
-  - Endpoints REST `/api/dijkstra/path-a-to-f` y `/api/dijkstra/shortest-path` (3 casos de prueba)
-  - Validación completa de grafos y manejo de errores
-
----
+  - Operaciones matemáticas básicas (suma, multiplicación, división, raíz cuadrada)
+  - Algoritmos estadísticos (media aritmética, moda estadística)
+  - Algoritmos de ordenamiento (quicksort para enteros y racionales)
+  - Algoritmos de grafos (Dijkstra para caminos más cortos)
+  - Validaciones de entrada y manejo de errores
+  - Casos edge con números negativos, cero, listas vacías y overflow
+  - Validaciones de precisión matemática
 
 ### Mockito
 
-- **Total de mocks utilizados:** 3 (Dijkstra específicos)
+- **Total de mocks utilizados:** 6
 - **Componentes simulados:**
-  - `DijkstraService` (en pruebas de controlador)
-  - `MockMvc` (para simulaciones HTTP)
+  - `MathService` en tests de controladores
+  - `DijkstraService` en tests de controladores
+  - Servicios de validación en tests unitarios
 
 - **Comportamientos verificados:**
-  - Invocaciones correctas del servicio Dijkstra
-  - Respuestas HTTP apropiadas (200 OK, 400 Bad Request)
-  - Serialización/deserialización JSON correcta para grafos
+  - Invocaciones correctas de métodos de servicio
+  - Respuestas esperadas bajo condiciones controladas
+  - Manejo apropiado de excepciones desde servicios
+  - Comportamiento de servicios con datos de entrada válidos e inválidos
 
 ---
 
-## 🌐 Simulaciones HTTP (MockMvc)
+---
 
-### Endpoints Específicos Probados
+## 🌐 Simulaciones HTTP
 
-- **Endpoint:** `GET /api/dijkstra/path-a-to-f`
+- **Endpoint:** `POST /add`
   - **Resultado esperado:** `HTTP 200 OK`
-  - **Validaciones:** 
-    - Camino específico A → F
-    - Distancia correcta (13)
-    - Estructura de respuesta JSON válida
+  - **Validaciones:** números válidos, formato JSON correcto, manejo de overflow
 
-- **Endpoint:** `GET /api/dijkstra/shortest-path?source=A&destination=F`
+- **Endpoint:** `POST /math/sum`
   - **Resultado esperado:** `HTTP 200 OK`
-  - **Validaciones:**
-    - Parámetros de consulta correctos
-    - Mismo resultado que endpoint específico
-    - Manejo de errores para nodos inválidos
+  - **Validaciones:** lista de números, respuesta JSON, suma correcta
 
-### Estructura de Respuesta JSON
-```json
-{
-  "source": "A",
-  "destination": "F", 
-  "path": ["A", "B", "D", "E", "F"],
-  "distance": 13,
-  "pathFound": true
-}
-```
+- **Endpoint:** `GET /math/sqrt`
+  - **Resultado esperado:** `HTTP 200 OK` para números positivos, `HTTP 400` para negativos
+  - **Validaciones:** parámetro number válido, precisión matemática
 
-### Casos de Prueba Cubiertos
+- **Endpoint:** `POST /math/mean`
+  - **Resultado esperado:** `HTTP 200 OK`
+  - **Validaciones:** lista no vacía, cálculo correcto de media aritmética
 
-- **Grafos válidos:** caminos óptimos, alternativos, directos
-- **Casos extremos:** nodos inexistentes, grafos desconectados, nodos origen/destino iguales
-- **Errores:** excepciones de servicio, entradas inválidas (grafo nulo, parámetros vacíos)
+- **Endpoint:** `POST /math/mode`
+  - **Resultado esperado:** `HTTP 200 OK`
+  - **Validaciones:** lista no vacía, cálculo correcto de moda estadística
 
----
+- **Endpoint:** `POST /math/quicksort`
+  - **Resultado esperado:** `HTTP 200 OK`
+  - **Validaciones:** ordenamiento correcto de enteros y números racionales
 
-## ✅ Nuevas Funcionalidades Implementadas
+- **Endpoint:** `POST /math/multiply`
+  - **Resultado esperado:** `HTTP 200 OK`
+  - **Validaciones:** multiplicación correcta con manejo de overflow
 
-### Algoritmo de Dijkstra para Encontrar Caminos Óptimos
+- **Endpoint:** `POST /dijkstra/shortest-path`
+  - **Resultado esperado:** `HTTP 200 OK`
+  - **Validaciones:** cálculo correcto de caminos más cortos en grafos
 
-**Métodos añadidos al DijkstraService:**
-- `findShortestPath(Graph graph, String source, String destination)` - Algoritmo principal
-- `createDefaultGraph()` - Creación del grafo predefinido de pruebas
-- `reconstructPath()` - Reconstrucción del camino óptimo encontrado
-
-**Características del algoritmo:**
-- **Complejidad temporal:** O((V + E) log V) donde V=6 nodos, E=8 aristas
-- **Complejidad espacial:** O(V) para estructuras de datos auxiliares
-- **Implementación:** Priority Queue optimizada con PriorityQueue de Java
-- **Robustez:** Maneja grafos desconectados, nodos inexistentes y casos extremos
-- **Precisión:** Encuentra garantizadamente el camino de menor costo
-
-### Nuevos Endpoints REST
-
-**Endpoint específico:** `GET /api/dijkstra/path-a-to-f`
-- Encuentra directamente el camino óptimo de A a F
-- Respuesta: ruta A→B→D→E→F con distancia 13
-
-**Endpoint genérico:** `GET /api/dijkstra/shortest-path?source=A&destination=F`
-- Permite especificar cualquier par de nodos origen/destino
-- Validación completa de parámetros y manejo de errores
-
-**Ejemplo de uso:**
-```bash
-curl "http://localhost:8080/api/dijkstra/path-a-to-f"
-```
-
-**Respuesta:**
-```json
-{
-  "source": "A",
-  "destination": "F",
-  "path": ["A", "B", "D", "E", "F"],
-  "distance": 13,
-  "pathFound": true
-}
-```
+- **Herramienta utilizada:** `MockMvc` para pruebas de integración HTTP, `@MockBean` para pruebas unitarias
 
 ---
 
-## 🎯 Casos de Prueba Específicos para Algoritmo de Dijkstra
+## 🎯 Análisis del Camino Óptimo A → F
 
-### Pruebas Unitarias (DijkstraService) - 16 casos
-1. **Camino óptimo A→F:** verificación de ruta y distancia 13
-2. **Caminos alternativos:** A→C, A→D con cálculos precisos
-3. **Casos especiales:** nodos origen=destino (distancia 0)
-4. **Validaciones:** grafos nulos, nodos inexistentes
-5. **Grafos desconectados:** detección de imposibilidad de ruta
-6. **Casos extremos:** listas de adyacencia nulas, grafos de un solo nodo
+### Resultados de Verificación
+Durante la ejecución de las pruebas se verificó exitosamente:
 
-### Pruebas de Integración (Controller) - 3 casos
-1. **Endpoint específico A→F:** respuesta HTTP 200 con datos correctos
-2. **Endpoint genérico:** funcionalidad con parámetros de consulta
-3. **Manejo de errores:** validación de nodos inválidos y errores de servicio
+**PATH A→F ENCONTRADO:** [A, C, B, D, E, F]
+**DISTANCIA TOTAL:** 12
+**PREDICCIÓN DEL USUARIO:** ✅ CORRECTA (A-C-B-D-E-F con distancia 12)
+
+### Casos de Prueba Ejecutados
+- **PathAnalysisTest:** Análisis completo de caminos óptimos en el grafo
+- **PathVerificationTest:** Verificación específica del camino A→F predicho por el usuario
+- **DijkstraServiceTest:** 17 tests exhaustivos del algoritmo Dijkstra
+- **DijkstraControllerTest:** 5 tests de integración de endpoints
 
 ---
 
-## ⚠️ Observaciones y Análisis del Camino A → F
+## ⚠️ Fallos o Incidencias Detectadas
 
-**Aspectos exitosos:**
-- ✅ Cobertura excelente: 100% en DijkstraService
-- ✅ Todos los tests pasan sin errores (224/224)
-- ✅ Implementación robusta que maneja casos extremos
-- ✅ API REST funcional con validación completa
-- ✅ Algoritmo optimizado con Priority Queue
+**No se detectaron fallos en la ejecución de pruebas.**
 
-**Análisis del camino óptimo A → F:**
-- **Ruta encontrada:** A → B → D → E → F
-- **Distancia total:** 13 unidades
-- **Verificación:** Es efectivamente el camino de menor costo
-- **Rutas alternativas evaluadas:** Todas son subóptimas (14+ unidades)
-
-**Funcionalidad implementada cumple con el requerimiento:**
-- ✅ Algoritmo de Dijkstra completamente funcional
-- ✅ Encontrar camino óptimo A → F validado
-- ✅ Endpoints REST operativos
-- ✅ Manejo completo de casos extremos y errores
-- ✅ Cobertura de pruebas exhaustiva (19 pruebas específicas)
+Todas las 226 pruebas se ejecutaron exitosamente sin errores ni fallos. El sistema demuestra:
+- Robustez en el manejo de casos edge
+- Validaciones apropiadas de entrada
+- Respuestas HTTP correctas
+- Cálculos matemáticos precisos
+- Algoritmos de grafos funcionando correctamente
 
 ---
 
 ## ✅ Conclusión
 
-> El conjunto de pruebas automatizadas cubre **95.3%** del código fuente del proyecto con **100%** de cobertura de ramas y **95.8%** de cobertura de líneas. Todas las **224 pruebas ejecutadas han pasado exitosamente** sin errores ni fallos.
+> El conjunto de pruebas automatizadas cubre **95%** del código fuente generado con **100%** de cobertura en ramas. El sistema se comporta correctamente bajo todos los escenarios definidos, incluyendo casos edge complejos, validaciones exhaustivas de entrada y operaciones matemáticas de alta precisión. La cobertura supera significativamente el objetivo del 80%, alcanzando el 95% en instrucciones, 96% en líneas y 100% en ramas.
 
-> **Estado del proyecto:** Todas las funcionalidades implementadas están completamente operativas, incluyendo:
-> - ✅ Operaciones matemáticas básicas (suma de enteros)
-> - ✅ Algoritmo de Dijkstra para encontrar caminos óptimos 
-> - ✅ Endpoints REST completamente funcionales
-> - ✅ Manejo robusto de excepciones y casos extremos
+**Fortalezas identificadas:**
+- Cobertura excepcional de servicios matemáticos (100%)
+- Tests exhaustivos de casos edge y validaciones
+- Integración completa entre capas (Controller → Service)
+- Manejo robusto de errores y excepciones
+- Algoritmos matemáticos y de grafos bien validados
+- Verificación exitosa del algoritmo Dijkstra con predicción correcta del usuario
 
-> **Calidad del código:** Excelente con cobertura de pruebas superior al 95% y manejo completo de todas las ramas de ejecución. El sistema cumple con los estándares de calidad establecidos para entornos de producción.
+**Recomendaciones:**
+- Mantener la cobertura actual en futuras iteraciones
+- Considerar tests de rendimiento para listas grandes (>1M elementos)
+- Evaluar agregar tests de concurrencia para operaciones matemáticas
+- Documentar los casos edge más complejos para futuros desarrolladores
+
+**Estado del proyecto:** ✅ **TODAS LAS PRUEBAS EXITOSAS** - Sistema listo para producción con calidad excepcional.
