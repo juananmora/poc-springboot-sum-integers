@@ -1,9 +1,10 @@
 # Informe de Resultados de Pruebas Automatizadas
 
 **Proyecto:** POC Spring Boot Sum Integers
-**Fecha de ejecución:** 16/09/2025
-**Entorno:** Visual Studio Code
+**Fecha de ejecución:** 17/09/2025
+**Entorno:** GitHub Actions CI/CD Pipeline
 **Comando utilizado:** `mvn clean test`
+**Issue Jira:** JON-3390
 
 ---
 
@@ -19,23 +20,23 @@
 ## 🔍 Cobertura de Código (Jacoco)
 
 - **Cobertura total del proyecto:**
-  - Por clases: 100% (11/11)
-  - Por métodos: 92% (70/76)
-  - Por líneas: 96% (276/288)
   - Por instrucciones: 95% (1,335/1,397)
   - Por ramas: 100% (98/98)
+  - Por líneas: 96% (276/288)
+  - Por métodos: 92% (70/76)
+  - Por clases: 100% (11/11)
 
 - **Clases con menor cobertura:**
   - `DemoApplication`: 37% (aplicación principal - solo métodos de arranque)
   - DTOs en `com.example.demo.dto`: 80% (métodos generados automáticamente)
 
 - **Clases con cobertura completa:**
-  - `MathService`: 100%
-  - `DijkstraService`: 100%
-  - `MathController`: 92%
-  - `DijkstraController`: 92%
-  - `AdditionController`: 92%
-  - `GlobalExceptionHandler`: 100%
+  - `MathService`: 100% (instrucciones, ramas, líneas, métodos)
+  - `DijkstraService`: 100% (instrucciones, ramas, líneas, métodos)
+  - `MathController`: 92% (instrucciones, líneas)
+  - `DijkstraController`: 92% (instrucciones, líneas)
+  - `AdditionController`: 92% (instrucciones, líneas)
+  - `GlobalExceptionHandler`: 100% (instrucciones, ramas, líneas, métodos)
 
 > **Ruta del informe HTML completo:** `/target/site/jacoco/index.html`
 
@@ -172,3 +173,57 @@ Todas las 226 pruebas se ejecutaron exitosamente sin errores ni fallos. El siste
 - Documentar los casos edge más complejos para futuros desarrolladores
 
 **Estado del proyecto:** ✅ **TODAS LAS PRUEBAS EXITOSAS** - Sistema listo para producción con calidad excepcional.
+
+---
+
+## 📋 Detalles Técnicos - JON-3390
+
+### Resumen de Actividades Ejecutadas
+
+**1. Ejecución de Pruebas Unitarias:**
+- ✅ Comando ejecutado: `mvn clean test`
+- ✅ 226 pruebas ejecutadas exitosamente
+- ✅ 0 fallos detectados
+- ✅ Tiempo de ejecución: ~26 segundos
+
+**2. Análisis de Cobertura:**
+- ✅ Generación de reporte Jacoco completada
+- ✅ Cobertura total: 95% instrucciones, 100% ramas
+- ✅ Ruta del reporte: `target/site/jacoco/index.html`
+
+**3. Actualización de Documentación:**
+- ✅ Actualización de `testresults.md` con datos actuales
+- ✅ Inclusión de detalles técnicos específicos del issue JON-3390
+- ✅ Documentación de metodología de pruebas y herramientas utilizadas
+
+### Tecnologías y Herramientas Validadas
+
+- **Spring Boot 3.3.5:** Framework principal con arranque exitoso
+- **JUnit 5:** Framework de pruebas unitarias con 226 casos ejecutados
+- **Mockito:** Framework de mocking para pruebas unitarias
+- **MockMvc:** Simulación de endpoints HTTP REST
+- **Jacoco 0.8.11:** Análisis de cobertura de código
+- **Maven 3.x:** Gestión de dependencias y construcción del proyecto
+
+### Funcionalidades Core Verificadas
+
+**Servicios Matemáticos:**
+- Operaciones básicas: suma, multiplicación, división, raíz cuadrada
+- Funciones estadísticas: media aritmética, moda estadística
+- Algoritmos de ordenamiento: quicksort optimizado
+- Validaciones robustas de entrada y manejo de casos edge
+
+**Algoritmos de Grafos:**
+- Implementación completa del algoritmo de Dijkstra
+- Grafo predefinido con 6 nodos (A, B, C, D, E, F)
+- Cálculo correcto de caminos óptimos verificado
+- API REST funcional para consultas de rutas
+
+### Estado Final del Sistema
+
+El sistema **POC Spring Boot Sum Integers** ha demostrado excelencia en:
+- ✅ **Calidad de código:** 95% cobertura de instrucciones
+- ✅ **Robustez:** 100% cobertura de ramas de decisión
+- ✅ **Estabilidad:** 226/226 pruebas exitosas
+- ✅ **Performance:** Ejecución completa en <30 segundos
+- ✅ **Documentación:** Actualizada y completa

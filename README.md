@@ -46,7 +46,7 @@ Una aplicación Spring Boot que proporciona operaciones matemáticas básicas y 
 ```bash
 mvn test
 ```
-**Descripción:** Ejecuta todas las pruebas unitarias e de integración (225+ pruebas total).
+**Descripción:** Ejecuta todas las pruebas unitarias e de integración (226 pruebas total).
 
 #### 2. Compilar y Ejecutar Pruebas con Reporte de Cobertura
 ```bash
@@ -347,7 +347,7 @@ poc-springboot-sum-integers/
 - ✅ **Total de Pruebas:** 226
 - ✅ **Pruebas Exitosas:** 226 (100%)
 - ❌ **Pruebas Fallidas:** 0
-- ⏱️ **Tiempo Total:** ~35 segundos
+- ⏱️ **Tiempo Total:** ~26 segundos
 - 🎯 **Cobertura:** >95%
 
 ### Hitos Importantes
