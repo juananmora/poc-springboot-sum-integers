@@ -1,10 +1,10 @@
 # Informe de Resultados de Pruebas Automatizadas
 
 **Proyecto:** POC Spring Boot Sum Integers
-**Fecha de ejecución:** 17/09/2025
+**Fecha de ejecución:** 18/09/2025
 **Entorno:** GitHub Actions CI/CD Pipeline
 **Comando utilizado:** `mvn clean test`
-**Issue Jira:** JON-3390
+**Issue Jira:** JUAN-1
 **Ejecutor:** GitHub Copilot Agent
 
 ---
@@ -196,6 +196,57 @@ Todas las 226 pruebas se ejecutaron exitosamente sin errores ni fallos. El siste
 - ✅ Actualización de `testresults.md` con datos actuales
 - ✅ Inclusión de detalles técnicos específicos del issue JON-3390
 - ✅ Documentación de metodología de pruebas y herramientas utilizadas
+
+### Tecnologías y Herramientas Validadas
+
+- **Spring Boot 3.3.5:** Framework principal con arranque exitoso
+- **JUnit 5:** Framework de pruebas unitarias con 226 casos ejecutados
+- **Mockito:** Framework de mocking para pruebas unitarias
+- **MockMvc:** Simulación de endpoints HTTP REST
+- **Jacoco 0.8.11:** Análisis de cobertura de código
+- **Maven 3.x:** Gestión de dependencias y construcción del proyecto
+
+---
+
+## 📋 Detalles Técnicos - JUAN-1
+
+### Resumen de Actividades Ejecutadas
+
+**1. Ejecución de Pruebas Unitarias:**
+- ✅ Comando ejecutado: `mvn clean test`
+- ✅ 226 pruebas ejecutadas exitosamente
+- ✅ 0 fallos detectados
+- ✅ Tiempo de ejecución: ~32 segundos
+- ✅ Build Maven exitoso sin errores
+
+**2. Análisis de Fallos (No Aplicable):**
+- ✅ Estado inicial: Todas las pruebas pasando exitosamente
+- ✅ No se detectaron fallos que requieran corrección
+- ✅ Sistema en estado de calidad óptimo
+- ✅ Cobertura mantenida en 95% instrucciones, 100% ramas
+
+**3. Actualización de Documentación:**
+- ✅ Actualización de `testresults.md` con datos del issue JUAN-1
+- ✅ Sincronización de fecha de ejecución (18/09/2025)
+- ✅ Documentación de nuevos resultados de testing
+- ✅ Validación de cumplimiento de los objetivos del issue
+
+### Metodología de Testing Aplicada
+
+**Spring Boot Testing Best Practices (Context7):**
+- ✅ **@SpringBootTest:** Pruebas de integración completas con contexto Spring
+- ✅ **@AutoConfigureMockMvc:** Configuración automática de MockMvc para endpoints REST
+- ✅ **TestRestTemplate:** Testing de endpoints con servidor embebido
+- ✅ **@MockBean:** Mocking de dependencias para pruebas unitarias aisladas
+- ✅ **@Nested:** Organización jerárquica de casos de prueba
+- ✅ **@ParameterizedTest:** Pruebas parametrizadas para múltiples casos
+
+**Cobertura de Código Jacoco:**
+- ✅ Instrucciones: 95% (1,335/1,397) - Superior al objetivo 80%
+- ✅ Ramas: 100% (98/98) - Cobertura completa de decisiones
+- ✅ Líneas: 96% (276/288) - Excelente cobertura de líneas
+- ✅ Métodos: 92% (70/76) - Amplia cobertura de métodos
+- ✅ Clases: 100% (11/11) - Todas las clases cubiertas
 
 ### Tecnologías y Herramientas Validadas
 
