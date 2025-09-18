@@ -32,7 +32,7 @@
 - Clases: 100% (11/11)
 
 **Testing Exhaustivo:**
-- 226 pruebas unitarias exitosas (0 fallos)
+- 226 pruebas unitarias exitosas (0 fallos, 18.5s ejecución)
 - Distribución: MathService (126), Controllers (55), Dijkstra (22), Integration (23)
 - Frameworks: JUnit 5, Mockito, MockMvc
 
@@ -66,7 +66,7 @@
 **Issue:** JUAN-2  
 **Ejecutado por:** GitHub Copilot Agent  
 **Comando:** `mvn clean test`  
-**Fecha:** 18/09/2025  
+**Fecha:** 18/09/2025 - 18:13:31 UTC  
 **Estado:** ✅ COMPLETADO EXITOSAMENTE
 
 ---
