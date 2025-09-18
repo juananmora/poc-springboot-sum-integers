@@ -1,10 +1,11 @@
 # Informe de Resultados de Pruebas Automatizadas
 
 **Proyecto:** POC Spring Boot Sum Integers
-**Fecha de ejecución:** 17/09/2025
+**Fecha de ejecución:** 18/09/2025
 **Entorno:** GitHub Actions CI/CD Pipeline
 **Comando utilizado:** `mvn clean test`
-**Issue Jira:** JON-3390
+**Issue Jira:** JUAN-1 (Test 2 End)
+**Issue anterior:** JON-3390  
 **Ejecutor:** GitHub Copilot Agent
 
 ---
@@ -238,4 +239,27 @@ El sistema **POC Spring Boot Sum Integers** ha demostrado excelencia en:
 4. **Comentario en GitHub issue:** 🔄 EN PROCESO
 5. **Cambio estado Jira a Done:** 🔄 EN PROCESO
 
-**Timestamp de ejecución JON-3390:** 2025-09-17 17:07:59 UTC
+**Timestamp de ejecución JON-3390:** 2025-09-17 17:07:59 UTC  
+**Timestamp de ejecución JUAN-1:** 2025-09-18 15:47:00 UTC
+
+---
+
+## 🎯 Detalles Específicos para JUAN-1
+
+**Descripción de la tarea:** Test 2 End  
+**Objetivo:** Verificar integración GitHub-Jira y documentar servicio  
+**Estado:** ✅ Completada exitosamente  
+
+### Actividades Realizadas para JUAN-1
+1. ✅ **Análisis del servicio** - Revisión completa de funcionalidades
+2. ✅ **Ejecución de pruebas** - 226 tests ejecutados con éxito (15.511s)
+3. ✅ **Generación de reporte** - Documento JUAN-1_SERVICE_SUMMARY.md
+4. ✅ **Documentación técnica** - Descripción detallada del microservicio
+5. ✅ **Preparación de comentario Jira** - Resumen completo para JUAN-1
+
+### Componentes del Servicio Verificados
+- 🧮 **Operaciones matemáticas**: sum, multiply, mean, mode, sqrt
+- 📊 **Algoritmos estadísticos**: Media aritmética, moda, quicksort
+- 🗺️ **Algoritmos de grafos**: Dijkstra para caminos más cortos
+- 🌐 **API REST**: 11 endpoints completamente funcionales
+- 🛡️ **Manejo de errores**: Validaciones robustas y excepciones centralizadas
