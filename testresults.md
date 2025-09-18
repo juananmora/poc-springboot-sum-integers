@@ -1,10 +1,10 @@
 # Informe de Resultados de Pruebas Automatizadas
 
 **Proyecto:** POC Spring Boot Sum Integers
-**Fecha de ejecución:** 18/09/2025
+**Fecha de ejecución:** 18/09/2025 - 18:13:31 UTC
 **Entorno:** GitHub Actions CI/CD Pipeline
 **Comando utilizado:** `mvn clean test`
-**Issue Jira:** JUAN-1 - COMPLETADO EXITOSAMENTE
+**Issue Jira:** JUAN-2 - COMPLETADO EXITOSAMENTE
 **Ejecutor:** GitHub Copilot Agent
 
 ---
@@ -383,7 +383,7 @@ El sistema **POC Spring Boot Sum Integers** ha demostrado excelencia en:
 | 3 | **Actualizar documentación** | ✅ COMPLETADA | testresults.md actualizado con JUAN-2 |
 | 4 | **Crear resumen para Jira** | ✅ COMPLETADA | Resumen detallado preparado y documentado |
 
-**Timestamp de ejecución JUAN-2:** 2025-09-18 17:36:00 UTC
+**Timestamp de ejecución JUAN-2:** 2025-09-18 18:13:31 UTC
 
 **🏆 ISSUE JUAN-2 COMPLETADO EXITOSAMENTE - 100% DE LOS OBJETIVOS CUMPLIDOS**
 
