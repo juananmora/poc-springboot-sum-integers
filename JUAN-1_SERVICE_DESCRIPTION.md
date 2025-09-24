@@ -110,3 +110,4 @@ El **POC Spring Boot Sum Integers** es una aplicación REST API avanzada que pro
 **Ejecutor:** GitHub Copilot Agent  
 **Issue Jira:** JUAN-1  
 **Comando test utilizado:** `mvn clean test`
+**Duración total:** ~25 segundos
