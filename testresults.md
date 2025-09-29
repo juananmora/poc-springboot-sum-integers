@@ -1,11 +1,12 @@
 # Informe de Resultados de Pruebas Automatizadas
 
 **Proyecto:** POC Spring Boot Sum Integers
-**Fecha de ejecución:** 18/09/2025 - 18:13:31 UTC
+**Fecha de ejecución:** 29/09/2025 - 18:37:48 UTC
 **Entorno:** GitHub Actions CI/CD Pipeline
 **Comando utilizado:** `mvn clean test`
-**Issue Jira:** JON-3394 - EJECUTADO EXITOSAMENTE  
+**Issue Jira:** JON-3394 - COMPLETADO EXITOSAMENTE  
 **Ejecutor:** GitHub Copilot Agent
+**Tiempo de ejecución total:** 39.639 segundos
 
 ---
 
