@@ -2,7 +2,7 @@ name: Auto-assign Copilot to Labeled Issues
 
 on:
   issues:
-    types: [opened, labeled]
+    types: [labeled]
 
 permissions:
   issues: write
