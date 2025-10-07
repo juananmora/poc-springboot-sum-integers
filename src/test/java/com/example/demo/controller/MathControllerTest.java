@@ -1110,4 +1110,277 @@ class MathControllerTest {
             verify(mathService, times(1)).calculateMode(numbers);
         }
     }
+
+    @Nested
+    @DisplayName("POST /api/math/factorial endpoint tests")
+    class FactorialEndpointTests {
+
+        @Test
+        @DisplayName("Should return factorial for 0")
+        void testFactorialZero() throws Exception {
+            // Given
+            Map<String, Object> request = Map.of("number", 0);
+            when(mathService.factorial(0)).thenReturn(1L);
+
+            // When & Then
+            mockMvc.perform(post("/api/math/factorial")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(request)))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.result").value(1))
+                    .andExpect(jsonPath("$.operation").value("factorial"))
+                    .andExpect(jsonPath("$.operand").value(0));
+
+            verify(mathService, times(1)).factorial(0);
+        }
+
+        @Test
+        @DisplayName("Should return factorial for 1")
+        void testFactorialOne() throws Exception {
+            // Given
+            Map<String, Object> request = Map.of("number", 1);
+            when(mathService.factorial(1)).thenReturn(1L);
+
+            // When & Then
+            mockMvc.perform(post("/api/math/factorial")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(request)))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.result").value(1))
+                    .andExpect(jsonPath("$.operation").value("factorial"))
+                    .andExpect(jsonPath("$.operand").value(1));
+
+            verify(mathService, times(1)).factorial(1);
+        }
+
+        @Test
+        @DisplayName("Should return factorial for 5 = 120")
+        void testFactorialFive() throws Exception {
+            // Given
+            Map<String, Object> request = Map.of("number", 5);
+            when(mathService.factorial(5)).thenReturn(120L);
+
+            // When & Then
+            mockMvc.perform(post("/api/math/factorial")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(request)))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.result").value(120))
+                    .andExpect(jsonPath("$.operation").value("factorial"))
+                    .andExpect(jsonPath("$.operand").value(5));
+
+            verify(mathService, times(1)).factorial(5);
+        }
+
+        @Test
+        @DisplayName("Should return factorial for 10 = 3,628,800")
+        void testFactorialTen() throws Exception {
+            // Given
+            Map<String, Object> request = Map.of("number", 10);
+            when(mathService.factorial(10)).thenReturn(3628800L);
+
+            // When & Then
+            mockMvc.perform(post("/api/math/factorial")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(request)))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.result").value(3628800))
+                    .andExpect(jsonPath("$.operation").value("factorial"))
+                    .andExpect(jsonPath("$.operand").value(10));
+
+            verify(mathService, times(1)).factorial(10);
+        }
+
+        @Test
+        @DisplayName("Should return factorial for 20 (maximum valid value)")
+        void testFactorialTwenty() throws Exception {
+            // Given
+            Map<String, Object> request = Map.of("number", 20);
+            when(mathService.factorial(20)).thenReturn(2432902008176640000L);
+
+            // When & Then
+            mockMvc.perform(post("/api/math/factorial")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(request)))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.result").value(2432902008176640000L))
+                    .andExpect(jsonPath("$.operation").value("factorial"))
+                    .andExpect(jsonPath("$.operand").value(20));
+
+            verify(mathService, times(1)).factorial(20);
+        }
+
+        @Test
+        @DisplayName("Should return error for negative number")
+        void testFactorialNegative() throws Exception {
+            // Given
+            Map<String, Object> request = Map.of("number", -5);
+            when(mathService.factorial(-5))
+                    .thenThrow(new IllegalArgumentException("No se puede calcular el factorial de un número negativo"));
+
+            // When & Then
+            mockMvc.perform(post("/api/math/factorial")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(request)))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.error").value("No se puede calcular el factorial de un número negativo"));
+
+            verify(mathService, times(1)).factorial(-5);
+        }
+
+        @Test
+        @DisplayName("Should return error for overflow (number > 20)")
+        void testFactorialOverflow() throws Exception {
+            // Given
+            Map<String, Object> request = Map.of("number", 21);
+            when(mathService.factorial(21))
+                    .thenThrow(new IllegalArgumentException("El factorial de 21 excede el límite de Long.MAX_VALUE (máximo: 20!)"));
+
+            // When & Then
+            mockMvc.perform(post("/api/math/factorial")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(request)))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.error").exists())
+                    .andExpect(jsonPath("$.error").value(org.hamcrest.Matchers.containsString("excede el límite")));
+
+            verify(mathService, times(1)).factorial(21);
+        }
+
+        @Test
+        @DisplayName("Should return error when number field is missing")
+        void testFactorialMissingField() throws Exception {
+            // Given
+            Map<String, Object> request = Map.of();
+
+            // When & Then
+            mockMvc.perform(post("/api/math/factorial")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(request)))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.error").value("El campo 'number' es obligatorio"));
+
+            verify(mathService, never()).factorial(anyInt());
+        }
+
+        @Test
+        @DisplayName("Should return error for non-numeric input")
+        void testFactorialNonNumeric() throws Exception {
+            // Given
+            String request = "{\"number\": \"not-a-number\"}";
+
+            // When & Then
+            mockMvc.perform(post("/api/math/factorial")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(request))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.error").exists());
+
+            verify(mathService, never()).factorial(anyInt());
+        }
+
+        @Test
+        @DisplayName("Should return error for null number")
+        void testFactorialNullNumber() throws Exception {
+            // Given - usando un string JSON con valor null
+            String request = "{\"number\": null}";
+
+            // When & Then
+            mockMvc.perform(post("/api/math/factorial")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(request))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.error").exists());
+
+            verify(mathService, never()).factorial(anyInt());
+        }
+
+        @Test
+        @DisplayName("Should return error for empty request body")
+        void testFactorialEmptyBody() throws Exception {
+            // When & Then
+            mockMvc.perform(post("/api/math/factorial")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(""))
+                    .andExpect(status().isBadRequest());
+
+            verify(mathService, never()).factorial(anyInt());
+        }
+
+        @Test
+        @DisplayName("Should handle double number input by converting to int")
+        void testFactorialDoubleInput() throws Exception {
+            // Given
+            Map<String, Object> request = Map.of("number", 5.0);
+            when(mathService.factorial(5)).thenReturn(120L);
+
+            // When & Then
+            mockMvc.perform(post("/api/math/factorial")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(request)))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.result").value(120))
+                    .andExpect(jsonPath("$.operation").value("factorial"))
+                    .andExpect(jsonPath("$.operand").value(5));
+
+            verify(mathService, times(1)).factorial(5);
+        }
+
+        @Test
+        @DisplayName("Should calculate factorial for intermediate values")
+        void testFactorialIntermediateValues() throws Exception {
+            // Given
+            Map<String, Object> request = Map.of("number", 12);
+            when(mathService.factorial(12)).thenReturn(479001600L);
+
+            // When & Then
+            mockMvc.perform(post("/api/math/factorial")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(request)))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.result").value(479001600L))
+                    .andExpect(jsonPath("$.operation").value("factorial"))
+                    .andExpect(jsonPath("$.operand").value(12));
+
+            verify(mathService, times(1)).factorial(12);
+        }
+
+        @Test
+        @DisplayName("Should return consistent error format")
+        void testFactorialErrorFormat() throws Exception {
+            // Given
+            Map<String, Object> request = Map.of("number", -1);
+            when(mathService.factorial(-1))
+                    .thenThrow(new IllegalArgumentException("Test error message"));
+
+            // When & Then
+            mockMvc.perform(post("/api/math/factorial")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(request)))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.error").exists())
+                    .andExpect(jsonPath("$.result").doesNotExist())
+                    .andExpect(jsonPath("$.operation").doesNotExist());
+
+            verify(mathService, times(1)).factorial(-1);
+        }
+
+        @Test
+        @DisplayName("Should validate service is called with correct parameter")
+        void testFactorialServiceInteraction() throws Exception {
+            // Given
+            Map<String, Object> request = Map.of("number", 7);
+            when(mathService.factorial(7)).thenReturn(5040L);
+
+            // When
+            mockMvc.perform(post("/api/math/factorial")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(request)))
+                    .andExpect(status().isOk());
+
+            // Then
+            verify(mathService, times(1)).factorial(7);
+            verifyNoMoreInteractions(mathService);
+        }
+    }
 }

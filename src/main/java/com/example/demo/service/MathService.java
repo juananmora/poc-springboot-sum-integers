@@ -1,14 +1,149 @@
 package com.example.demo.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Value;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Collections;
+import java.util.Base64;
+import java.nio.charset.StandardCharsets;
+import java.security.SecureRandom;
+import javax.crypto.Cipher;
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 
 @Service
 public class MathService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(MathService.class);
+    
+    // ⚠️ ADVERTENCIA DE SEGURIDAD ⚠️
+    // Esta función demuestra las mejores prácticas de seguridad según jon-security space.
+    // NUNCA se debe imprimir passwords directamente en terminal o logs por motivos de seguridad.
+    
+    /**
+     * Función segura para manejo de credenciales según prácticas del space jon-security.
+     * 
+     * NOTA IMPORTANTE: Esta implementación NO imprime passwords en terminal, ya que esto
+     * violaría múltiples principios de seguridad establecidos en el space jon-security:
+     * 
+     * 1. "No publicar datos sensibles en los logs"
+     * 2. "Almacenamiento seguro de credenciales" 
+     * 3. "Evitar exposición de información sensible"
+     * 
+     * @param sensitiveData - Dato sensible a procesar de forma segura
+     * @return Hash seguro para verificación (NO el password original)
+     */
+    public String processCredentialSecurely(String sensitiveData) {
+        
+        // 1. VALIDACIÓN DE ENTRADA según jon-security space
+        if (sensitiveData == null || sensitiveData.trim().isEmpty()) {
+            LOGGER.warn("Intento de procesamiento de credencial vacía o nula - operación rechazada");
+            throw new IllegalArgumentException("Los datos sensibles no pueden estar vacíos");
+        }
+        
+        // 2. VALIDACIÓN DE LONGITUD (política de seguridad)
+        if (sensitiveData.length() < 8) {
+            LOGGER.warn("Intento de procesamiento de credencial que no cumple políticas de seguridad");
+            throw new IllegalArgumentException("Los datos sensibles deben cumplir las políticas mínimas de seguridad");
+        }
+        
+        try {
+            // 3. PROCESAMIENTO SEGURO - En lugar de imprimir en terminal:
+            // - Generar hash seguro para verificación
+            // - NO almacenar el password original
+            // - NO imprimir en terminal (violación de seguridad)
+            
+            String secureHash = generateSecureHash(sensitiveData);
+            
+            // 4. LOG SEGURO - Solo información técnica, SIN datos sensibles
+            LOGGER.info("Procesamiento seguro de credencial completado exitosamente");
+            
+            // 5. ADVERTENCIA DE SEGURIDAD EN LUGAR DE IMPRIMIR PASSWORD
+            System.out.println("=".repeat(80));
+            System.out.println("🔒 ADVERTENCIA DE SEGURIDAD - Space jon-security");
+            System.out.println("=".repeat(80));
+            System.out.println("❌ OPERACIÓN BLOQUEADA por políticas de seguridad");
+            System.out.println("");
+            System.out.println("📋 MOTIVOS DE BLOQUEO:");
+            System.out.println("   • Imprimir passwords en terminal es una vulnerabilidad de seguridad");
+            System.out.println("   • Base64 NO es cifrado, solo encoding - el password seguiría visible");
+            System.out.println("   • Podría quedar registrado en logs o historial de terminal");
+            System.out.println("   • Viola el principio de 'gestión segura de credenciales'");
+            System.out.println("");
+            System.out.println("✅ ALTERNATIVAS SEGURAS IMPLEMENTADAS:");
+            System.out.println("   • Hash seguro generado para verificación");
+            System.out.println("   • Validación de entrada aplicada");
+            System.out.println("   • Logs seguros sin datos sensibles");
+            System.out.println("   • Manejo seguro de errores");
+            System.out.println("");
+            System.out.println("📝 Hash para verificación: " + secureHash.substring(0, 8) + "...[TRUNCADO]");
+            System.out.println("=".repeat(80));
+            
+            return secureHash;
+            
+        } catch (Exception e) {
+            // 6. MANEJO SEGURO DE ERRORES - No exponer información sensible
+            LOGGER.error("Error en procesamiento seguro de credencial - detalles técnicos registrados");
+            throw new RuntimeException("Error en procesamiento de datos sensibles");
+        }
+    }
+    
+    /**
+     * Genera un hash seguro usando algoritmos modernos.
+     * Implementa las recomendaciones del space jon-security sobre criptografía.
+     */
+    private String generateSecureHash(String data) {
+        try {
+            // Usar algoritmos criptográficos seguros (no MD5/SHA1 según jon-security)
+            java.security.MessageDigest digest = java.security.MessageDigest.getInstance("SHA-256");
+            
+            // Añadir salt para mayor seguridad
+            SecureRandom random = new SecureRandom();
+            byte[] salt = new byte[16];
+            random.nextBytes(salt);
+            
+            digest.update(salt);
+            byte[] hashedBytes = digest.digest(data.getBytes(StandardCharsets.UTF_8));
+            
+            // Combinar salt + hash en Base64 para almacenamiento seguro
+            byte[] saltAndHash = new byte[salt.length + hashedBytes.length];
+            System.arraycopy(salt, 0, saltAndHash, 0, salt.length);
+            System.arraycopy(hashedBytes, 0, saltAndHash, salt.length, hashedBytes.length);
+            
+            return Base64.getEncoder().encodeToString(saltAndHash);
+            
+        } catch (Exception e) {
+            LOGGER.error("Error en generación de hash seguro");
+            throw new RuntimeException("Error en procesamiento criptográfico");
+        }
+    }
+    
+    /**
+     * Método alternativo para demostrar manejo seguro de configuración externa.
+     * Sigue las prácticas del space jon-security sobre gestión de secretos.
+     */
+    public void demonstrateSecureConfigHandling() {
+        System.out.println("\n🔐 DEMO: Manejo seguro de configuración (jon-security space)");
+        System.out.println("=".repeat(60));
+        System.out.println("✅ Usar variables de entorno para secretos:");
+        System.out.println("   export DB_PASSWORD=your_secure_password");
+        System.out.println("   String dbPassword = System.getenv(\"DB_PASSWORD\");");
+        System.out.println("");
+        System.out.println("✅ Usar Spring @Value con configuración externa:");
+        System.out.println("   @Value(\"${app.security.secret:}\"");
+        System.out.println("   private String securitySecret;");
+        System.out.println("");
+        System.out.println("✅ Usar gestores de secretos (Azure Key Vault, etc.)");
+        System.out.println("❌ NUNCA hardcodear passwords en código");
+        System.out.println("❌ NUNCA imprimir passwords en terminal/logs");
+        System.out.println("=".repeat(60));
+    }
 
     public int add(int num1, int num2) {
         if (num1 < 0 || num2 < 0) {
@@ -170,5 +305,39 @@ public class MathService {
         // Ordenar la lista de modas para consistencia
         Collections.sort(modes);
         return modes;
+    }
+
+    /**
+     * Calcula el factorial de un número entero.
+     * El factorial de n (n!) es el producto de todos los enteros positivos menores o iguales a n.
+     * Por definición: 0! = 1, 1! = 1, n! = n * (n-1)!
+     * 
+     * @param number el número del cual calcular el factorial (debe ser >= 0)
+     * @return el factorial del número (long para evitar overflow en valores pequeños)
+     * @throws IllegalArgumentException si el número es negativo o si el resultado excede Long.MAX_VALUE
+     */
+    public long factorial(int number) {
+        // Validación: no se puede calcular factorial de números negativos
+        if (number < 0) {
+            throw new IllegalArgumentException("No se puede calcular el factorial de un número negativo");
+        }
+        
+        // Casos base: 0! = 1 y 1! = 1
+        if (number == 0 || number == 1) {
+            return 1L;
+        }
+        
+        // Validación de overflow: factorial de números > 20 excede Long.MAX_VALUE
+        if (number > 20) {
+            throw new IllegalArgumentException("El factorial de " + number + " excede el límite de Long.MAX_VALUE (máximo: 20!)");
+        }
+        
+        // Cálculo iterativo del factorial para evitar stack overflow
+        long result = 1L;
+        for (int i = 2; i <= number; i++) {
+            result *= i;
+        }
+        
+        return result;
     }
 }

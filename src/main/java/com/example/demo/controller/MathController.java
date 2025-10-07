@@ -136,4 +136,75 @@ public class MathController {
             return ResponseEntity.badRequest().body(Map.of("error", "Invalid input"));
         }
     }
+
+    /**
+     * Endpoint POST para calcular el factorial de un número entero.
+     * 
+     * Request body formato JSON:
+     * {
+     *   "number": 5
+     * }
+     * 
+     * Respuesta exitosa (200 OK):
+     * {
+     *   "result": 120,
+     *   "operation": "factorial",
+     *   "operand": 5
+     * }
+     * 
+     * Respuesta error (400 Bad Request):
+     * {
+     *   "error": "Mensaje de error descriptivo"
+     * }
+     * 
+     * @param request Map con la clave "number" (Integer)
+     * @return ResponseEntity con el resultado o mensaje de error
+     */
+    @PostMapping("/factorial")
+    public ResponseEntity<Map<String, Object>> factorial(@RequestBody Map<String, Object> request) {
+        try {
+            // Validación de entrada: número debe estar presente
+            if (!request.containsKey("number")) {
+                return ResponseEntity.badRequest().body(Map.of(
+                    "error", "El campo 'number' es obligatorio"
+                ));
+            }
+            
+            // Extraer número del request
+            Object numberObj = request.get("number");
+            int number;
+            
+            // Manejar diferentes tipos numéricos
+            if (numberObj instanceof Integer) {
+                number = (Integer) numberObj;
+            } else if (numberObj instanceof Number) {
+                number = ((Number) numberObj).intValue();
+            } else {
+                return ResponseEntity.badRequest().body(Map.of(
+                    "error", "El campo 'number' debe ser un número entero"
+                ));
+            }
+            
+            // Calcular factorial
+            long result = mathService.factorial(number);
+            
+            // Respuesta exitosa
+            return ResponseEntity.ok(Map.of(
+                "result", result,
+                "operation", "factorial",
+                "operand", number
+            ));
+            
+        } catch (IllegalArgumentException e) {
+            // Errores de validación (número negativo o overflow)
+            return ResponseEntity.badRequest().body(Map.of(
+                "error", e.getMessage()
+            ));
+        } catch (Exception e) {
+            // Errores generales
+            return ResponseEntity.badRequest().body(Map.of(
+                "error", "Entrada inválida: " + e.getMessage()
+            ));
+        }
+    }
 }

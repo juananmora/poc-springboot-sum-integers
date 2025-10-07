@@ -753,4 +753,199 @@ class MathServiceTest {
             );
         }
     }
+
+    @Nested
+    @DisplayName("Factorial Tests")
+    class FactorialTests {
+
+        @Test
+        @DisplayName("Should return 1 for factorial(0) - base case")
+        void testFactorialZero() {
+            assertEquals(1L, mathService.factorial(0));
+        }
+
+        @Test
+        @DisplayName("Should return 1 for factorial(1) - base case")
+        void testFactorialOne() {
+            assertEquals(1L, mathService.factorial(1));
+        }
+
+        @Test
+        @DisplayName("Should calculate factorial(2) = 2")
+        void testFactorialTwo() {
+            assertEquals(2L, mathService.factorial(2));
+        }
+
+        @Test
+        @DisplayName("Should calculate factorial(3) = 6")
+        void testFactorialThree() {
+            assertEquals(6L, mathService.factorial(3));
+        }
+
+        @Test
+        @DisplayName("Should calculate factorial(4) = 24")
+        void testFactorialFour() {
+            assertEquals(24L, mathService.factorial(4));
+        }
+
+        @Test
+        @DisplayName("Should calculate factorial(5) = 120")
+        void testFactorialFive() {
+            assertEquals(120L, mathService.factorial(5));
+        }
+
+        @Test
+        @DisplayName("Should calculate factorial(10) = 3,628,800")
+        void testFactorialTen() {
+            assertEquals(3628800L, mathService.factorial(10));
+        }
+
+        @Test
+        @DisplayName("Should calculate factorial(20) = 2,432,902,008,176,640,000")
+        void testFactorialTwenty() {
+            // 20! es el máximo valor que cabe en un long
+            assertEquals(2432902008176640000L, mathService.factorial(20));
+        }
+
+        @Test
+        @DisplayName("Should throw IllegalArgumentException for negative number")
+        void testFactorialNegativeNumber() {
+            IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> mathService.factorial(-1)
+            );
+            assertEquals("No se puede calcular el factorial de un número negativo", exception.getMessage());
+        }
+
+        @Test
+        @DisplayName("Should throw IllegalArgumentException for large negative number")
+        void testFactorialLargeNegativeNumber() {
+            IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> mathService.factorial(-100)
+            );
+            assertTrue(exception.getMessage().contains("número negativo"));
+        }
+
+        @Test
+        @DisplayName("Should throw IllegalArgumentException for factorial(21) - overflow")
+        void testFactorialOverflow21() {
+            IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> mathService.factorial(21)
+            );
+            assertTrue(exception.getMessage().contains("excede el límite de Long.MAX_VALUE"));
+            assertTrue(exception.getMessage().contains("máximo: 20!"));
+        }
+
+        @Test
+        @DisplayName("Should throw IllegalArgumentException for factorial(25) - overflow")
+        void testFactorialOverflow25() {
+            IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> mathService.factorial(25)
+            );
+            assertTrue(exception.getMessage().contains("excede el límite"));
+        }
+
+        @Test
+        @DisplayName("Should throw IllegalArgumentException for factorial(100) - overflow")
+        void testFactorialOverflow100() {
+            IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> mathService.factorial(100)
+            );
+            assertTrue(exception.getMessage().contains("excede el límite"));
+        }
+
+        @ParameterizedTest
+        @DisplayName("Should calculate factorial correctly for valid range")
+        @CsvSource({
+            "0, 1",
+            "1, 1",
+            "2, 2",
+            "3, 6",
+            "4, 24",
+            "5, 120",
+            "6, 720",
+            "7, 5040",
+            "8, 40320",
+            "9, 362880",
+            "10, 3628800"
+        })
+        void testFactorialValidRange(int input, long expected) {
+            assertEquals(expected, mathService.factorial(input));
+        }
+
+        @ParameterizedTest
+        @DisplayName("Should throw exception for invalid negative inputs")
+        @ValueSource(ints = {-1, -2, -5, -10, -100})
+        void testFactorialInvalidNegativeInputs(int input) {
+            assertThrows(IllegalArgumentException.class, () -> mathService.factorial(input));
+        }
+
+        @ParameterizedTest
+        @DisplayName("Should throw exception for overflow inputs")
+        @ValueSource(ints = {21, 22, 25, 30, 50, 100})
+        void testFactorialOverflowInputs(int input) {
+            assertThrows(IllegalArgumentException.class, () -> mathService.factorial(input));
+        }
+
+        @Test
+        @DisplayName("Should calculate intermediate factorials correctly")
+        void testFactorialIntermediateValues() {
+            assertEquals(39916800L, mathService.factorial(11)); // 11!
+            assertEquals(479001600L, mathService.factorial(12)); // 12!
+            assertEquals(1307674368000L, mathService.factorial(15)); // 15!
+        }
+
+        @Test
+        @DisplayName("Should use long type to prevent overflow for valid values")
+        void testFactorialUsesLongType() {
+            long result = mathService.factorial(15);
+            assertTrue(result > Integer.MAX_VALUE, "Result should exceed Integer.MAX_VALUE");
+            assertEquals(1307674368000L, result);
+        }
+
+        @Test
+        @DisplayName("Should be consistent across multiple calls")
+        void testFactorialConsistency() {
+            int input = 10;
+            long firstCall = mathService.factorial(input);
+            long secondCall = mathService.factorial(input);
+            long thirdCall = mathService.factorial(input);
+            
+            assertEquals(firstCall, secondCall);
+            assertEquals(secondCall, thirdCall);
+            assertEquals(3628800L, firstCall);
+        }
+
+        @ParameterizedTest
+        @DisplayName("Should handle edge cases correctly")
+        @MethodSource("provideFactorialEdgeCases")
+        void testFactorialEdgeCases(int input, Long expectedResult, Class<? extends Exception> expectedException) {
+            if (expectedException != null) {
+                assertThrows(expectedException, () -> mathService.factorial(input));
+            } else {
+                assertEquals(expectedResult, mathService.factorial(input));
+            }
+        }
+
+        private static Stream<Arguments> provideFactorialEdgeCases() {
+            return Stream.of(
+                Arguments.of(0, 1L, null),                    // Base case: 0!
+                Arguments.of(1, 1L, null),                    // Base case: 1!
+                Arguments.of(20, 2432902008176640000L, null), // Maximum valid value
+                Arguments.of(-1, null, IllegalArgumentException.class),  // Negative
+                Arguments.of(21, null, IllegalArgumentException.class)   // Overflow
+            );
+        }
+
+        @Test
+        @DisplayName("Should return result type as long")
+        void testFactorialReturnType() {
+            Object result = mathService.factorial(5);
+            assertTrue(result instanceof Long, "Result should be of type Long");
+        }
+    }
 }
