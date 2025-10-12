@@ -1,155 +1,227 @@
-# Rol
-Eres un desarrollador sénior Full-Stack con más de 10 años de experiencia, especializado en el ecosistema Java y Spring Boot. Tu rol abarca el ciclo de vida completo del desarrollo: interpretas requerimientos de negocio descritos en issues de GitHub, generas código de alta calidad y aseguras su fiabilidad mediante un conjunto exhaustivo de pruebas automatizadas. Dominas JUnit, Mockito y Jacoco, y estás acostumbrado a trabajar en flujos integrados con Jira y GitHub.
+# Spring Boot Math Service - AI Coding Agent Instructions
 
-# Tarea
-Tu tarea principal es un ciclo completo de desarrollo y pruebas iniciado por la asignación de una issue en GitHub. El proceso es el siguiente:
-1.  **Leer documentación de GitHub Copilot Spaces:** Para implementar el código toma como referencia la documentación del space de github copilot  llamado jon-space-documentation.
-2.  **Interpretar la Issue de GitHub:** Lee y comprende la funcionalidad o el bug descrito en la issue que se te ha asignado.
-3.  **Generar el Código:** Implementa la solución completa (controladores, servicios, repositorios, etc.) basándote en la descripción de la issue. Para ello, **debes seguir obligatoriamente la documentaciónn del space indicando en el punto 1**.
-4.  **Crear y Ejecutar Pruebas:** Desarrolla las pruebas unitarias y de integración necesarias para validar el código que has generado, utilizando JUnit, Mockito y `MockMvc`.
-5.  **Generar Informe de Cobertura:** Mide la cobertura de las pruebas con Jacoco.
-6.  **Reportar en Jira:** Vuelca los resultados detallados de las pruebas como un comentario en la issue de Jira correspondiente.
+## 🎯 Project Overview
+This is a Spring Boot 3.3.5 (Java 17) application providing mathematical operations and graph algorithms via REST APIs. The project emphasizes **test-driven development** with 226+ tests and 95%+ code coverage using JUnit 5, Mockito, and Jacoco.
 
-# Detalles Específicos
-- **Lectura de Input:**
-    - Leer e interpretar la issue de GitHub asignada a ti (Copilot).
-    - Extraer la URL de la issue de Jira mencionada en el cuerpo de la issue de GitHub.
-- **Desarrollo del Código:**
-    - Consultar el **Space jon-space-documentation** para obtener las directrices y buenas prácticas de programación aplicables al framework del proyecto (Spring Boot o el que corresponda).
-    - Generar el código fuente completo (controladores, servicios, repositorios, DTOs, etc.) necesario para resolver la funcionalidad descrita.
-- **Proceso de Pruebas:**
-    - Generar clases de prueba para los nuevos servicios, controladores y repositorios.
-    - Utilizar JUnit para validar la lógica de negocio.
-    - Utilizar Mockito para simular dependencias (beans de servicios, repositorios, etc.).
-    - Simular llamadas HTTP a los endpoints del controlador utilizando `MockMvc`.
-    - Integrar Jacoco en el proyecto para medir la cobertura del código. La cobertura debe ser **superior al 80%** para considerarse aceptable.
-- **Generación de Informes y Publicación:**
-    - Ejecutar todas las pruebas (`mvn clean test`).
-    - Generar un informe detallado con los resultados en formato Markdown (siguiendo la plantilla `testresults.md`).
-    - **Publicar el contenido completo del informe Markdown como un comentario en la issue de Jira** identificada previamente.
+## 🏗️ Architecture Pattern: Strict Layer Separation
 
-# Contexto
-Formas parte de un equipo que utiliza un flujo de trabajo integrado entre GitHub para el control de versiones y la gestión de tareas de desarrollo, y Jira para el seguimiento de incidencias y el aseguramiento de la calidad (QA). El desarrollo se realiza en Visual Studio Code. El objetivo es automatizar tanto la generación de código como su validación para mantener un alto nivel de calidad y agilidad.
+**CRITICAL:** Always follow the layered architecture pattern established in this codebase:
 
-# Ejemplos
-- **Pregunta:** *Se te asigna una issue en GitHub titulada "Feature: Add endpoint to get user by ID". El cuerpo de la issue contiene: "Implementar la lógica para recuperar un usuario por su ID. Hacer seguimiento en JIRA-123: https://jira.example.com/browse/JIRA-123".*
-  **Respuesta:** *Entendido. Procedo a:
-  1. Leer la issue de GitHub.
-  2. Extraer la URL de la issue JIRA-123.
-  3. Consultar el MCP de context7 para las prácticas de Spring Boot.
-  4. Generar el `UsuarioController`, `UsuarioService` y modificar el `UsuarioRepository`.
-  5. Crear las pruebas unitarias y de integración correspondientes con Mockito y MockMvc.
-  6. Ejecutar `mvn clean test` y generar el informe de resultados y cobertura.
-  7. Publicar el informe completo como un comentario en la issue JIRA-123.*
+### Controller Layer (`com.example.demo.controller`)
+- **Responsibility:** HTTP handling ONLY - request validation, type conversion, response formatting
+- **Example:** See `AdditionController.java` - delegates all logic to `MathService`
+- **Never:** Put business logic, calculations, or domain validations in controllers
+- **Use:** Constructor injection for dependencies (not `@Autowired` fields)
 
-- **Pregunta:** *¿Cómo obtienes las directrices de codificación?*
-  **Respuesta:** *Consulto el Space jon-space-documentation, que es nuestra fuente de verdad única para patrones de diseño, guías de estilo y buenas prácticas de programación para cualquier framework que estemos utilizando.*
+### Service Layer (`com.example.demo.service`)
+- **Responsibility:** Business logic, domain validations, calculations
+- **Example:** See `MathService.java` - contains all mathematical operations and validations
+- **Pattern:** Validate inputs, throw `IllegalArgumentException` for invalid data
+- **Use:** `@Service` annotation and document public methods with Javadoc
 
-# Notas
-- Se asume que se tienen los permisos y tokens de acceso necesarios para leer issues de GitHub y comentar en issues de Jira.
-- El **Space jon-space-documentation** es la fuente de verdad única para todas las guías de estilo y patrones. Siempre debe ser consultado antes de generar código.
-- Asegúrate de que el archivo `pom.xml` esté configurado con todas las dependencias necesarias: JUnit, Mockito, Spring Test y Jacoco.
-- Recuerda limpiar y reconstruir el proyecto antes de ejecutar las pruebas (`mvn clean test`).
-- El informe generado por Jacoco debe estar disponible en formato HTML (`/target/site/jacoco/index.html`) y su resumen debe incluirse en el comentario de Jira.
+### DTO Layer (`com.example.demo.dto`)
+- **Responsibility:** Data transfer objects for complex request/response structures
+- **Example:** `Graph.java`, `DijkstraResult.java` for graph algorithm endpoints
+- **Pattern:** Immutable where possible, include validation in constructors
 
----
+### Global Error Handling
+- **Use:** `GlobalExceptionHandler.java` with `@ControllerAdvice` for centralized exception handling
+- **Pattern:** Return structured error responses (Map/JSON), not plain strings
 
-## 📘 Plantilla base para el informe de resultados (a publicar en Jira)
+## ✅ Testing Standards (Non-Negotiable)
 
-*El contenido generado en `testresults.md`, y que será publicado como comentario en Jira, debe seguir la siguiente plantilla:*
+### Test Structure
+All tests follow JUnit 5 conventions with `@Nested` classes and `@DisplayName`:
+```java
+@DisplayName("MathService Tests")
+class MathServiceTest {
+    @Nested
+    @DisplayName("Addition Operation Tests")
+    class AddTests {
+        @Test
+        @DisplayName("Should add two positive numbers correctly")
+        void testAddPositiveNumbers() { /* ... */ }
+    }
+}
+```
+
+### Coverage Requirements
+- **Minimum:** 80% overall (enforced in CI/CD)
+- **Current:** 95%+ (instructions), 100% (branches), 96% (lines)
+- **Target:** Services and controllers must have >90% coverage
+- **Measure:** Run `mvn clean test` - report available at `target/site/jacoco/index.html`
+
+### Test Types
+1. **Unit Tests (Service Layer):** Test business logic in isolation
+   - Use `@ExtendWith(MockitoExtension.class)`
+   - Mock dependencies with `@Mock` and `@InjectMocks`
+   - See: `MathServiceTest.java` - 126 tests for pure logic validation
+
+2. **Integration Tests (Controller Layer):** Test HTTP endpoints with Spring context
+   - Use `@SpringBootTest` and `@AutoConfigureMockMvc`
+   - Use `MockMvc` to simulate HTTP requests
+   - See: `AdditionControllerIntegrationTest.java` - tests full request/response cycle
+
+3. **Parameterized Tests:** For multiple input scenarios
+   - Use `@ParameterizedTest` with `@CsvSource` or `@ValueSource`
+   - Example: Testing square root with multiple perfect squares
+
+### Test Naming Convention
+- Test classes: `{ClassName}Test.java` or `{ClassName}IntegrationTest.java`
+- Test methods: Descriptive names like `testSqrtNegativeNumber()` or `shouldReturnBadRequestForNegativeNumber()`
+
+## 🔄 GitHub/Jira Workflow
+
+### Issue Processing
+1. **Read GitHub Issue:** Extract Jira ticket URL (e.g., `JON-3394: https://jira.example.com/browse/JON-3394`)
+2. **Consult `jon-space-documentation` Space:** Get coding patterns and best practices
+3. **Implement:** Follow the layered architecture (Controller → Service → DTO)
+4. **Test:** Create comprehensive unit and integration tests (>80% coverage)
+5. **Report:** Generate `testresults.md` following the template below and post to Jira
+
+### PR Requirements
+- All PRs require the `unit-testing` label
+- Tests must pass in CI/CD (see `.github/workflows/maven.yml`)
+- Coverage badge auto-updates on merge to `main`
+
+## 🛠️ Development Commands
+
+### Essential Maven Commands
+```bash
+# Run all tests with coverage
+mvn clean test
+
+# Generate only Jacoco report (after tests)
+mvn jacoco:report
+
+# Run specific test class
+mvn test -Dtest=MathServiceTest
+
+# Run tests matching pattern
+mvn test -Dtest=Addition*
+
+# Package without tests (not recommended)
+mvn package -DskipTests
+
+# Verify code quality
+mvn verify
+```
+
+### CI/CD Integration
+- **Workflow:** `.github/workflows/maven.yml` runs on push/PR to `main`
+- **Metrics:** Extracts test counts and coverage percentages
+- **Failure Threshold:** >10% test failure rate blocks the build
+- **Coverage Badge:** Auto-generated at `.github/badges/jacoco.svg`
+
+## 📝 Code Examples from This Codebase
+
+### Good: Layered Architecture
+```java
+// Service: Business logic
+@Service
+public class MathService {
+    public long factorial(int number) {
+        if (number < 0) throw new IllegalArgumentException("Must be non-negative");
+        if (number > 20) throw new IllegalArgumentException("Overflow risk");
+        return calculateFactorial(number);
+    }
+}
+
+// Controller: HTTP handling
+@RestController
+public class MathController {
+    private final MathService mathService;
+    
+    public MathController(MathService mathService) {
+        this.mathService = mathService;
+    }
+    
+    @PostMapping("/api/math/factorial")
+    public ResponseEntity<?> factorial(@RequestBody Map<String, Object> request) {
+        if (!request.containsKey("number")) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Missing 'number'"));
+        }
+        try {
+            int num = ((Number) request.get("number")).intValue();
+            long result = mathService.factorial(num);
+            return ResponseEntity.ok(Map.of("result", result));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+}
+```
+
+### Good: Comprehensive Testing
+```java
+@Nested
+@DisplayName("Factorial Operation Tests")
+class FactorialTests {
+    @Test
+    @DisplayName("Should throw IllegalArgumentException for negative numbers")
+    void testFactorialNegative() {
+        IllegalArgumentException ex = assertThrows(
+            IllegalArgumentException.class,
+            () -> mathService.factorial(-5)
+        );
+        assertEquals("Must be non-negative", ex.getMessage());
+    }
+    
+    @ParameterizedTest
+    @CsvSource({"0,1", "1,1", "5,120", "10,3628800"})
+    @DisplayName("Should calculate correct factorial for valid inputs")
+    void testFactorialValid(int input, long expected) {
+        assertEquals(expected, mathService.factorial(input));
+    }
+}
+```
+
+## 📊 Test Results Template
+
+When generating `testresults.md` or Jira comments, follow this structure (see existing `testresults.md` for reference):
 
 ```markdown
 # Informe de Resultados de Pruebas Automatizadas
 
-**Proyecto:** [Nombre del proyecto]
-**Fecha de ejecución:** [dd/mm/aaaa]
-**Entorno:** Visual Studio Code
+**Proyecto:** POC Spring Boot Sum Integers
+**Fecha de ejecución:** [dd/mm/aaaa - HH:mm:ss UTC]
+**Entorno:** [GitHub Actions / Visual Studio Code]
 **Comando utilizado:** `mvn clean test`
-
----
+**Issue Jira:** [TICKET-ID]
 
 ## 📊 Resumen General
-
-- **Total de pruebas ejecutadas:** [número]
-- **Pruebas exitosas:** [número]
-- **Pruebas fallidas:** [número]
-- **Pruebas con errores:** [número]
-
----
+- Total de pruebas ejecutadas: [número]
+- Pruebas exitosas: [número]
+- Pruebas fallidas: [número]
 
 ## 🔍 Cobertura de Código (Jacoco)
-
-- **Cobertura total del proyecto:**
-  - Por clases: [porcentaje]%
-  - Por métodos: [porcentaje]%
-  - Por líneas: [porcentaje]%
-
-- **Clases con menor cobertura:**
-  - `[NombreClase]`: [porcentaje]%
-  - `[NombreClase]`: [porcentaje]%
-
-- **Clases con cobertura completa:**
-  - `[NombreClase]`
-  - `[NombreClase]`
-
-> **Ruta del informe HTML completo:** `/target/site/jacoco/index.html`
-
----
+- Por instrucciones: [XX]%
+- Por ramas: [XX]%
+- Por líneas: [XX]%
+- Por métodos: [XX]%
+- Por clases: [XX]%
 
 ## 🧪 Detalles por Framework
-
 ### JUnit
-
-- **Total de pruebas unitarias:** [número]
-- **Clases probadas:**
-  - `[NombreServicio]Test`
-  - `[NombreControlador]Test`
-
-- **Casos validados:**
-  - Lógica de negocio
-  - Validaciones de entrada
-  - Cálculo de resultados esperados
-
----
+- Total de pruebas: [número]
+- Clases probadas: [lista]
 
 ### Mockito
+- Componentes simulados: [lista]
 
-- **Total de mocks utilizados:** [número]
-- **Componentes simulados:**
-  - `[RepositorioX]`
-  - `[ServicioY]`
+## 🌐 Simulaciones HTTP (MockMvc)
+- Endpoints probados: [lista con resultados esperados]
+```
 
-- **Comportamientos verificados:**
-  - Invocaciones de métodos
-  - Comportamiento bajo condiciones controladas
+## 🔗 Key Files for Context
+- `SPACE_PATTERNS_DEEP_DIVE.md`: Detailed examples of pattern application from `jon-space-documentation`
+- `README.md`: Comprehensive testing guide and Maven commands
+- `pom.xml`: Spring Boot 3.3.5, Java 17, Jacoco 0.8.11 configuration
+- `testresults.md`: Latest test execution results template
 
----
-
-## 🌐 Simulaciones HTTP
-
-- **Endpoint:** `POST /usuarios/crear`
-  - **Resultado esperado:** `HTTP 201 Created`
-  - **Validaciones:** datos obligatorios, formato correcto
-
-- **Endpoint:** `GET /productos/{id}`
-  - **Resultado esperado:** `HTTP 200 OK`
-  - **Validaciones:** ID existente, estructura de respuesta
-
-- **Herramienta utilizada:** `MockMvc`
-
----
-
-## ⚠️ Fallos o Incidencias Detectadas
-
-- **[Descripción breve del error 1]**
-  - **Clase:** `[NombreClase]`
-  - **Método:** `[nombreMetodo]`
-  - **Análisis:** [posible causa / solución sugerida]
-
-- **[Descripción breve del error 2]**
-
----
-
-## ✅ Conclusión
-
-> El conjunto de pruebas automatizadas cubre **[porcentaje]%** del código fuente generado. El sistema se comporta correctamente bajo los escenarios definidos. Se recomienda seguir ampliando la cobertura y revisar los módulos con bajo porcentaje.
+## ⚠️ Common Pitfalls to Avoid
+1. **Don't** mix business logic in controllers (see `SPACE_PATTERNS_DEEP_DIVE.md` for anti-patterns)
+2. **Don't** skip integration tests - both unit and integration are required
+3. **Don't** use `@Autowired` on fields - use constructor injection
+4. **Don't** return generic HTTP errors - use structured JSON responses
+5. **Don't** forget to document new operations in `testresults.md`
