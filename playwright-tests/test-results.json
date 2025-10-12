@@ -1,0 +1,271 @@
+{
+  "config": {
+    "configFile": "/home/runner/work/poc-springboot-sum-integers/poc-springboot-sum-integers/playwright-tests/playwright.config.ts",
+    "rootDir": "/home/runner/work/poc-springboot-sum-integers/poc-springboot-sum-integers/playwright-tests/tests",
+    "forbidOnly": true,
+    "fullyParallel": true,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "ci": {
+        "commitHref": "https://github.com/accenture-amer-extending-copilot/poc-springboot-sum-integers/commit/0f923c2596d29f1ed72159ce1a42f7f6a37e57ac",
+        "commitHash": "0f923c2596d29f1ed72159ce1a42f7f6a37e57ac",
+        "buildHref": "https://github.com/accenture-amer-extending-copilot/poc-springboot-sum-integers/actions/runs/17857211981"
+      },
+      "gitCommit": {
+        "shortHash": "e00e427",
+        "hash": "e00e427aa0502865ed2d72921aa79f5588a155d1",
+        "subject": "JUAN-3: Implement Playwright automation for TODO list task ordering verification",
+        "body": "JUAN-3: Implement Playwright automation for TODO list task ordering verification\n\nCo-authored-by: juananmora <52193917+juananmora@users.noreply.github.com>\n",
+        "author": {
+          "name": "copilot-swe-agent[bot]",
+          "email": "198982749+Copilot@users.noreply.github.com",
+          "time": 1758282581000
+        },
+        "committer": {
+          "name": "copilot-swe-agent[bot]",
+          "email": "198982749+Copilot@users.noreply.github.com",
+          "time": 1758282581000
+        },
+        "branch": "copilot/fix-42"
+      },
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "html",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "test-results.json"
+        }
+      ],
+      [
+        "list",
+        null
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/home/runner/work/poc-springboot-sum-integers/poc-springboot-sum-integers/playwright-tests/test-results",
+        "repeatEach": 1,
+        "retries": 2,
+        "metadata": {
+          "ci": {
+            "commitHref": "https://github.com/accenture-amer-extending-copilot/poc-springboot-sum-integers/commit/0f923c2596d29f1ed72159ce1a42f7f6a37e57ac",
+            "commitHash": "0f923c2596d29f1ed72159ce1a42f7f6a37e57ac",
+            "buildHref": "https://github.com/accenture-amer-extending-copilot/poc-springboot-sum-integers/actions/runs/17857211981"
+          },
+          "gitCommit": {
+            "shortHash": "e00e427",
+            "hash": "e00e427aa0502865ed2d72921aa79f5588a155d1",
+            "subject": "JUAN-3: Implement Playwright automation for TODO list task ordering verification",
+            "body": "JUAN-3: Implement Playwright automation for TODO list task ordering verification\n\nCo-authored-by: juananmora <52193917+juananmora@users.noreply.github.com>\n",
+            "author": {
+              "name": "copilot-swe-agent[bot]",
+              "email": "198982749+Copilot@users.noreply.github.com",
+              "time": 1758282581000
+            },
+            "committer": {
+              "name": "copilot-swe-agent[bot]",
+              "email": "198982749+Copilot@users.noreply.github.com",
+              "time": 1758282581000
+            },
+            "branch": "copilot/fix-42"
+          },
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/home/runner/work/poc-springboot-sum-integers/poc-springboot-sum-integers/playwright-tests/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.55.0",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "todo-ordering.spec.ts",
+      "file": "todo-ordering.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "TODO List Task Ordering - JUAN-3",
+          "file": "todo-ordering.spec.ts",
+          "line": 11,
+          "column": 6,
+          "specs": [
+            {
+              "title": "should verify that new tasks are added at the end of the list in correct order",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 700,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Navigate to TODO application",
+                          "duration": 186
+                        },
+                        {
+                          "title": "Verify application is loaded",
+                          "duration": 23
+                        },
+                        {
+                          "title": "Create first task: \"Primera tarea\"",
+                          "duration": 50
+                        },
+                        {
+                          "title": "Create second task: \"Segunda tarea\"",
+                          "duration": 53
+                        },
+                        {
+                          "title": "Create third task: \"Tercera tarea\"",
+                          "duration": 64
+                        },
+                        {
+                          "title": "Verify tasks appear in correct order (Primera, Segunda, Tercera)",
+                          "duration": 25
+                        },
+                        {
+                          "title": "Verify each new task is added at the end of the list",
+                          "duration": 100
+                        },
+                        {
+                          "title": "Check that counter shows \"4 items left\"",
+                          "duration": 11
+                        },
+                        {
+                          "title": "Verify acceptance criteria",
+                          "duration": 26
+                        }
+                      ],
+                      "startTime": "2025-09-19T11:50:28.561Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "58916dfe6033f2603141-e555bbc51c868ffbba34",
+              "file": "todo-ordering.spec.ts",
+              "line": 13,
+              "column": 7
+            },
+            {
+              "title": "should maintain order when adding multiple tasks consecutively",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 513,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Navigate to TODO application",
+                          "duration": 120
+                        },
+                        {
+                          "title": "Add task 1: \"Tarea A\"",
+                          "duration": 65
+                        },
+                        {
+                          "title": "Add task 2: \"Tarea B\"",
+                          "duration": 47
+                        },
+                        {
+                          "title": "Add task 3: \"Tarea C\"",
+                          "duration": 35
+                        },
+                        {
+                          "title": "Add task 4: \"Tarea D\"",
+                          "duration": 45
+                        },
+                        {
+                          "title": "Add task 5: \"Tarea E\"",
+                          "duration": 41
+                        },
+                        {
+                          "title": "Verify final order of all tasks",
+                          "duration": 36
+                        }
+                      ],
+                      "startTime": "2025-09-19T11:50:29.380Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "58916dfe6033f2603141-bc40dac1bc7ee74fb728",
+              "file": "todo-ordering.spec.ts",
+              "line": 114,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2025-09-19T11:50:27.981Z",
+    "duration": 1971.1399999999999,
+    "expected": 2,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}
