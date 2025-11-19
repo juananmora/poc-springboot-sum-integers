@@ -434,12 +434,328 @@ mvn clean package
    mvn dependency:purge-local-repository
    ```
 
+## 📚 API Documentation
+
+### Generating JavaDoc
+
+The project includes comprehensive JavaDoc documentation for all public classes and methods.
+
+#### Generate JavaDoc HTML
+
+```bash
+# Generate JavaDoc in target/site/apidocs
+mvn javadoc:javadoc
+
+# Open in browser (Linux/Mac)
+open target/site/apidocs/index.html
+
+# Open in browser (Windows)
+start target/site/apidocs/index.html
+```
+
+#### JavaDoc Coverage
+
+All public APIs are documented with:
+- **Class-level documentation**: Purpose and usage guidelines
+- **Method documentation**: Parameters, return values, exceptions
+- **Usage examples**: Where applicable
+- **Cross-references**: Links to related classes
+
+**Key documented packages:**
+- `com.example.demo.controller` - REST API endpoints
+- `com.example.demo.service` - Business logic services
+- `com.example.demo.dto` - Data transfer objects
+
+### REST API Reference
+
+#### Mathematical Operations
+
+##### Addition
+```bash
+GET /add?num1=5&num2=3
+```
+**Response:** `8`
+
+**Validation:** Both numbers must be non-negative
+
+##### Multiplication
+```bash
+GET /multiply?num1=4&num2=6
+```
+**Response:** `24`
+
+##### Division
+```bash
+GET /divide?num1=15&num2=3
+```
+**Response:** `5.0`
+
+**Validation:** Divisor cannot be zero
+
+##### Subtraction
+```bash
+GET /subtract?num1=10&num2=4
+```
+**Response:** `6`
+
+##### Square Root
+```bash
+GET /sqrt?number=16
+```
+**Response:** `4.0`
+
+**Validation:** Number must be non-negative
+
+#### Advanced Math Operations
+
+##### Sum (POST)
+```bash
+curl -X POST http://localhost:8080/api/math/sum \
+  -H "Content-Type: application/json" \
+  -d '{"a": 5, "b": 3}'
+```
+**Response:**
+```json
+{
+  "result": 8,
+  "operation": "sum",
+  "operands": [5, 3]
+}
+```
+
+##### Sum List
+```bash
+curl -X POST http://localhost:8080/api/math/sum-list \
+  -H "Content-Type: application/json" \
+  -d '{"numbers": [1, 2, 3, 4, 5]}'
+```
+**Response:**
+```json
+{
+  "result": 15,
+  "operation": "sum-list",
+  "operands": [1, 2, 3, 4, 5]
+}
+```
+
+##### Calculate Mean
+```bash
+curl -X POST http://localhost:8080/api/math/mean \
+  -H "Content-Type: application/json" \
+  -d '{"numbers": [2, 4, 6, 8, 10]}'
+```
+**Response:**
+```json
+{
+  "result": 6.0,
+  "operation": "mean",
+  "operands": [2, 4, 6, 8, 10]
+}
+```
+
+##### Quicksort
+```bash
+curl -X POST http://localhost:8080/api/math/quicksort \
+  -H "Content-Type: application/json" \
+  -d '{"numbers": [5, 2, 8, 1, 9]}'
+```
+**Response:**
+```json
+{
+  "result": [1, 2, 5, 8, 9],
+  "operation": "quicksort",
+  "operands": [5, 2, 8, 1, 9]
+}
+```
+
+##### Calculate Mode
+```bash
+curl -X POST http://localhost:8080/api/math/mode \
+  -H "Content-Type: application/json" \
+  -d '{"numbers": [1, 2, 2, 3, 3, 3, 4]}'
+```
+**Response:**
+```json
+{
+  "result": [3],
+  "operation": "mode",
+  "operands": [1, 2, 2, 3, 3, 3, 4]
+}
+```
+
+##### Factorial
+```bash
+curl -X POST http://localhost:8080/api/math/factorial \
+  -H "Content-Type: application/json" \
+  -d '{"number": 5}'
+```
+**Response:**
+```json
+{
+  "result": 120,
+  "operation": "factorial",
+  "operand": 5
+}
+```
+
+**Validation:** 
+- Number must be non-negative
+- Maximum value: 20 (to prevent overflow)
+
+#### Graph Algorithms (Dijkstra)
+
+See [🗺️ Algoritmo de Dijkstra](#️-algoritmo-de-dijkstra) section above for detailed Dijkstra endpoint documentation.
+
+### Error Responses
+
+All endpoints return consistent error responses in JSON format:
+
+```json
+{
+  "error": "Descriptive error message"
+}
+```
+
+**Common HTTP Status Codes:**
+- `200 OK` - Successful operation
+- `400 Bad Request` - Invalid input or validation failure
+- `403 Forbidden` - Authentication required
+- `500 Internal Server Error` - Server error (rare, check logs)
+
+## 🏗️ Architecture Overview
+
+### Layered Architecture
+
+This application follows a strict **layered architecture** pattern with clear separation of concerns:
+
+```
+┌─────────────────────────────────────────┐
+│         Controller Layer                │
+│  (HTTP request/response handling)       │
+│  - AdditionController                   │
+│  - MathController                       │
+│  - DijkstraController                   │
+└─────────────────┬───────────────────────┘
+                  │
+                  │ delegates to
+                  │
+┌─────────────────▼───────────────────────┐
+│          Service Layer                  │
+│     (Business logic & validation)       │
+│  - MathService                          │
+│  - DijkstraService                      │
+│  - AuthenticationService                │
+└─────────────────┬───────────────────────┘
+                  │
+                  │ uses
+                  │
+┌─────────────────▼───────────────────────┐
+│           DTO Layer                     │
+│    (Data transfer objects)              │
+│  - Graph, GraphEdge                     │
+│  - DijkstraResult                       │
+│  - AuthenticationRequest/Response       │
+└─────────────────────────────────────────┘
+```
+
+**Key Principles:**
+1. **Controller Layer**: Only handles HTTP concerns (no business logic)
+2. **Service Layer**: Contains all business logic and validations
+3. **DTO Layer**: Structures data for transfer between layers
+4. **Dependency Injection**: Constructor injection used throughout
+5. **Exception Handling**: Centralized via `GlobalExceptionHandler`
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed architecture guidelines.
+
+## 🔐 Security Features
+
+This application implements several security best practices:
+
+### Authentication
+- BCrypt password hashing with auto-generated salts
+- Secure credential validation
+- No plain-text password storage
+- Session-based authentication
+
+### Secure Coding Practices
+- Input validation at service layer
+- No sensitive data in logs
+- Secure exception messages (no internal details exposed)
+- Constructor injection (prevents field injection vulnerabilities)
+- Global exception handling
+
+### API Security Endpoints
+
+**Authentication:**
+```bash
+# Login
+curl -X POST http://localhost:8080/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"username": "user", "password": "password"}'
+
+# Register
+curl -X POST http://localhost:8080/api/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{"username": "newuser", "password": "SecureP@ss1"}'
+```
+
+For detailed security implementation, see:
+- `AuthenticationController.java` - Endpoint security
+- `AuthenticationService.java` - Password hashing and validation
+- `SecurityConfig.java` - Spring Security configuration
+
+## 🔍 Troubleshooting
+
+### Problemas Comunes
+
+1. **Error de compilación de Java:**
+   ```bash
+   mvn clean compile
+   ```
+
+2. **Fallo de pruebas por puerto ocupado:**
+   ```bash
+   lsof -ti:8080 | xargs kill -9
+   mvn test
+   ```
+
+3. **Problemas de dependencias:**
+   ```bash
+   mvn dependency:purge-local-repository
+   mvn clean install
+   ```
+
+4. **Limpiar cache de Maven:**
+   ```bash
+   mvn dependency:purge-local-repository
+   ```
+
 ## 📝 Notas Importantes
 
 - Las pruebas de integración pueden tomar más tiempo debido al servidor embebido
 - El puerto 8080 debe estar libre para las pruebas de integración completa
 - Los reportes de Jacoco se generan automáticamente con `mvn test`
 - Para ver cobertura en tiempo real, usar IDEs como IntelliJ IDEA o VSCode con extensiones apropiadas
+
+## 🤝 Contributing
+
+We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for:
+
+- Development setup and workflow
+- Coding standards and architecture patterns
+- Testing requirements (80%+ coverage)
+- Pull request process
+- Security best practices
+
+**Quick Start for Contributors:**
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/amazing-feature`
+3. Make your changes following the [layered architecture](CONTRIBUTING.md#layered-architecture)
+4. Add tests (maintain 80%+ coverage)
+5. Run tests: `mvn clean test`
+6. Commit with descriptive message
+7. Push and create a Pull Request
 
 ## 📞 Contacto y Contribuciones
 
@@ -448,6 +764,14 @@ Para reportar problemas o contribuir al proyecto:
 2. Mantener la cobertura de código por encima del 90%
 3. Añadir pruebas para nueva funcionalidad
 4. Seguir las convenciones de naming establecidas
+5. Consultar [CONTRIBUTING.md](CONTRIBUTING.md) para guías detalladas
+
+## 📖 Additional Resources
+
+- **[CONTRIBUTING.md](CONTRIBUTING.md)** - Comprehensive contributing guide
+- **[JavaDoc](target/site/apidocs/index.html)** - Generated API documentation (run `mvn javadoc:javadoc`)
+- **[Test Coverage Report](target/site/jacoco/index.html)** - Jacoco coverage report (run `mvn test`)
+- **[GitHub Actions](.github/workflows/maven.yml)** - CI/CD pipeline configuration
 
 ---
 

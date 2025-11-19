@@ -44,7 +44,7 @@ public class GlobalExceptionHandler {
      * @param ex the HttpMessageNotReadableException that was thrown
      * @return Map containing error message with key "error"
      * 
-     * @apiNote Returns HTTP 400 Bad Request with JSON: {"error": "Invalid input"}
+     * <p><b>Returns:</b> HTTP 400 Bad Request with JSON: {@code {"error": "Invalid input"}}
      */
     @ExceptionHandler(HttpMessageNotReadableException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -67,7 +67,7 @@ public class GlobalExceptionHandler {
      * @param ex the MethodArgumentNotValidException containing validation details
      * @return Map containing error message with key "error"
      * 
-     * @apiNote Returns HTTP 400 Bad Request with JSON: {"error": "Invalid input"}
+     * <p><b>Returns:</b> HTTP 400 Bad Request with JSON: {@code {"error": "Invalid input"}}
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)

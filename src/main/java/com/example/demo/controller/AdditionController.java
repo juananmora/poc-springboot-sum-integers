@@ -46,7 +46,7 @@ public class AdditionController {
      * @param num2 the second number to add (must be non-negative)
      * @return ResponseEntity containing the sum if successful, or 400 Bad Request if validation fails
      * 
-     * @apiNote Example usage: GET /add?num1=5&num2=3 returns 8
+     * <p><b>Example usage:</b> {@code GET /add?num1=5&num2=3} returns {@code 8}
      */
     @GetMapping("/add")
     public ResponseEntity<Integer> add(@RequestParam int num1, @RequestParam int num2) {
@@ -65,7 +65,7 @@ public class AdditionController {
      * @param num2 the second number to multiply
      * @return ResponseEntity containing the product
      * 
-     * @apiNote Example usage: GET /multiply?num1=4&num2=6 returns 24
+     * <p><b>Example usage:</b> {@code GET /multiply?num1=4&num2=6} returns {@code 24}
      */
     @GetMapping("/multiply")
     public ResponseEntity<Integer> multiply(@RequestParam int num1, @RequestParam int num2) {
@@ -81,7 +81,7 @@ public class AdditionController {
      * @param num2 the divisor (number to divide by, must not be zero)
      * @return ResponseEntity containing the quotient if successful, or 400 Bad Request if divisor is zero
      * 
-     * @apiNote Example usage: GET /divide?num1=15&num2=3 returns 5.0
+     * <p><b>Example usage:</b> {@code GET /divide?num1=15&num2=3} returns {@code 5.0}
      */
     @GetMapping("/divide")
     public ResponseEntity<Double> divide(@RequestParam int num1, @RequestParam int num2) {
@@ -100,7 +100,7 @@ public class AdditionController {
      * @param num2 the subtrahend (number to be subtracted)
      * @return ResponseEntity containing the difference
      * 
-     * @apiNote Example usage: GET /subtract?num1=10&num2=4 returns 6
+     * <p><b>Example usage:</b> {@code GET /subtract?num1=10&num2=4} returns {@code 6}
      */
     @GetMapping("/subtract")
     public ResponseEntity<Integer> subtract(@RequestParam int num1, @RequestParam int num2) {
@@ -115,7 +115,7 @@ public class AdditionController {
      * @param number the number to find the square root of (must be non-negative)
      * @return ResponseEntity containing the square root if successful, or 400 Bad Request if number is negative
      * 
-     * @apiNote Example usage: GET /sqrt?number=16 returns 4.0
+     * <p><b>Example usage:</b> {@code GET /sqrt?number=16} returns {@code 4.0}
      */
     @GetMapping("/sqrt")
     public ResponseEntity<Double> sqrt(@RequestParam double number) {

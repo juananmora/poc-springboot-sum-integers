@@ -374,8 +374,8 @@ public class MathService {
      * @param numbers the list of integers to analyze (can be null or empty)
      * @return a sorted list of the mode value(s), or an empty list if input is null/empty
      * 
-     * @apiNote If all numbers appear with the same frequency, all numbers are considered modes.
-     *          For example, [1, 2, 3] returns [1, 2, 3], while [1, 1, 2, 2, 3] returns [1, 2].
+     * <p><b>Note:</b> If all numbers appear with the same frequency, all numbers are considered modes.
+     * For example, {@code [1, 2, 3]} returns {@code [1, 2, 3]}, while {@code [1, 1, 2, 2, 3]} returns {@code [1, 2]}.
      */
     public List<Integer> calculateMode(List<Integer> numbers) {
         if (numbers == null || numbers.isEmpty()) {
