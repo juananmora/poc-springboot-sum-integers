@@ -145,6 +145,15 @@ public class MathService {
         System.out.println("=".repeat(60));
     }
 
+    /**
+     * Adds two non-negative integers together.
+     * This method validates that both input numbers are non-negative before performing the addition.
+     * 
+     * @param num1 the first number to add (must be non-negative)
+     * @param num2 the second number to add (must be non-negative)
+     * @return the sum of num1 and num2
+     * @throws IllegalArgumentException if either num1 or num2 is negative
+     */
     public int add(int num1, int num2) {
         if (num1 < 0 || num2 < 0) {
             throw new IllegalArgumentException("Los números no pueden ser negativos");
@@ -152,6 +161,13 @@ public class MathService {
         return num1 + num2;
     }
 
+    /**
+     * Calculates the sum of all integers in a list.
+     * Returns 0 for null or empty lists.
+     * 
+     * @param numbers the list of integers to sum (can be null or empty)
+     * @return the sum of all numbers in the list, or 0 if the list is null or empty
+     */
     public int sumList(List<Integer> numbers) {
         if (numbers == null || numbers.isEmpty()) {
             return 0;
@@ -159,18 +175,48 @@ public class MathService {
         return numbers.stream().mapToInt(Integer::intValue).sum();
     }
 
+    /**
+     * Determines if a number is even.
+     * A number is even if it is divisible by 2 with no remainder.
+     * 
+     * @param number the integer to check
+     * @return true if the number is even, false otherwise
+     */
     public boolean isEven(int number) {
         return number % 2 == 0;
     }
 
+    /**
+     * Determines if a number is positive.
+     * A number is positive if it is greater than zero.
+     * 
+     * @param number the integer to check
+     * @return true if the number is positive (> 0), false otherwise
+     */
     public boolean isPositive(int number) {
         return number > 0;
     }
 
+    /**
+     * Multiplies two integers together.
+     * 
+     * @param num1 the first number to multiply
+     * @param num2 the second number to multiply
+     * @return the product of num1 and num2
+     */
     public int multiply(int num1, int num2) {
         return num1 * num2;
     }
 
+    /**
+     * Divides one integer by another, returning the result as a double.
+     * This method validates that the divisor is not zero before performing division.
+     * 
+     * @param num1 the dividend (number to be divided)
+     * @param num2 the divisor (number to divide by)
+     * @return the quotient as a double-precision floating-point number
+     * @throws ArithmeticException if num2 is zero
+     */
     public double divide(int num1, int num2) {
         if (num2 == 0) {
             throw new ArithmeticException("No se puede dividir por cero");
@@ -178,10 +224,25 @@ public class MathService {
         return (double) num1 / num2;
     }
 
+    /**
+     * Subtracts one integer from another.
+     * 
+     * @param num1 the minuend (number to subtract from)
+     * @param num2 the subtrahend (number to be subtracted)
+     * @return the difference (num1 - num2)
+     */
     public int subtract(int num1, int num2) {
         return num1 - num2;
     }
 
+    /**
+     * Calculates the square root of a non-negative number.
+     * This method validates that the input is non-negative before calculation.
+     * 
+     * @param number the number to find the square root of (must be non-negative)
+     * @return the square root of the number
+     * @throws IllegalArgumentException if the number is negative
+     */
     public double sqrt(double number) {
         if (number < 0) {
             throw new IllegalArgumentException("No se puede calcular la raíz cuadrada de un número negativo");
@@ -189,6 +250,13 @@ public class MathService {
         return Math.sqrt(number);
     }
 
+    /**
+     * Calculates the arithmetic mean (average) of a list of integers.
+     * Returns 0.0 for null or empty lists.
+     * 
+     * @param numbers the list of integers to average (can be null or empty)
+     * @return the mean value, or 0.0 if the list is null or empty
+     */
     public double calculateMean(List<Integer> numbers) {
         if (numbers == null || numbers.isEmpty()) {
             return 0.0;
@@ -197,6 +265,17 @@ public class MathService {
         return sum / numbers.size();
     }
 
+    /**
+     * Sorts a list of integers using the quicksort algorithm.
+     * Creates a copy of the input list to avoid modifying the original.
+     * Returns an empty list if the input is null or empty.
+     * 
+     * <p>Time complexity: O(n log n) average case, O(n²) worst case
+     * <p>Space complexity: O(n) for the copy + O(log n) for recursion stack
+     * 
+     * @param numbers the list of integers to sort (can be null or empty)
+     * @return a new sorted list in ascending order, or an empty list if input is null/empty
+     */
     public List<Integer> quicksort(List<Integer> numbers) {
         if (numbers == null || numbers.isEmpty()) {
             return new ArrayList<>();
@@ -208,6 +287,17 @@ public class MathService {
         return sortedNumbers;
     }
 
+    /**
+     * Sorts a list of doubles using the quicksort algorithm.
+     * Creates a copy of the input list to avoid modifying the original.
+     * Returns an empty list if the input is null or empty.
+     * 
+     * <p>Time complexity: O(n log n) average case, O(n²) worst case
+     * <p>Space complexity: O(n) for the copy + O(log n) for recursion stack
+     * 
+     * @param numbers the list of doubles to sort (can be null or empty)
+     * @return a new sorted list in ascending order, or an empty list if input is null/empty
+     */
     public List<Double> quicksortRational(List<Double> numbers) {
         if (numbers == null || numbers.isEmpty()) {
             return new ArrayList<>();
@@ -275,6 +365,18 @@ public class MathService {
         numbers.set(j, temp);
     }
 
+    /**
+     * Calculates the mode(s) of a list of integers.
+     * The mode is the value(s) that appear most frequently in the dataset.
+     * If multiple values have the same maximum frequency, all are returned in sorted order.
+     * Returns an empty list if the input is null or empty.
+     * 
+     * @param numbers the list of integers to analyze (can be null or empty)
+     * @return a sorted list of the mode value(s), or an empty list if input is null/empty
+     * 
+     * <p><b>Note:</b> If all numbers appear with the same frequency, all numbers are considered modes.
+     * For example, {@code [1, 2, 3]} returns {@code [1, 2, 3]}, while {@code [1, 1, 2, 2, 3]} returns {@code [1, 2]}.
+     */
     public List<Integer> calculateMode(List<Integer> numbers) {
         if (numbers == null || numbers.isEmpty()) {
             return new ArrayList<>();
