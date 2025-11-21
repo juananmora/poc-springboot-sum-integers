@@ -752,7 +752,7 @@ La API no está versionada actualmente. Se mantiene retrocompatibilidad en cambi
 
 - [README.md](README.md) - Guía general del proyecto
 - [CONTRIBUTING.md](CONTRIBUTING.md) - Guía de contribución
-- [Javadoc](TODO: link a Javadoc generado) - Documentación de código
+- Javadoc - Disponible en el código fuente con documentación completa de todas las clases y métodos públicos
 
 ---
 
