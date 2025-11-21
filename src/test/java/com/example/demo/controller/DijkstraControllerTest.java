@@ -21,7 +21,8 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(DijkstraController.class)
+@WebMvcTest(controllers = DijkstraController.class, 
+    excludeAutoConfiguration = org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration.class)
 @DisplayName("DijkstraController Tests")
 class DijkstraControllerTest {
 
