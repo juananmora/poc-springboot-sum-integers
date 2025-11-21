@@ -13,7 +13,8 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(AdditionController.class)
+@WebMvcTest(controllers = AdditionController.class, 
+    excludeAutoConfiguration = org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration.class)
 @DisplayName("AdditionController Integration Tests with MockMvc")
 class AdditionControllerIntegrationTest {
 
