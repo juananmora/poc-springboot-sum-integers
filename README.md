@@ -19,6 +19,15 @@ Una aplicación Spring Boot que proporciona operaciones matemáticas básicas y 
 - [Endpoints Disponibles](#-endpoints-disponibles)
 - [Estructura del Proyecto](#-estructura-del-proyecto)
 - [Resultados de Pruebas](#-resultados-de-pruebas)
+- [Documentación Adicional](#-documentación-adicional)
+
+## 📚 Documentación Adicional
+
+Este README proporciona una guía completa para desarrolladores. Para información específica, consulta:
+
+- **[API.md](API.md)** - Documentación exhaustiva de todos los endpoints REST con ejemplos de curl
+- **[CONTRIBUTING.md](CONTRIBUTING.md)** - Guía completa de contribución, estándares de código y proceso de desarrollo
+- **[.github/copilot-instructions.md](.github/copilot-instructions.md)** - Instrucciones para agentes de IA y patrones del proyecto
 
 ## 🎯 Descripción General
 
