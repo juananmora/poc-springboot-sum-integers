@@ -7,6 +7,33 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Controlador REST para operaciones matemáticas avanzadas.
+ * <p>
+ * Este controlador proporciona endpoints POST para operaciones matemáticas
+ * más complejas que requieren cuerpos de petición JSON, incluyendo:
+ * <ul>
+ *   <li>Operaciones aritméticas básicas (suma, multiplicación)</li>
+ *   <li>Operaciones estadísticas (media, moda)</li>
+ *   <li>Algoritmos de ordenamiento (quicksort)</li>
+ *   <li>Operaciones sobre listas de números</li>
+ *   <li>Cálculo de factorial</li>
+ * </ul>
+ * </p>
+ * 
+ * <p><strong>Arquitectura:</strong></p>
+ * <ul>
+ *   <li>Todos los endpoints aceptan peticiones POST con cuerpo JSON</li>
+ *   <li>Delega toda la lógica de negocio a {@link MathService}</li>
+ *   <li>Retorna respuestas estructuradas con resultado, operación y operandos</li>
+ * </ul>
+ * 
+ * <p><strong>Base URL:</strong> /api/math</p>
+ * 
+ * @author Spring Boot Math Service Team
+ * @version 1.0
+ * @see MathService
+ */
 @RestController
 @RequestMapping("/api/math")
 public class MathController {
@@ -14,6 +41,32 @@ public class MathController {
     @Autowired
     private MathService mathService;
 
+    /**
+     * Suma dos números enteros.
+     * <p>
+     * Endpoint: POST /api/math/sum
+     * </p>
+     * 
+     * @param request Mapa con claves "a" y "b" (enteros)
+     * @return ResponseEntity con resultado estructurado o error
+     * 
+     * <p><strong>Request body ejemplo:</strong></p>
+     * <pre>
+     * {
+     *   "a": 5,
+     *   "b": 3
+     * }
+     * </pre>
+     * 
+     * <p><strong>Response exitosa (200 OK):</strong></p>
+     * <pre>
+     * {
+     *   "result": 8,
+     *   "operation": "sum",
+     *   "operands": [5, 3]
+     * }
+     * </pre>
+     */
     @PostMapping("/sum")
     public ResponseEntity<Map<String, Object>> sum(@RequestBody Map<String, Object> request) {
         try {
@@ -31,6 +84,31 @@ public class MathController {
         }
     }
 
+    /**
+     * Suma una lista de números enteros.
+     * <p>
+     * Endpoint: POST /api/math/sum-list
+     * </p>
+     * 
+     * @param request Mapa con clave "numbers" (lista de enteros)
+     * @return ResponseEntity con resultado estructurado o error
+     * 
+     * <p><strong>Request body ejemplo:</strong></p>
+     * <pre>
+     * {
+     *   "numbers": [1, 2, 3, 4, 5]
+     * }
+     * </pre>
+     * 
+     * <p><strong>Response exitosa (200 OK):</strong></p>
+     * <pre>
+     * {
+     *   "result": 15,
+     *   "operation": "sum-list",
+     *   "operands": [1, 2, 3, 4, 5]
+     * }
+     * </pre>
+     */
     @PostMapping("/sum-list")
     public ResponseEntity<Map<String, Object>> sumList(@RequestBody Map<String, List<Integer>> request) {
         try {
@@ -47,6 +125,25 @@ public class MathController {
         }
     }
 
+    /**
+     * Verifica propiedades de un número (si es par y si es positivo).
+     * <p>
+     * Endpoint: GET /api/math/check/{number}
+     * </p>
+     * 
+     * @param number número a verificar
+     * @return ResponseEntity con las propiedades del número
+     * 
+     * <p><strong>Ejemplo:</strong></p>
+     * <pre>
+     * GET /api/math/check/4 → 200 OK
+     * {
+     *   "number": 4,
+     *   "isEven": true,
+     *   "isPositive": true
+     * }
+     * </pre>
+     */
     @GetMapping("/check/{number}")
     public ResponseEntity<Map<String, Object>> checkNumber(@PathVariable int number) {
         return ResponseEntity.ok(Map.of(

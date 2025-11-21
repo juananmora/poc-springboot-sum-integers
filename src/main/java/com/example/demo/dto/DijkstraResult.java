@@ -3,7 +3,47 @@ package com.example.demo.dto;
 import java.util.List;
 
 /**
- * DTO que representa el resultado de la ejecución del algoritmo de Dijkstra
+ * Data Transfer Object (DTO) que representa el resultado de ejecutar el algoritmo de Dijkstra.
+ * <p>
+ * Este objeto encapsula toda la información sobre el camino más corto encontrado
+ * entre dos nodos en un grafo, incluyendo la ruta completa y la distancia total.
+ * </p>
+ * 
+ * <p><strong>Componentes del resultado:</strong></p>
+ * <ul>
+ *   <li><strong>source:</strong> Nodo de origen del camino</li>
+ *   <li><strong>destination:</strong> Nodo de destino del camino</li>
+ *   <li><strong>path:</strong> Lista ordenada de nodos que forman el camino más corto</li>
+ *   <li><strong>distance:</strong> Distancia total del camino (suma de pesos de aristas)</li>
+ *   <li><strong>pathFound:</strong> Indica si se encontró un camino válido</li>
+ * </ul>
+ * 
+ * <p><strong>Ejemplo de respuesta exitosa:</strong></p>
+ * <pre>
+ * {
+ *   "source": "A",
+ *   "destination": "F",
+ *   "path": ["A", "C", "B", "D", "E", "F"],
+ *   "distance": 12,
+ *   "pathFound": true
+ * }
+ * </pre>
+ * 
+ * <p><strong>Ejemplo de respuesta sin camino:</strong></p>
+ * <pre>
+ * {
+ *   "source": "A",
+ *   "destination": "Z",
+ *   "path": null,
+ *   "distance": -1,
+ *   "pathFound": false
+ * }
+ * </pre>
+ * 
+ * @author Spring Boot Math Service Team
+ * @version 1.0
+ * @see com.example.demo.service.DijkstraService
+ * @see Graph
  */
 public class DijkstraResult {
     private String source;
