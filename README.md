@@ -17,6 +17,7 @@ Una aplicación Spring Boot que proporciona operaciones matemáticas básicas y 
 - [Endpoints Disponibles](#-endpoints-disponibles)
 - [Estructura del Proyecto](#-estructura-del-proyecto)
 - [Resultados de Pruebas](#-resultados-de-pruebas)
+- [Documentación Adicional](#-documentación-adicional)
 
 ## 🔧 Requisitos Previos
 
@@ -235,9 +236,12 @@ GET /api/dijkstra/default-graph
 | Componente | Instrucciones | Ramas | Líneas | Métodos |
 |------------|---------------|-------|--------|---------|
 | **MathService** | 100% | 100% | 100% | 100% |
-| **AdditionController** | 100% | N/A | 100% | 100% |
-| **DemoApplication** | 37.5% | N/A | 33.3% | 50% |
-| **TOTAL** | **95.1%** | **100%** | **92.9%** | **91.7%** |
+| **DijkstraService** | 95%+ | 94%+ | 95%+ | 90%+ |
+| **AuthenticationService** | 84% | 94% | 84% | 87% |
+| **Controllers** | 69% | 90% | 69% | 86% |
+| **SecurityConfig** | 100% | N/A | 100% | 100% |
+| **DTOs** | 87% | 100% | 87% | 90% |
+| **TOTAL** | **77%** | **94%** | **78%** | **89%** |
 
 ## 🌐 Endpoints Disponibles
 
@@ -303,6 +307,8 @@ curl -X POST "http://localhost:8080/api/dijkstra/shortest-path" \
 
 ## 📁 Estructura del Proyecto
 
+Para una descripción detallada de la arquitectura del sistema, patrones de diseño y flujo de datos, ver [ARCHITECTURE.md](ARCHITECTURE.md).
+
 ```
 poc-springboot-sum-integers/
 ├── src/
@@ -344,18 +350,20 @@ poc-springboot-sum-integers/
 ## 📈 Resultados de Pruebas
 
 ### Resumen de Última Ejecución
-- ✅ **Total de Pruebas:** 226
-- ✅ **Pruebas Exitosas:** 226 (100%)
+- ✅ **Total de Pruebas:** 327
+- ✅ **Pruebas Exitosas:** 327 (100%)
 - ❌ **Pruebas Fallidas:** 0
-- ⏱️ **Tiempo Total:** ~26 segundos
-- 🎯 **Cobertura:** >95%
+- ⏱️ **Tiempo Total:** ~40 segundos
+- 🎯 **Cobertura:** 77% (Instrucciones), 94% (Ramas)
 
 ### Hitos Importantes
 - ✅ **Algoritmo de Dijkstra** implementado y funcionando correctamente
 - ✅ **Camino A→F = 12** (predicción correcta confirmada)
 - ✅ **Grafos bidireccionales** correctamente implementados
 - ✅ **Endpoints REST** funcionando para consultas de rutas
-- ✅ **Todas las pruebas unitarias** pasando exitosamente
+- ✅ **Autenticación JWT** implementada con Spring Security
+- ✅ **327 pruebas unitarias** pasando exitosamente
+- ✅ **Factorial y operaciones estadísticas** implementadas
 
 ### Ver Reportes Detallados
 ```bash
@@ -440,14 +448,45 @@ mvn clean package
 - El puerto 8080 debe estar libre para las pruebas de integración completa
 - Los reportes de Jacoco se generan automáticamente con `mvn test`
 - Para ver cobertura en tiempo real, usar IDEs como IntelliJ IDEA o VSCode con extensiones apropiadas
+- **Arquitectura detallada**: Ver [ARCHITECTURE.md](ARCHITECTURE.md) para información sobre la arquitectura del sistema
+- **API completa**: Ver [API.md](API.md) para documentación completa de endpoints
 
 ## 📞 Contacto y Contribuciones
 
 Para reportar problemas o contribuir al proyecto:
 1. Ejecutar todas las pruebas antes de hacer cambios
-2. Mantener la cobertura de código por encima del 90%
+2. Mantener la cobertura de código por encima del 80%
 3. Añadir pruebas para nueva funcionalidad
 4. Seguir las convenciones de naming establecidas
+
+Ver [CONTRIBUTING.md](CONTRIBUTING.md) para guías detalladas de contribución.
+
+---
+
+## 📚 Documentación Adicional
+
+Este proyecto cuenta con documentación completa distribuida en varios archivos:
+
+### Documentación Principal
+- **[README.md](README.md)** - Esta guía de pruebas unitarias y uso general
+- **[ARCHITECTURE.md](ARCHITECTURE.md)** - Arquitectura del sistema, patrones de diseño y flujo de datos
+- **[API.md](API.md)** - Documentación completa de endpoints REST con ejemplos
+- **[CONTRIBUTING.md](CONTRIBUTING.md)** - Guía de contribución y estándares de código
+- **[REPOSITORY_SUMMARY.md](REPOSITORY_SUMMARY.md)** - Resumen completo del repositorio
+
+### Documentación Técnica
+- **[AUTHENTICATION_IMPLEMENTATION.md](AUTHENTICATION_IMPLEMENTATION.md)** - Implementación de autenticación JWT
+- **[FACTORIAL_SUMMARY.md](FACTORIAL_SUMMARY.md)** - Implementación del cálculo de factorial
+- **[grafo-camino-optimo.md](grafo-camino-optimo.md)** - Análisis del algoritmo de Dijkstra
+
+### Informes de Pruebas
+- **[testresults.md](testresults.md)** - Resultados completos de pruebas
+- **[testresults_paths.md](testresults_paths.md)** - Análisis detallado de caminos en grafos
+- **target/site/jacoco/index.html** - Reporte interactivo de cobertura Jacoco
+
+### Guías de Workflow
+- **[WORKFLOW_IMPROVEMENTS_SUMMARY.md](WORKFLOW_IMPROVEMENTS_SUMMARY.md)** - Mejoras en CI/CD
+- **[JON_SPACE_DOCUMENTATION_SUMMARY.md](JON_SPACE_DOCUMENTATION_SUMMARY.md)** - Patrones de documentación
 
 ---
 
