@@ -6,6 +6,8 @@ Una aplicación Spring Boot que proporciona operaciones matemáticas básicas y 
 
 ![Cobertura Jacoco](.github/badges/jacoco.svg)
 
+> 📘 **[Ver Documentación Completa del Repositorio](COMPREHENSIVE_REPOSITORY_SUMMARY_JON-3396.md)** - Análisis exhaustivo con arquitectura, APIs, seguridad, testing y deployment (JON-3396)
+
 ## 📋 Contenido
 
 - [Requisitos Previos](#-requisitos-previos)
