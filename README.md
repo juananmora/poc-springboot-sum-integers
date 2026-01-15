@@ -344,10 +344,10 @@ poc-springboot-sum-integers/
 ## 📈 Resultados de Pruebas
 
 ### Resumen de Última Ejecución
-- ✅ **Total de Pruebas:** 226
-- ✅ **Pruebas Exitosas:** 226 (100%)
+- ✅ **Total de Pruebas:** 327
+- ✅ **Pruebas Exitosas:** 327 (100%)
 - ❌ **Pruebas Fallidas:** 0
-- ⏱️ **Tiempo Total:** ~26 segundos
+- ⏱️ **Tiempo Total:** ~30 segundos
 - 🎯 **Cobertura:** >95%
 
 ### Hitos Importantes
@@ -448,6 +448,15 @@ Para reportar problemas o contribuir al proyecto:
 2. Mantener la cobertura de código por encima del 90%
 3. Añadir pruebas para nueva funcionalidad
 4. Seguir las convenciones de naming establecidas
+
+Ver [CONTRIBUTING.md](CONTRIBUTING.md) para guía completa de contribución.
+
+## 📚 Documentación Adicional
+
+- **[API.md](API.md)** - Documentación completa de endpoints REST
+- **[CONTRIBUTING.md](CONTRIBUTING.md)** - Guía de contribución y estándares
+- **[LICENSE](LICENSE)** - Licencia del proyecto
+- **Javadoc** - Disponible en el código fuente con documentación de todas las clases públicas
 
 ---
 
