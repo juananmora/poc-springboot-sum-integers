@@ -756,4 +756,4 @@ La API no está versionada actualmente. Se mantiene retrocompatibilidad en cambi
 
 ---
 
-**Última actualización:** 2025-11-21
+**Última actualización:** 2026-01-15
