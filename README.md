@@ -20,16 +20,16 @@ Una aplicación Spring Boot que proporciona operaciones matemáticas básicas y 
 
 ## 🔧 Requisitos Previos
 
-- **Java 11+** (Recomendado Java 17)
+- **Java 17+** (Recomendado Java 17 LTS)
 - **Maven 3.6+**
 - **Git** (para clonar el repositorio)
 
 ## 📦 Instalación
 
-1. **Clonar el repositorio** (si aplicable):
+1. **Clonar el repositorio**:
    ```bash
-   git clone <repository-url>
-   cd springboot-sum-integers
+   git clone https://github.com/juananmora/poc-springboot-sum-integers.git
+   cd poc-springboot-sum-integers
    ```
 
 2. **Verificar la instalación de Java y Maven**:
@@ -46,7 +46,7 @@ Una aplicación Spring Boot que proporciona operaciones matemáticas básicas y 
 ```bash
 mvn test
 ```
-**Descripción:** Ejecuta todas las pruebas unitarias e de integración (226 pruebas total).
+**Descripción:** Ejecuta todas las pruebas unitarias e de integración (327 pruebas total).
 
 #### 2. Compilar y Ejecutar Pruebas con Reporte de Cobertura
 ```bash
@@ -232,12 +232,14 @@ GET /api/dijkstra/default-graph
 
 ### Métricas de Cobertura Actuales
 
-| Componente | Instrucciones | Ramas | Líneas | Métodos |
-|------------|---------------|-------|--------|---------|
-| **MathService** | 100% | 100% | 100% | 100% |
-| **AdditionController** | 100% | N/A | 100% | 100% |
-| **DemoApplication** | 37.5% | N/A | 33.3% | 50% |
-| **TOTAL** | **95.1%** | **100%** | **92.9%** | **91.7%** |
+| Componente | Instrucciones | Ramas | Estado |
+|------------|---------------|-------|--------|
+| **com.example.demo.controller** | 69% | 90% | ✅ Bueno |
+| **com.example.demo.service** | 84% | 94% | ✅ Excelente |
+| **com.example.demo.dto** | 87% | 100% | ✅ Excelente |
+| **com.example.demo.config** | 100% | N/A | ✅ Perfecto |
+| **com.example.demo** (main) | 37% | N/A | ⚠️ Esperado (bootstrap) |
+| **TOTAL** | **77%** | **94%** | ✅ Saludable |
 
 ## 🌐 Endpoints Disponibles
 
@@ -344,11 +346,11 @@ poc-springboot-sum-integers/
 ## 📈 Resultados de Pruebas
 
 ### Resumen de Última Ejecución
-- ✅ **Total de Pruebas:** 226
-- ✅ **Pruebas Exitosas:** 226 (100%)
+- ✅ **Total de Pruebas:** 327
+- ✅ **Pruebas Exitosas:** 327 (100%)
 - ❌ **Pruebas Fallidas:** 0
-- ⏱️ **Tiempo Total:** ~26 segundos
-- 🎯 **Cobertura:** >95%
+- ⏱️ **Tiempo Total:** ~38 segundos
+- 🎯 **Cobertura:** 77% (instrucciones), 94% (ramas)
 
 ### Hitos Importantes
 - ✅ **Algoritmo de Dijkstra** implementado y funcionando correctamente
